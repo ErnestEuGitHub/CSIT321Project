@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from database import engine
 from sqlalchemy import text
 
@@ -13,10 +13,22 @@ def load_desc_from_db():
     return descriptions
 
 @app.route('/')
-def home():
+def loadhome():
     desc = load_desc_from_db()
     return render_template('index.html', desc=desc)
     
+@app.route('/login', methods=["POST", "GET"])
+def login():
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+
+        with engine.connect() as conn:
+            searchUser = conn.execute(text("SELECT * FROM USERS WHERE EMAIL = " + email))
+            rows = searchUser.fetchall()
+        return rows
+    else:
+        return render_template('login.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
