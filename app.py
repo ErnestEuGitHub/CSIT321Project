@@ -26,10 +26,13 @@ def login():
     error = False
 
     if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form.get("email")
+        password = request.form.get("password")
+        print(email, password)
+        print("POST activated")
 
         if not email or not password:
+            flash('Please fill in both Email and Password!')
             return render_template('login.html', emptyForm = True)
 
         with engine.connect() as conn:
@@ -38,13 +41,17 @@ def login():
             print(rows)
 
             if not rows:
+                print('if not rows triggered')
+                flash('This Email is not registered, try creating account instead.')
                 return render_template('login.html', invalidEmail = True)
-            elif rows[3] == password:
+            elif rows[0][2] == password:
+                print('login success')
                 flash('Login Successful!')
                 return render_template('login.html', invalidEmail = False, invalidPassword = False)
-            elif rows[3] != password:
+            elif rows[0][2] != password:
+                print('elif not equals password triggered')
                 flash('Help lah, you forgot your password!')
-                return render_template('login.html', invalidPassword = True,)
+                return render_template('login.html', invalidPassword = True)
             else:
                 flash('Oops, an error has occured.')
 
