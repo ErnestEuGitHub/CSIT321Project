@@ -29,7 +29,6 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
         print(email, password)
-        print("POST activated")
 
         if not email or not password:
             flash('Please fill in both Email and Password!')
@@ -41,15 +40,12 @@ def login():
             print(rows)
 
             if not rows:
-                print('if not rows triggered')
                 flash('This Email is not registered, try creating account instead.')
                 return render_template('login.html', invalidEmail = True)
             elif rows[0][2] == password:
-                print('login success')
                 flash('Login Successful!')
                 return render_template('login.html', invalidEmail = False, invalidPassword = False)
             elif rows[0][2] != password:
-                print('elif not equals password triggered')
                 flash('Help lah, you forgot your password!')
                 return render_template('login.html', invalidPassword = True)
             else:
