@@ -36,37 +36,50 @@
 					</div>
 					<div class="card shadow-lg">
 						<div class="card-body p-5">
-							<h1 class="fs-4 card-title fw-bold mb-4">Login</h1>
-							<form action="/login" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+							<h1 class="fs-4 card-title fw-bold mb-4">Create Account</h1>
+							<form action="/register" method="POST" class="needs-validation" novalidate="" autocomplete="off">
 								<div class="mb-3">
 									<label class="mb-2 text-muted" for="email">E-Mail Address</label>
-									<input id="email" type="email" class="form-control" name="email" value="" required autofocus>
+									<input id="email" type="email" class="form-control" name="email" value="{{ email }}" required autofocus>
 								</div>
 
 								<div class="mb-3">
 									<div class="mb-2 w-100">
 										<label class="text-muted" for="password">Password</label>
-										<a href="forgot.html" class="float-end">
-											Forgot Password?
-										</a>
 									</div>
+									<!-- <div class="invalid-feedback" style="display: {% if invalidPassword == True %}block{% else %}none{% endif %}">
+								    	Please ensure password and confirm password are the same
+							    	</div> -->
 									<input id="password" type="password" class="form-control" name="password" required>
 								</div>
 
+								<div class="mb-3">
+									<div class="mb-2 w-100">
+										<label class="text-muted" for="cpassword">Confirm Password</label>
+									</div>
+									<input id="cpassword" type="password" class="form-control" name="cpassword" required>
+								</div>
+
+								<div class="mb-3">
+									<label class="mb-2 text-muted" for="fname">First Name</label>
+									<input id="fname" type="text" class="form-control" name="fname" value="{{ fname }}" required autofocus>
+								</div>
+
+								<div class="mb-3">
+									<label class="mb-2 text-muted" for="lname">Last Name</label>
+									<input id="lname" type="text" class="form-control" name="lname" value="{{ lname }}" required autofocus>
+								</div>
+
 								<div class="d-flex align-items-center">
-									<!-- <div class="form-check">
-										<input type="checkbox" name="remember" id="remember" class="form-check-input">
-										<label for="remember" class="form-check-label">Remember Me</label>
-									</div> -->
 									<button type="submit" class="btn btn-primary ms-auto">
-										Login
+										Create Account
 									</button>
 								</div>
 							</form>
 						</div>
 						<div class="card-footer py-3 border-0">
 							<div class="text-center">
-								Don't have an account? <a href="/register" class="text-dark">Create One</a>
+								Have an Account? <a href="/login" class="text-dark">Login Here</a>
 							</div>
 						</div>
 					</div>
