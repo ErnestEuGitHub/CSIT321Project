@@ -46,7 +46,7 @@ def login():
                 flash('Login Successful!')
                 return render_template('login.html', invalidEmail = False, invalidPassword = False)
             elif rows[0][2] != password:
-                flash('Help lah, you forgot your password!')
+                flash('Wrong password, please try again.')
                 return render_template('login.html', invalidPassword = True)
             else:
                 flash('Oops, an error has occured.')
