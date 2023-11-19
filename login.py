@@ -1,4 +1,4 @@
-from flask import render_template, request, flash
+from flask import render_template, request, flash, session
 from database import dbConnect
 import bcrypt
 from sqlalchemy import text
@@ -21,12 +21,15 @@ def login():
         with dbConnect.engine.connect() as conn:
             searchUser = conn.execute(text("SELECT * FROM users WHERE EMAIL = '" + email +"'"))
             rows = searchUser.fetchall()
-        
+            print(rows)
+
             if not rows:
                 flash('This Email is not registered, try creating account instead.', 'error')
                 return render_template('login.html', invalidEmail = True)
             elif bcrypt.checkpw(password.encode('utf-8'), rows[0][2].encode('utf-8')):
                 flash('Login Successful!', 'success')
+                session["id"] = rows[0][0]
+                session["fname"] = rows[0][5]
                 return render_template('login.html', invalidEmail = False, invalidPassword = False)
             elif rows[0][2] != password:
                 flash('Wrong password, please try again.', 'error')
