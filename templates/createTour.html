@@ -72,6 +72,7 @@
 									<div class="mb-4 col-xl-4">
 										<label class="mb-2 text-muted" for="sport">Sport</label>
 										<select id="sport" class="form-select" name="sport" required autofocus>
+											<option value=""></option>
 											{%for s in sportlist %}
 												<option value="{{s['sportID']}}">{{s['sportName']}}</option>
               								{% endfor %}
@@ -81,7 +82,7 @@
 									<div class="mb-4 col-xl-4">
 										<label class="mb-2 text-muted" for="format">Format</label>
 										<select id="format" class="form-select" name="format" required autofocus>
-											<option value="1">test</option>
+											
 										</select>
 									</div>
 
@@ -107,7 +108,30 @@
 		</div>
 	</section>
 
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
 	
+	<script>
+		$(document).ready(function () {
+			$("#sport").change(function () {
+				var selectedSport = $(this).val();
+	
+				// Make an AJAX request to Flask
+				$.ajax({
+					type: "POST",
+					url: "/get_formats",  // Update the route to handle format retrieval
+					data: { sport_id: selectedSport },
+					success: function (response) {
+						// Populate the "Format" dropdown with the received data
+						$("#format").html(response.options);
+					},
+					error: function (error) {
+						console.error("Error:", error);
+					}
+				});
+			});
+		});
+	</script>
+
 </body>
 </html>

@@ -3,6 +3,7 @@ from landing import *
 from login import *
 from register import *
 from createTour import *
+from getformat import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -26,6 +27,11 @@ def loadregister():
 def loadCreateTour():
     page = createTour()
     return page
+
+@app.route('/get_formats', methods=['POST'])
+def getformatspy():
+    formats = getformat()
+    return formats
 
 if __name__ == "__main__":
     
