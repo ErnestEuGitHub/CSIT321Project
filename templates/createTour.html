@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="author" content="Muhamad Nauval Azhar">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta name="description" content="This is a login page template based on Bootstrap 5">
+	<title>Bootstrap 5 Login Page</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+</head>
+
+<body>
+	<section class="h-100">
+		{% for message in get_flashed_messages(category_filter=["error"]) %}
+			{% if message %}
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endif %}
+        {% endfor %}
+
+		{% for message in get_flashed_messages(category_filter=["success"]) %}
+			{% if message %}
+				<div class="alert alert-success alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endif %}
+        {% endfor %}
+		<div class="container h-100">
+			<div class="row justify-content-sm-center h-100">
+				<div class="col-xxl-10 col-xl-8 col-lg-8 col-md-9 col-sm-10">
+					<div class="text-center my-5">
+						<img src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt="logo" width="100">
+					</div>
+					<div class="card shadow-lg">
+						<div class="card-body p-5">
+							<h1 class="fs-4 card-title fw-bold mb-4">Create Tournament</h1>
+							<form action="/createTour" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+								
+								<div class="row mb-3 justify-content-sm-center">
+									<div class="mb-4">
+										<label class="mb-2 text-muted" for="tourName">Tournament Name</label>
+										<input id="tourName" type="text" class="form-control" name="tourName" value="{{ tourName }}" required autofocus>
+									</div>
+									
+									<div class="mb-4 col-xl-4">
+										<label class="mb-2 text-muted" for="tourSize">Size of Participants</label>
+										<input id="tourSize" type="number" class="form-control" name="tourSize" value="{{ tourSize }}" min="0" required autofocus>
+									</div>
+
+									<div class="mb-4 col-xl-4">
+										<label class="mb-2 text-muted" for="startDate">Start Date</label>
+										<input id="startDate" type="date" class="form-control" name="startDate" value="{{ startDate }}" required autofocus>
+									</div>
+
+									<div class="mb-4 col-xl-4">
+										<label class="mb-2 text-muted" for="endDate">End Date</label>
+										<input id="endDate" type="date" class="form-control" name="endDate" value="{{ endDate }}" required autofocus>
+									</div>
+
+									<div class="mb-4 col-xl-4">
+										<label class="mb-2 text-muted" for="gender">Gender</label>
+										<select id="gender" class="form-select" name="gender" required autofocus>
+											<option value="Male">Male</option>
+											<option value="Female">Female</option>
+											<option value="Mixed">Mixed</option>
+										</select>
+									</div>
+
+									<div class="mb-4 col-xl-4">
+										<label class="mb-2 text-muted" for="sport">Sport</label>
+										<select id="sport" class="form-select" name="sport" required autofocus>
+											{%for s in sportlist %}
+												<option value="{{s['sportID']}}">{{s['sportName']}}</option>
+              								{% endfor %}
+										</select>
+									</div>
+
+									<div class="mb-4 col-xl-4">
+										<label class="mb-2 text-muted" for="format">Format</label>
+										<select id="format" class="form-select" name="format" required autofocus>
+											<option value="1">test</option>
+										</select>
+									</div>
+
+									<div class="mb-4">
+										<label class="mb-2 text-muted" for="generalInfo">General Info</label>
+										<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" value="{{ generalInfo }}" rows="5" required autofocus></textarea>
+									</div>
+								</div>
+
+								<div class="d-flex align-items-center">
+									<button type="submit" class="btn btn-primary ms-auto">
+										Create Tournament
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+					<div class="text-center mt-5 text-muted">
+						Copyright &copy; 2017-2021 &mdash; Your Company 
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+	
+</body>
+</html>
