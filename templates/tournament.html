@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    /* Box styles */
+    .content {
+        margin-left: 200px;
+        padding-top: 50px;
+        /* Adjust padding-top to avoid overlap with topnav */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-bottom: 20px;
+    }
+
+    .box {
+        width: 380px;
+        height: 380px;
+        margin: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    /* Search box styles */
+    .search-container {
+        text-align: center;
+        width: 100%;
+        padding: 10px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .search-container input[type=text] {
+        padding: 10px;
+        margin-right: 10px;
+        width: 200px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    .search-container button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .search-container button:hover {
+        background: #45a049;
+    }
+</style>
+
+<div class="content">
+    <div class="search-container">
+        <label for="search-input">Tournaments</label>
+        <input type="text" placeholder="Search...">
+        <button type="submit">Create</button>
+    </div>
+    <div class="box">
+        <h2>Section 1</h2>
+        <p>This is the content for section 1.</p>
+    </div>
+    <div class="box">
+        <h2>Section 2</h2>
+        <p>This is the content for section 2.</p>
+    </div>
+    <div class="box">
+        <h2>Section 3</h2>
+        <p>This is the content for section 3.</p>
+    </div>
+    <div class="box">
+        <h2>Section 4</h2>
+        <p>This is the content for section 4.</p>
+    </div>
+    <div class="box">
+        <h2>Section 5</h2>
+        <p>This is the content for section 5.</p>
+    </div>
+    <div class="box">
+        <h2>Section 6</h2>
+        <p>This is the content for section 6.</p>
+    </div>
+</div>
+{% endblock %}

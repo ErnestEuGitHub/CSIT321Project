@@ -105,5 +105,13 @@ def register():
     else:
         return render_template('register.html')
 
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+@app.route('/tournament')
+def tournament():
+    return render_template('tournament.html')
+
 if __name__ == "__main__":
     app.run(debug=True)
