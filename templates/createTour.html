@@ -72,7 +72,7 @@
 									<div class="mb-4 col-xl-4">
 										<label class="mb-2 text-muted" for="sport">Sport</label>
 										<select id="sport" class="form-select" name="sport" required autofocus>
-											<option value=""></option>
+											<option value="">Please select a sport first</option>
 											{%for s in sportlist %}
 												<option value="{{s['sportID']}}">{{s['sportName']}}</option>
               								{% endfor %}
