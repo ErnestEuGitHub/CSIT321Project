@@ -24,6 +24,15 @@ def loadregister():
     page = register()
     return page
 
+
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+@app.route('/tournament')
+def tournament():
+    return render_template('tournament.html')
+
 @app.route('/createTour', methods=["POST", "GET"])
 def loadCreateTour():
     page = createTour()
@@ -46,6 +55,7 @@ def loadTournamentOverviewRules():
 def loaddashboard():
     page = dashboard()
     return page
+
 
 if __name__ == "__main__":
     
