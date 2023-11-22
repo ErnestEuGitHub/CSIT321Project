@@ -4,6 +4,7 @@ from login import *
 from register import *
 from createTour import *
 from getformat import *
+from dashboard import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -49,6 +50,11 @@ def loadTournamentOverviewDetails():
 @app.route('/tournamentOverviewPageRules', methods=["POST", "GET"])
 def loadTournamentOverviewRules():
     return render_template('tournamentOverviewPageRules.html')
+
+@app.route('/dashboard', methods=["POST", "GET"])
+def loaddashboard():
+    page = dashboard()
+    return page
 
 
 if __name__ == "__main__":
