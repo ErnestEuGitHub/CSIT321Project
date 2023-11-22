@@ -75,7 +75,7 @@
             top: 50px;
             /* Adjust top position to avoid overlapping */
             left: 0;
-            background-color: #f2f2f2;
+            background-color: #f0f0f0;
             overflow-x: hidden;
             padding-top: 20px;
             padding-left: 40px;
@@ -83,16 +83,21 @@
             /* Ensure leftnav is below topnav but above other content */
         }
 
+        .leftnav h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
         .leftnav a {
             padding: 6px 8px 6px 16px;
             text-decoration: none;
             font-size: 18px;
-            color: #818181;
+            color: #333;
             display: block;
         }
 
         .leftnav a:hover {
-            color: #f1f1f1;
+            color: #666;
         }
 
         /* Box styles */
@@ -189,9 +194,10 @@
 
     <div class="leftnav">
         <h2>Projects</h2>
-        <a href="#section1">Section 1</a>
-        <a href="#section2">Section 2</a>
-        <a href="#section3">Section 3</a>
+        <a href="#section1">Olympic</a>
+        <a href="#section2">EPL</a>
+        <a href="#section3">NBA</a>
+        <a href="#section3">World Cup</a>
     </div>
 
     <div class="content">
@@ -201,17 +207,15 @@
             <button class="open-form-btn" onclick="openForm()">Create</button>
         </div>
         <div class="form-container" id="myForm">
-            <h2>My Form</h2>
-            <form action="/submit" method="post">
-                <!-- Your form fields here -->
-                <!-- For example: -->
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name"><br><br>
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date"><br><br>
-                <label for="time">Time:</label>
-                <input type="time" id="time" name="time"><br><br>
-                <input type="submit" value="Submit">
+            <h2>Project Form</h2>
+            <form action="/submit_project" method="post">
+                <label for="project_name">Project Name:</label>
+                <input type="text" id="project_name" name="project_name"><br><br>
+
+                <label for="description">Description:</label><br>
+                <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+
+                <input type="submit" value="Create Project">
             </form>
             <button onclick="closeForm()">Close</button>
         </div>

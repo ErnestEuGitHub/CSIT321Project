@@ -55,13 +55,55 @@
     .search-container button:hover {
         background: #45a049;
     }
+
+    /* Style the form container */
+    .form-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f2f2f2;
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 1000;
+    }
+
+    /* Style the button */
+    .open-form-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 </style>
 
 <div class="content">
     <div class="search-container">
         <label for="search-input">Tournaments</label>
         <input type="text" placeholder="Search...">
-        <button type="submit">Create</button>
+        <button class="open-form-btn" onclick="openForm()">Create</button>
+    </div>
+    <div class="form-container" id="myForm">
+        <h2>Tournament Form</h2>
+        <form action="/submit_tournament" method="post">
+            <label for="tournament_name">Tournament Name:</label>
+            <input type="text" id="tournament_name" name="tournament_name"><br><br>
+
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date"><br><br>
+
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location"><br><br>
+
+            <label for="description">Description:</label><br>
+            <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+
+            <input type="submit" value="Create Tournament">
+        </form>
+        <button onclick="closeForm()">Close</button>
     </div>
     <div class="box">
         <h2>Section 1</h2>
@@ -88,4 +130,15 @@
         <p>This is the content for section 6.</p>
     </div>
 </div>
+
+<script>
+    // JavaScript to open and close the form
+    function openForm() {
+        document.getElementById("myForm").style.display = "block";
+    }
+
+    function closeForm() {
+        document.getElementById("myForm").style.display = "none";
+    }
+</script>
 {% endblock %}
