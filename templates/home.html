@@ -1,194 +1,26 @@
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous"> -->
+<link rel="stylesheet" href="../static/css/navbar.css">
 
 <head>
     <title>Navigation Bar</title>
-    <style>
-        /* Reset default margin and padding for all elements */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* CSS for the navigation bars */
-        .topnav {
-            background-color: #333;
-            position: fixed;
-            width: 100%;
-            z-index: 999;
-            /* Ensures the topnav is above other elements */
-            top: 0;
-            /* Ensure it starts from the top of the page */
-        }
-
-        .topnav a {
-            display: inline-block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-        }
-
-        .dropdown {
-            float: right;
-            overflow: hidden;
-        }
-
-        .topnav a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-
-        /* Hide the dropdown content by default */
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            left: auto;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-            z-index: 999;
-        }
-
-        /* Style the dropdown content links */
-        .dropdown-content a {
-            display: block;
-            color: #333;
-            padding: 12px 16px;
-            text-decoration: none;
-            float: none;
-            text-align: left;
-        }
-
-        /* Style the dropdown button */
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .leftnav {
-            height: 100%;
-            width: 200px;
-            position: fixed;
-            top: 50px;
-            /* Adjust top position to avoid overlapping */
-            left: 0;
-            background-color: #f0f0f0;
-            overflow-x: hidden;
-            padding-top: 20px;
-            padding-left: 40px;
-            z-index: 999;
-            /* Ensure leftnav is below topnav but above other content */
-        }
-
-        .leftnav h2 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        .leftnav a {
-            padding: 6px 8px 6px 16px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #333;
-            display: block;
-        }
-
-        .leftnav a:hover {
-            color: #666;
-        }
-
-        /* Box styles */
-        .content {
-            margin-left: 200px;
-            padding-top: 50px;
-            /* Adjust padding-top to avoid overlap with topnav */
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding-bottom: 20px;
-        }
-
-        .box {
-            width: 380px;
-            height: 380px;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-align: center;
-        }
-
-        /* Search box styles */
-        .search-container {
-            text-align: center;
-            width: 100%;
-            padding: 10px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .search-container input[type=text] {
-            padding: 10px;
-            margin-right: 10px;
-            width: 200px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-
-        .search-container button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .search-container button:hover {
-            background: #45a049;
-        }
-
-        /* Style the form container */
-        .form-container {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #f2f2f2;
-            padding: 20px;
-            border-radius: 5px;
-            z-index: 1000;
-        }
-
-        /* Style the button */
-        .open-form-btn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
 </head>
 
 <body>
 
     <div class="topnav">
         <a href="home">GameSphere</a>
-        <div class="dropdown">
-            <a href=""><i class="fa fa-fw fa-user"></i>
-                <div class="dropdown-content">
-                    <a href="">Account Settings</a>
-                    <a href="">Logout</a>
-                </div>
+        <div class="toprightnav">
+            <div class="firstname">Welcome {{ session["fname"] }}</div>
+            <div class="dropdown">
+                <a href=""><i class="fa fa-fw fa-user"></i>
+                    <div class="dropdown-content">
+                        <a href="">Account Settings</a>
+                        <a href="/logout">Logout</a>
+                    </div>
+            </div>
         </div>
     </div>
 
@@ -204,7 +36,7 @@
         <div class="search-container">
             <label for="search-input">Projects</label>
             <input type="text" placeholder="Search...">
-            <button class="open-form-btn" onclick="openForm()">Create</button>
+            <button onclick="location.href='/createTour'">Create</button>
         </div>
         <div class="form-container" id="myForm">
             <h2>Project Form</h2>
