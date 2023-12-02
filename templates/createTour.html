@@ -60,22 +60,22 @@
 									
 									<div class="row mb-3 justify-content-sm-center">
 										<div class="mb-4">
-											<label class="mb-2 text-muted" for="tourName">Tournament Name</label>
-											<input id="tourName" type="text" class="form-control" name="tourName" value="{{ tourName }}" required autofocus>
+											<label class="mb-2 text-muted" for="tourName">Tournament Name<span class="text-danger">*</span></label>
+											<input id="tourName" type="text" class="form-control" name="tourName" value="{{ tourName }}" placeholder="Eg. Men's Singles Badminton" style="#tourName::placeholder {color: #888;}" required autofocus>
 										</div>
 										
 										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="tourSize">Size of Participants</label>
+											<label class="mb-2 text-muted" for="tourSize">Size of Participants<span class="text-danger">*</span></label>
 											<input id="tourSize" type="number" class="form-control" name="tourSize" value="{{ tourSize }}" min="0" required autofocus>
 										</div>
 
 										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="startDate">Start Date</label>
+											<label class="mb-2 text-muted" for="startDate">Start Date<span class="text-danger">*</span></label>
 											<input id="startDate" type="date" class="form-control" name="startDate" value="{{ startDate }}" required autofocus>
 										</div>
 
 										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="endDate">End Date</label>
+											<label class="mb-2 text-muted" for="endDate">End Date<span class="text-danger">*</span></label>
 											<input id="endDate" type="date" class="form-control" name="endDate" value="{{ endDate }}" required autofocus>
 										</div>
 
@@ -89,7 +89,7 @@
 										</div>
 
 										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="sport">Sport</label>
+											<label class="mb-2 text-muted" for="sport">Sport<span class="text-danger">*</span></label>
 											<select id="sport" class="form-select" name="sport" required autofocus>
 												<option value="">Please select a sport first</option>
 												{%for s in sportlist %}
@@ -99,7 +99,7 @@
 										</div>
 
 										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="format">Format</label>
+											<label class="mb-2 text-muted" for="format">Format<span class="text-danger">*</span></label>
 											<select id="format" class="form-select" name="format" required autofocus>
 												
 											</select>
@@ -107,7 +107,7 @@
 
 										<div class="mb-4">
 											<label class="mb-2 text-muted" for="generalInfo">General Info</label>
-											<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" rows="5" required autofocus>{{ generalInfo }}</textarea>
+											<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" rows="5" required autofocus style="resize: none;">{{ generalInfo }}</textarea>
 										</div>
 									</div>
 
@@ -134,14 +134,13 @@
 	
 	<script>
 		$(document).ready(function () {
-        // Function to populate format dropdown
 			function populateFormatDropdown(selectedSport) {
 				$.ajax({
 					type: "POST",
 					url: "/get_formats",  // Update the route to handle format retrieval
 					data: { sport_id: selectedSport },
 					success: function (response) {
-						// Populate the "Format" dropdown with the received data
+						// Populate format dropdown with the received data
 						$("#format").html(response.options);
 
 						var selectedFormat = "{{ format }}";  // Replace with the actual variable from Flask

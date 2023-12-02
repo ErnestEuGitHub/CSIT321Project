@@ -29,8 +29,14 @@ def createTour():
         elif not tourName:
             flash('Please fill in a tournament name!', 'error')
             return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
+        elif len(tourName) > 100:
+            flash('Please keep tournament name less than 100 characters!', 'error')
+            return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
         elif not tourSize:
             flash('Please Enter a minimum participation size!', 'error')
+            return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
+        elif int(tourSize) > 10000:
+            flash('Please reduce participant size to less than 10,000!', 'error')
             return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
         elif not format:
             flash('That is not a valid format for the sport!', 'error')
@@ -40,6 +46,9 @@ def createTour():
             return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
         elif endDate < startDate:
             flash('End Date cannot be earlier than Start Date!', 'error')
+            return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
+        elif len(generalInfo) > 500:
+            flash('Please keep general info less than 500 characters!', 'error')
             return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
         
         else:
