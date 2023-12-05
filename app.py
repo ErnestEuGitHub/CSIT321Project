@@ -105,13 +105,9 @@ def register():
     else:
         return render_template('register.html')
 
-@app.route('/tournamentOverviewPageDetails', methods=["POST", "GET"])
-def loadTournamentOverviewDetails():
-    return render_template('tournamentOverviewPageDetails.html')
-
-@app.route('/tournamentOverviewPageRules', methods=["POST", "GET"])
-def loadTournamentOverviewRules():
-    return render_template('tournamentOverviewPageRules.html')
+@app.route('/tournamentOverviewPage', methods=["POST", "GET"])
+def loadTournamentOverviewPage():
+    return render_template('tournamentOverviewPage.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
