@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous"> -->
+<link rel="stylesheet" href="../static/css/navbar.css">
+
+<head>
+    <title>Navigation Bar</title>
+</head>
+
+<body>
+
+    <div class="topnav">
+        <a href="home">GameSphere</a>
+        <div class="toprightnav">
+            <div class="firstname">Welcome {{ session["fname"] }}</div>
+            <div class="dropdown">
+                <a href=""><i class="fa fa-fw fa-user"></i>
+                    <div class="dropdown-content">
+                        <a href="">Account Settings</a>
+                        <a href="/logout">Logout</a>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="leftnav">
+        <h2>Projects</h2>
+        <a href="#section1">Olympic</a>
+        <a href="#section2">EPL</a>
+        <a href="#section3">NBA</a>
+        <a href="#section3">World Cup</a>
+    </div>
+
+    <div class="content">
+        <div class="search-container">
+            <label for="search-input">Projects</label>
+            <input type="text" placeholder="Search...">
+            <button onclick="location.href='/createTour'">Create</button>
+        </div>
+        <div class="form-container" id="myForm">
+            <h2>Project Form</h2>
+            <form action="/submit_project" method="post">
+                <label for="project_name">Project Name:</label>
+                <input type="text" id="project_name" name="project_name"><br><br>
+
+                <label for="description">Description:</label><br>
+                <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+
+                <input type="submit" value="Create Project">
+            </form>
+            <button onclick="closeForm()">Close</button>
+        </div>
+        <div class="box">
+            <h2>Section 1</h2>
+            <p>This is the content for section 1.</p>
+        </div>
+        <div class="box">
+            <h2>Section 2</h2>
+            <p>This is the content for section 2.</p>
+        </div>
+        <div class="box">
+            <h2>Section 3</h2>
+            <p>This is the content for section 3.</p>
+        </div>
+        <div class="box">
+            <h2>Section 4</h2>
+            <p>This is the content for section 4.</p>
+        </div>
+        <div class="box">
+            <h2>Section 5</h2>
+            <p>This is the content for section 5.</p>
+        </div>
+        <div class="box">
+            <h2>Section 6</h2>
+            <p>This is the content for section 6.</p>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to open and close the form
+        function openForm() {
+            document.getElementById("myForm").style.display = "block";
+        }
+
+        function closeForm() {
+            document.getElementById("myForm").style.display = "none";
+        }
+    </script>
+
+</body>
+
+</html>
