@@ -1,6 +1,7 @@
 from flask import render_template, request, flash, session
 from database import dbConnect
 from sqlalchemy import text
+from datetime import datetime
 
 def createTour():
     if request.method == "POST":
@@ -52,11 +53,16 @@ def createTour():
             return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
         
         else:
-            IntSport = int(sport)
+            #convertion to correct types placed here after checking no empty strings
+            sport = int(sport)
+            tourSize = int(tourSize)
+            startDate = datetime.strptime(startDate, "%Y-%m-%d")
+            endDate = datetime.strptime(endDate, "%Y-%m-%d")
+
             try:
                 with dbConnect.engine.connect() as conn:
                     query = "SELECT sfID FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
-                    inputs = {'sport': IntSport, 'format': format}
+                    inputs = {'sport': sport, 'format': format}
                     getsfID = conn.execute(text(query), inputs)
                     rows = getsfID.fetchall()
                     sfID = rows[0][0]
