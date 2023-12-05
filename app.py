@@ -5,6 +5,7 @@ from register import *
 from createTour import *
 from getformat import *
 from dashboard import *
+from placement import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -70,6 +71,11 @@ def loaddashboard():
     page = dashboard()
     return page
 
+@app.route('/placement', methods=["POST", "GET"])
+def placement():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    return render_template('placement.html')
 
 if __name__ == "__main__":
     
