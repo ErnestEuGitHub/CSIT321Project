@@ -110,37 +110,67 @@
         let prizeTabContent = document.getElementById("prizeTabContent");
         let contactTabContent = document.getElementById("contactTabContent");
         
-        detailsTab.addEventListener("click", detailTabFn);
-        ruleTab.addEventListener("click", ruleTabFn);
-        prizeTab.addEventListener("click", prizeTabFn);
-        contactTab.addEventListener("click", contactTabFn);
+        // detailsTab.addEventListener("click", detailTabFn);
+        // ruleTab.addEventListener("click", ruleTabFn);
+        // prizeTab.addEventListener("click", prizeTabFn);
+        // contactTab.addEventListener("click", contactTabFn);
 
-        function detailTabFn(){
-            detailsTabContent.hidden = false;
-            ruleTabContent.hidden = true;
-            prizeTabContent.hidden = true;
-            contactTabContent.hidden = true;
-        }
+        // function detailTabFn(){
+        //     detailsTabContent.hidden = false;
+        //     ruleTabContent.hidden = true;
+        //     prizeTabContent.hidden = true;
+        //     contactTabContent.hidden = true;
+        // }
         
-        function ruleTabFn(){
-            ruleTabContent.hidden = false;
-            detailsTabContent.hidden = true;
-            prizeTabContent.hidden = true;
-            contactTabContent.hidden = true;
-        }
+        // function ruleTabFn(){
+        //     ruleTabContent.hidden = false;
+        //     detailsTabContent.hidden = true;
+        //     prizeTabContent.hidden = true;
+        //     contactTabContent.hidden = true;
+        // }
 
-        function prizeTabFn(){
-            prizeTabContent.hidden = false;
-            ruleTabContent.hidden = true;
-            detailsTabContent.hidden = true;
-            contactTabContent.hidden = true;
-        }
+        // function prizeTabFn(){
+        //     prizeTabContent.hidden = false;
+        //     ruleTabContent.hidden = true;
+        //     detailsTabContent.hidden = true;
+        //     contactTabContent.hidden = true;
+        // }
 
-        function contactTabFn(){
-            contactTabContent.hidden = false;
-            ruleTabContent.hidden = true;
-            detailsTabContent.hidden = true;
-            prizeTabContent.hidden = true;
+        // function contactTabFn(){
+        //     contactTabContent.hidden = false;
+        //     ruleTabContent.hidden = true;
+        //     detailsTabContent.hidden = true;
+        //     prizeTabContent.hidden = true;
+        // }
+
+        detailsTab.addEventListener("click", tabFn(detailsTab));
+        ruleTab.addEventListener("click", tabFn(ruleTab));
+        prizeTab.addEventListener("click", tabFn(prizeTab));
+        contactTab.addEventListener("click", tabFn(contactTab));
+
+        function tabFn(tabClicked) {
+            tabs = {
+                details:detailsTab,
+                rule:ruleTab,
+                prize:prizeTab,
+                contact:contactTab,
+            };
+
+            tabsContent = {
+                details:detailsTabContent,
+                rule:ruleTabContent,
+                prize:prizeTabContent,
+                contact:contactTabContent,
+            };
+
+            for (tab in tabs){
+                if (tabClicked === tab){
+                    for(tabC in tabsContent){
+                        tabC[tab].hidden = false;
+                        tabC[!tab].hidden = true;
+                    }
+                } 
+            }
         }
     </script>
 	
