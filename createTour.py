@@ -39,7 +39,10 @@ def createTour():
             flash('Please Enter a minimum participation size!', 'error')
             return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
         elif int(tourSize) > 10000:
-            flash('Please reduce participant size to less than 10,000!', 'error')
+            flash('Please enter participant size from 1-10,000!', 'error')
+            return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+        elif int(tourSize) < 0:
+            flash('Please enter participant size from 1-10,000!', 'error')
             return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
         elif not format:
             flash('That is not a valid format for the sport!', 'error')
@@ -69,13 +72,15 @@ def createTour():
                     rows = getsfID.fetchall()
                     formatID = rows[0][2]
 
-                    print(rows)
-                    print(formatID)
-
                     query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID)"
                     inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':userID}
                     createTournament = conn.execute(text(query), inputs)
-                
+                    getID = createTournament.lastrowid
+
+                    query = "INSERT INTO generalInfo (tourID) VALUES (:getID)"
+                    inputs = {'getID':getID}
+                    createNewGeneralInfo = conn.execute(text(query), inputs)
+
                 flash('Tournament Created!', 'success')
                 return render_template('createTour.html', sportlist=sportsOptions)
             
