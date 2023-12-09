@@ -35,7 +35,7 @@
 		<div class="container h-100 navbarcontentpadding">
 			<div class="row justify-content-sm-center h-100">
 				<div class="align-items-left">
-                    <h1 class="fs-4 fw-bold mb-4 ">Soccer</h1>
+                    <h1 class="fs-4 fw-bold mb-4 ">{% if not tourName %}No Tournament Name{% else %}{{tourName}}{% endif %}</h1>
 				</div>
                 <div class="row justify-content-center mb-4 fs-4">
                     <ul class="nav nav-tabs">
@@ -79,12 +79,14 @@
                         </li>
                     </ul>
                 </div>
-                <div id="detailsTabContent">
-                    <h4 class="fs-4 mb-4 ">Sport: Soccer</h4>
-                    <h4 class="fs-4 mb-4 ">Gender: Male</h4>
-                    <h4 class="fs-4 mb-4 ">Age Limit: 18 and above</h4>
-                    <h4 class="fs-4 mb-4 ">Tournament Start Date: 22 Nov 2023</h4>
-                    <h4 class="fs-4 mb-4 ">Tournament End Date: 14 Feb 2024</h4>
+
+                <div id="detailsTabContent" block>
+                    <h4 class="fs-4 mb-4 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</h4>
+                    <h4 class="fs-4 mb-4 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</h4>
+                    <!-- <h4 class="fs-4 mb-4 ">Age Limit: 18 and above</h4> -->
+                    <h4 class="fs-4 mb-4 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</h4>
+                    <h4 class="fs-4 mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h4>
+
                 </div>
                 <div id="ruleTabContent" hidden>
                     <h4 class="fs-4 mb-4 ">Rule 1: Cannot Tackle</h4>

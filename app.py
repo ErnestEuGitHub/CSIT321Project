@@ -5,6 +5,8 @@ from register import *
 from createTour import *
 from getformat import *
 from dashboard import *
+from viewTour import *
+from settings import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -65,10 +67,21 @@ def getformatspy():
 def loadTournamentOverviewPage():
     return render_template('tournamentOverviewPage.html')
 
+@app.route('/tournamentOverviewPage/<tourID>')
+def loadTourOverviewWithID(tourID):
+    page = TourOverviewDetails(tourID)
+    return page
+
 @app.route('/dashboard', methods=["POST", "GET"])
 def loaddashboard():
     page = dashboard()
     return page
+
+@app.route('/settings/<tourID>', methods=["POST", "GET"])
+def loadsettings(tourID):
+    page = settings(tourID)
+    return page
+
 
 
 if __name__ == "__main__":
