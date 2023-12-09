@@ -28,54 +28,79 @@ def settings(tourID):
 
             sportsOptions = [row._asdict() for row in rows]
 
-        if identifier == "general":
-            try:
-                with dbConnect.engine.connect() as conn:
-                    query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
-                    inputs = {'sport': sport, 'format': format}
-                    getsfID = conn.execute(text(query), inputs)
-                    rows = getsfID.fetchall()
-                    formatID = rows[0][2]
+        if not tourName:
+            flash('Please fill in a tournament name!', 'error')
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        elif len(tourName) > 100:
+            flash('Please keep tournament name less than 100 characters!', 'error')
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        elif not tourSize:
+            flash('Please Enter a minimum participation size!', 'error')
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        elif int(tourSize) > 10000:
+            flash('Please enter participant size from 1-10,000!', 'error')
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        elif int(tourSize) < 0:
+            flash('Please enter participant size from 1-10,000!', 'error')
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        elif not format:
+            flash('That is not a valid format for the sport!', 'error')
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        elif not endDate or not startDate:
+            flash('Start or End Dates are not filled!', 'error')
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        elif endDate < startDate:
+            flash('End Date cannot be earlier than Start Date!', 'error')
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        else:
+            if identifier == "general":
+                try:
+                    with dbConnect.engine.connect() as conn:
+                        query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
+                        inputs = {'sport': sport, 'format': format}
+                        getsfID = conn.execute(text(query), inputs)
+                        rows = getsfID.fetchall()
+                        formatID = rows[0][2]
 
-                    query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = :formatID WHERE tourID = :tourID"
-                    inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'sportID':sport, 'formatID':formatID, 'tourID':tourID}
-                    updateGeneralInfo = conn.execute(text(query), inputs)
-            
-                flash('General Information Updated!', 'success')
-            
-            except Exception as e:
-                flash('Oops, an error has occured.', 'error')
-                print(f"Error details: {e}")
+                        query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = :formatID WHERE tourID = :tourID"
+                        inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'sportID':sport, 'formatID':formatID, 'tourID':tourID}
+                        updateGeneralInfo = conn.execute(text(query), inputs)
+                
+                    flash('General Information Updated!', 'success')
+                
+                except Exception as e:
+                    flash('Oops, an error has occured.', 'error')
+                    print(f"Error details: {e}")
 
-        elif identifier == "details":
+            elif identifier == "details":
 
-            try:
-                with dbConnect.engine.connect() as conn:
-                    query = "UPDATE generalInfo SET generalInfoDesc = :generalDesc, rules = :rules, prize = :prize WHERE tourID = :tourID"
-                    inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'tourID':tourID}
-                    updateDetails = conn.execute(text(query), inputs)
-            
-                flash('Details Updated!', 'success')
-            
-            except Exception as e:
-                flash('Oops, an error has occured.', 'error')
-                print(f"Error details: {e}")
+                try:
+                    with dbConnect.engine.connect() as conn:
+                        query = "UPDATE generalInfo SET generalInfoDesc = :generalDesc, rules = :rules, prize = :prize WHERE tourID = :tourID"
+                        inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'tourID':tourID}
+                        updateDetails = conn.execute(text(query), inputs)
+                
+                    flash('Details Updated!', 'success')
+                
+                except Exception as e:
+                    flash('Oops, an error has occured.', 'error')
+                    print(f"Error details: {e}")
 
-        elif identifier == "contact":
+            elif identifier == "contact":
 
-            try:
-                with dbConnect.engine.connect() as conn:
-                    query = "UPDATE generalInfo SET contact = :contact WHERE tourID = :tourID"
-                    inputs = {'contact':contact, 'tourID':tourID}
-                    updateDetails = conn.execute(text(query), inputs)
-            
-                flash('Contact Updated!', 'success')
-            
-            except Exception as e:
-                flash('Oops, an error has occured.', 'error')
-                print(f"Error details: {e}")
+                try:
+                    with dbConnect.engine.connect() as conn:
+                        query = "UPDATE generalInfo SET contact = :contact WHERE tourID = :tourID"
+                        inputs = {'contact':contact, 'tourID':tourID}
+                        updateDetails = conn.execute(text(query), inputs)
+                
+                    flash('Contact Updated!', 'success')
+                
+                except Exception as e:
+                    flash('Oops, an error has occured.', 'error')
+                    print(f"Error details: {e}")
 
-        return redirect(url_for('loadsettings', tourID=tourID))
+            return redirect(url_for('loadsettings', tourID=tourID))
 
 
     else:
@@ -117,4 +142,4 @@ def settings(tourID):
                 prize = ""
                 contact = ""
     
-        return render_template('settings.html', tourID=tourID, tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=sport, format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+        return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
