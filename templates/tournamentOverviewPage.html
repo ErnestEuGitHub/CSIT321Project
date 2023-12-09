@@ -69,22 +69,24 @@
                             <a class="nav-link active" aria-disabled="false">Details</a>
                         </li>
                         <li class="nav-item" id="ruleTab">
-                            <a class="nav-link active" aria-disabled="false">Rules</a>
+                            <a class="nav-link" aria-disabled="false">Rules</a>
                         </li>
                         <li class="nav-item" id="prizeTab">
-                            <a class="nav-link active" aria-disabled="false">Prize</a>
+                            <a class="nav-link" aria-disabled="false">Prize</a>
                         </li>
                         <li class="nav-item" id="contactTab">
-                            <a class="nav-link active" aria-disabled="false">Contact</a>
+                            <a class="nav-link" aria-disabled="false">Contact</a>
                         </li>
                     </ul>
                 </div>
+
                 <div id="detailsTabContent" block>
                     <h4 class="fs-4 mb-4 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</h4>
                     <h4 class="fs-4 mb-4 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</h4>
                     <!-- <h4 class="fs-4 mb-4 ">Age Limit: 18 and above</h4> -->
                     <h4 class="fs-4 mb-4 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</h4>
                     <h4 class="fs-4 mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h4>
+
                 </div>
                 <div id="ruleTabContent" hidden>
                     <h4 class="fs-4 mb-4 ">Rule 1: Cannot Tackle</h4>
@@ -110,37 +112,29 @@
         let prizeTabContent = document.getElementById("prizeTabContent");
         let contactTabContent = document.getElementById("contactTabContent");
         
-        detailsTab.addEventListener("click", detailTabFn);
-        ruleTab.addEventListener("click", ruleTabFn);
-        prizeTab.addEventListener("click", prizeTabFn);
-        contactTab.addEventListener("click", contactTabFn);
+        detailsTab.addEventListener("click", function(){tabFn(detailsTab);});
+        ruleTab.addEventListener("click", function(){tabFn(ruleTab);});
+        prizeTab.addEventListener("click", function(){tabFn(prizeTab);});
+        contactTab.addEventListener("click", function(){tabFn(contactTab);});
 
-        function detailTabFn(){
-            detailsTabContent.hidden = false;
-            ruleTabContent.hidden = true;
-            prizeTabContent.hidden = true;
-            contactTabContent.hidden = true;
-        }
-        
-        function ruleTabFn(){
-            ruleTabContent.hidden = false;
-            detailsTabContent.hidden = true;
-            prizeTabContent.hidden = true;
-            contactTabContent.hidden = true;
-        }
+        function tabFn(tabClicked) {
+            const tabs = [detailsTab, ruleTab, prizeTab, contactTab];
+            const tabsContent = [detailsTabContent, ruleTabContent, prizeTabContent, contactTabContent];
 
-        function prizeTabFn(){
-            prizeTabContent.hidden = false;
-            ruleTabContent.hidden = true;
-            detailsTabContent.hidden = true;
-            contactTabContent.hidden = true;
-        }
-
-        function contactTabFn(){
-            contactTabContent.hidden = false;
-            ruleTabContent.hidden = true;
-            detailsTabContent.hidden = true;
-            prizeTabContent.hidden = true;
+            for (tab of tabs){
+                if (tabClicked === tab){
+                    tab.firstElementChild.classList.add("active");
+                    for(tabC of tabsContent){
+                        if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)){
+                            tabC.hidden = false;
+                        } else {
+                            tabC.hidden = true;
+                        }
+                    }
+                } else {
+                    tab.firstElementChild.classList.remove("active");
+                }
+            }
         }
     </script>
 	
