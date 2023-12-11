@@ -70,6 +70,10 @@ def loaddashboard():
     page = dashboard()
     return page
 
+@app.route('/strcture', methods=["POST", "GET"])
+def loadstructure():
+    return render_template('structure.html')
+
 
 if __name__ == "__main__":
     
