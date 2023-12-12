@@ -4,4 +4,4 @@ import bcrypt
 from sqlalchemy import text
 
 def dashboard():
-    return render_template('dashboard.html')
+    return render_template('tournamentDashboard.html')

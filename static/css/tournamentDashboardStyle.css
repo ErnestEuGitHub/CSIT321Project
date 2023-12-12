@@ -118,12 +118,12 @@ main header{
     font-size: 25px;
     color:black;
 }
-.box{
+table{
     padding: 12px;
     padding-left: 20px;
     padding-right: 20px;
     height: auto;
-    width: 50%;
+    width: 100%;
     float: left;
     box-sizing: border-box;
     border: 15px solid;
