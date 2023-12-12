@@ -71,12 +71,12 @@ def loadTournamentOverviewRules():
     return render_template('tournamentOverviewPageRules.html')
 
 @app.route('/tournamentDashboard', methods=["POST", "GET"])
-def loaddashboard():
+def loadTournamentDashboard():
     page = tournamentDashboard()
     return page
 
 @app.route('/tournamentParticipant', methods=["POST", "GET"])
-def loadparticipant():
+def loadTournamentParticipant():
     page = tournamentParticipant()
     return page
 
