@@ -3,5 +3,5 @@ from database import dbConnect
 import bcrypt
 from sqlalchemy import text
 
-def dashboard():
+def tournamentDashboard():
     return render_template('tournamentDashboard.html')
