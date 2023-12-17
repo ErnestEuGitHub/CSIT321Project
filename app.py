@@ -69,6 +69,8 @@ def loadTournamentOverviewPage():
 
 @app.route('/tournamentOverviewPage/<tourID>')
 def loadTourOverviewWithID(tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
     page = TourOverviewDetails(tourID)
     return page
 
