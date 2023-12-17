@@ -7,20 +7,6 @@ def settings(tourID):
     if request.method == "POST":
         identifier = request.form.get("formIdentifier")
 
-        tourName = request.form.get("tourName")
-        tourSize = request.form.get("tourSize")
-        startDate = request.form.get("startDate")
-        endDate = request.form.get("endDate")
-        gender = request.form.get("gender")
-        sport = request.form.get("sport")
-        format = request.form.get("format")
-
-        generalDesc = request.form.get("generalDesc")
-        rules = request.form.get("rules")
-        prize = request.form.get("prize")
-
-        contact = request.form.get("contact")
-
         with dbConnect.engine.connect() as conn:
             query = "SELECT * FROM sports"
             result = conn.execute(text(query))
@@ -28,32 +14,42 @@ def settings(tourID):
 
             sportsOptions = [row._asdict() for row in rows]
 
-        if not tourName:
-            flash('Please fill in a tournament name!', 'error')
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
-        elif len(tourName) > 100:
-            flash('Please keep tournament name less than 100 characters!', 'error')
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
-        elif not tourSize:
-            flash('Please Enter a minimum participation size!', 'error')
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
-        elif int(tourSize) > 10000:
-            flash('Please enter participant size from 1-10,000!', 'error')
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
-        elif int(tourSize) < 0:
-            flash('Please enter participant size from 1-10,000!', 'error')
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
-        elif not format:
-            flash('That is not a valid format for the sport!', 'error')
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
-        elif not endDate or not startDate:
-            flash('Start or End Dates are not filled!', 'error')
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
-        elif endDate < startDate:
-            flash('End Date cannot be earlier than Start Date!', 'error')
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
-        else:
-            if identifier == "general":
+        if identifier == "general":
+
+            tourName = request.form.get("tourName")
+            tourSize = request.form.get("tourSize")
+            startDate = request.form.get("startDate")
+            endDate = request.form.get("endDate")
+            gender = request.form.get("gender")
+            sport = request.form.get("sport")
+            format = request.form.get("format")
+
+            if not tourName:
+                flash('Please fill in a tournament name!', 'error')
+                return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+            elif len(tourName) > 100:
+                flash('Please keep tournament name less than 100 characters!', 'error')
+                return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+            elif not tourSize:
+                flash('Please Enter a minimum participation size!', 'error')
+                return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+            elif int(tourSize) > 10000:
+                flash('Please enter participant size from 1-10,000!', 'error')
+                return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+            elif int(tourSize) < 0:
+                flash('Please enter participant size from 1-10,000!', 'error')
+                return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+            elif not format:
+                flash('That is not a valid format for the sport!', 'error')
+                return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+            elif not endDate or not startDate:
+                flash('Start or End Dates are not filled!', 'error')
+                return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+            elif endDate < startDate:
+                flash('End Date cannot be earlier than Start Date!', 'error')
+                return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact)
+            else:
+        
                 try:
                     with dbConnect.engine.connect() as conn:
                         query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
@@ -72,35 +68,41 @@ def settings(tourID):
                     flash('Oops, an error has occured.', 'error')
                     print(f"Error details: {e}")
 
-            elif identifier == "details":
+        elif identifier == "details":
 
-                try:
-                    with dbConnect.engine.connect() as conn:
-                        query = "UPDATE generalInfo SET generalInfoDesc = :generalDesc, rules = :rules, prize = :prize WHERE tourID = :tourID"
-                        inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'tourID':tourID}
-                        updateDetails = conn.execute(text(query), inputs)
-                
-                    flash('Details Updated!', 'success')
-                
-                except Exception as e:
-                    flash('Oops, an error has occured.', 'error')
-                    print(f"Error details: {e}")
+            generalDesc = request.form.get("generalDesc")
+            rules = request.form.get("rules")
+            prize = request.form.get("prize")
 
-            elif identifier == "contact":
+            try:
+                with dbConnect.engine.connect() as conn:
+                    query = "UPDATE generalInfo SET generalInfoDesc = :generalDesc, rules = :rules, prize = :prize WHERE tourID = :tourID"
+                    inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'tourID':tourID}
+                    updateDetails = conn.execute(text(query), inputs)
+            
+                flash('Details Updated!', 'success')
+            
+            except Exception as e:
+                flash('Oops, an error has occured.', 'error')
+                print(f"Error details: {e}")
 
-                try:
-                    with dbConnect.engine.connect() as conn:
-                        query = "UPDATE generalInfo SET contact = :contact WHERE tourID = :tourID"
-                        inputs = {'contact':contact, 'tourID':tourID}
-                        updateDetails = conn.execute(text(query), inputs)
-                
-                    flash('Contact Updated!', 'success')
-                
-                except Exception as e:
-                    flash('Oops, an error has occured.', 'error')
-                    print(f"Error details: {e}")
+        elif identifier == "contact":
 
-            return redirect(url_for('loadsettings', tourID=tourID))
+            contact = request.form.get("contact")
+            
+            try:
+                with dbConnect.engine.connect() as conn:
+                    query = "UPDATE generalInfo SET contact = :contact WHERE tourID = :tourID"
+                    inputs = {'contact':contact, 'tourID':tourID}
+                    updateDetails = conn.execute(text(query), inputs)
+            
+                flash('Contact Updated!', 'success')
+            
+            except Exception as e:
+                flash('Oops, an error has occured.', 'error')
+                print(f"Error details: {e}")
+
+        return redirect(url_for('loadsettings', tourID=tourID))
 
 
     else:
