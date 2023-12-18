@@ -1,15 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>Tournament Create Participant</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-    </head>
-
-    <body>
-
-        <h2>Create Participant</h2>
+<head>
+   <meta charset="UTF-8">
+   <title>Soccer Dashboard</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="../static/css/tournamentParticipantCreateStyle.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+</head>
+<body> 
+   <nav>
+      <input type="checkbox" id="check">
+      <label for="check">
+         <i class="fas fa-bars" id="btn"></i>
+         <i class="fas fa-times" id="cancel"></i>
+      </label>
+      <label class="logo">Game Sphere</label>
+      <ul>
+         <li><a href="#"><i class="fas fa-user-circle"></i></a></li>
+      </ul>
+      <div class="sidebar">
+         <header>
+            <h2>Soccer</h2>
+         </header>   
+         <ul>
+            <li><a href="#">Dashboard</a></li>
+            <li>      
+               <a href="#dropdown">      
+                  <span>Setting</span>
+                  <i class="fas fa-angle-right" id="showdropdown"></i>
+               </a>
+               <!--dropdown-->
+               <ul>
+                  <li><a href="#">General</a></li>
+                  <li><a href="#">Permission</a></li>
+                  <li><a href="#">Custom Field</a></li>              
+               </ul>
+            </li>
+            <li><a href="#">Structure</a></li>
+            <li><a href="#">Registration</a></li>
+            <li><a href="#">Participant</a></li>
+            <li><a href="#">Placement</a></li>
+            <li><a href="#">Match</a></li>
+            <li><a href="#">Final Standing</a></li>
+            <li><a href="#">Public Page</a></li>
+            <li><a href="#">Media</a></li>
+            <li><a href="#">Dashboard</a></li>
+         </ul>
+      </div>
+   </nav>
+   
+   <h2>Create Participant</h2>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -31,6 +72,5 @@
             <input type="submit" value="Create Participant">
         </form>
 
-    </body>
-
+</body>
 </html>
