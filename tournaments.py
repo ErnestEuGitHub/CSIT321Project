@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, session
 from database import dbConnect
 from sqlalchemy import text
 from datetime import datetime
@@ -11,6 +11,9 @@ def tournaments(projID):
         rows = getTour.fetchall()
 
         tournamentlist = [row._asdict() for row in rows]
+
+        session["tournav"] = tournamentlist
+        #for navbar
         type = 'tournament'
 
     return render_template('tournament.html', tournamentlist=tournamentlist, type=type)

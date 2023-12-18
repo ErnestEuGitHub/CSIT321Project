@@ -11,6 +11,8 @@ def home():
         rows = getprojs.fetchall()
 
         projects = [row._asdict() for row in rows]
+
+        #for navbar
         type = 'project'
 
     return render_template('home.html', projects=projects, type=type)
