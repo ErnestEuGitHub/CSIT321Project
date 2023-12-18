@@ -105,15 +105,34 @@
     padding-bottom: 20px;
 }
 
-.box {
+.boxlink{
+    margin: 20px;
+    text-decoration: none;
+    color: black;
+}
+
+.boxlink h2{
+    margin-bottom: 20px;
+}
+
+.boxlink p {
+    font-size: large;
+    color: black;
+}
+
+.boxlink .box {
     width: 380px;
     height: 380px;
-    margin: 20px;
     padding: 20px;
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     border-radius: 5px;
     text-align: center;
+}
+
+.boxlink:hover .box p,
+.boxlink:hover .box h2{
+    color: #666;
 }
 
 /* Search box styles */

@@ -34,7 +34,7 @@ def login():
 
                 #profileID 1 = Org, 2 = Participant, 3 = System Admin
                 if session["profileID"] == 1:
-                    return redirect(url_for('home'))
+                    return redirect(url_for('loadhome'))
                 elif session["profileID"] == 3:
                     flash('Login Successful As A Sys Admin!', 'success')
                     return render_template('login.html', invalidEmail = False, invalidPassword = False)
