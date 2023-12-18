@@ -80,6 +80,11 @@ def loadTournamentParticipant():
     page = tournamentParticipant()
     return page
 
+@app.route('/tournamentCreateParticipant', methods=["POST", "GET"])
+def tournamentCreateParticipant():
+    page = tournamentCreateParticipant()
+    return page
+
 
 if __name__ == "__main__":    
     app.run(debug=True)
