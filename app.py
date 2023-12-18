@@ -7,6 +7,8 @@ from getformat import *
 from dashboard import *
 from viewTour import *
 from settings import *
+from home import *
+from tournaments import*
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -40,16 +42,18 @@ def loadregister():
     return page
 
 @app.route('/home')
-def home():
+def loadhome():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    return render_template('home.html')
+    page = home()
+    return page
 
-@app.route('/tournament')
-def tournament():
+@app.route('/projects/<projID>')
+def loadtournaments(projID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    return render_template('tournament.html')
+    page = tournaments(projID)
+    return page
 
 @app.route('/createTour', methods=["POST", "GET"])
 def loadCreateTour():
