@@ -86,9 +86,7 @@ def placement():
 
 @app.route('/update_content', methods=['POST'])
 def update_content():
-    # Read updated content from a separate HTML file
-    with open('seeding.html', 'r') as file:
-        updated_content = file.read()
+    updated_content = get_updated_content()
     return jsonify({'content': updated_content})
 
 @app.route('/settings/<tourID>', methods=["POST", "GET"])

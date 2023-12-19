@@ -1,9 +1,186 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Hello, World Example</title>
-</head>
-<body>
-    <h1>Hello, World!</h1>
-</body>
-</html>
+<link rel="stylesheet" href="../static/css/seeding.css">
+
+<div class="container">
+    <div class="table-container">
+        <h1>Seeding</h1>
+        <table id="1">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Initial 10 empty rows -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h1>Group 1</h1>
+        <table id="2">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Initial 10 empty rows for the second table -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for name selection -->
+<div id="nameSelectionModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Select a Name</h2>
+        <ul id="nameList">
+            <!-- Names will be populated dynamically -->
+        </ul>
+    </div>
+</div>
+
+<script>
+    let rowId = 1;
+    let secondRowId = 1;
+
+    function addPerson(cell, tableId) {
+        const namesFromDatabase = ["Alice", "Bob", "Charlie", "David", "Eva", "Frank", "Grace"];
+
+        const modal = document.getElementById('nameSelectionModal');
+        modal.style.display = 'block';
+
+        const nameList = document.getElementById('nameList');
+        nameList.innerHTML = '';
+
+        namesFromDatabase.forEach(name => {
+            const listItem = document.createElement('li');
+            listItem.textContent = name;
+            listItem.onclick = function () {
+                selectName(cell, name, tableId);
+            };
+            nameList.appendChild(listItem);
+        });
+    }
+
+    function selectName(cell, selectedName, tableId) {
+        const nameContainer = document.createElement('div');
+        nameContainer.className = 'name-cell';
+
+        const editableContent = document.createElement('span');
+        editableContent.className = 'editable';
+        editableContent.textContent = selectedName;
+
+        const deleteButton = createDeleteButton(cell.parentNode, tableId); // Pass the row and tableId
+
+        nameContainer.appendChild(editableContent);
+        nameContainer.appendChild(deleteButton);
+
+        cell.innerHTML = '';
+        cell.appendChild(nameContainer);
+        cell.parentNode.classList.add('has-name');
+
+        // Sync changes with the corresponding cell in the other table
+        const rowIndex = cell.parentNode.rowIndex - 1;
+        const otherTableId = tableId === '1' ? '2' : '1';
+        const otherTableRows = document.getElementById(otherTableId).getElementsByTagName('tbody')[0].rows;
+        const correspondingCell = otherTableRows[rowIndex].cells[1];
+        correspondingCell.innerHTML = nameContainer.innerHTML;
+
+        closeModal(); // Close the modal after selecting a name
+    }
+
+    function createDeleteButton(row, tableId) {
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-button';
+        deleteButton.innerHTML = '&#10060;'; // Cross icon HTML entity
+
+        deleteButton.onclick = function () {
+            const rowIndex = row.rowIndex - 1; // Adjust for zero-based index
+            const otherTableId = tableId === '1' ? '2' : '1';
+            const otherTableRows = document.getElementById(otherTableId).getElementsByTagName('tbody')[0].rows;
+            const correspondingRow = otherTableRows[rowIndex];
+
+            row.cells[1].innerHTML = ''; // Clear the name content
+            row.classList.remove('has-name'); // Remove 'has-name' class
+            deleteButton.style.display = 'none'; // Hide delete button
+
+            correspondingRow.cells[1].innerHTML = ''; // Clear the corresponding cell in the other table
+            closeModal(); // Close the modal after deletion
+        };
+        return deleteButton;
+    }
+
+    function createEmptyRow(tableId) {
+        const container = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+        const newRow = container.insertRow();
+
+        const cell1 = newRow.insertCell(0);
+        cell1.textContent = tableId === '1' ? rowId : secondRowId;
+
+        const cell2 = newRow.insertCell(1);
+        cell2.textContent = ''; // Initially empty
+
+        newRow.id = tableId === '1' ? `row_${rowId}` : `second_row_${secondRowId}`;
+
+        if (tableId === '1') {
+            rowId++;
+        } else {
+            secondRowId++;
+        }
+
+        newRow.onclick = function () {
+            enableEditing(newRow, tableId);
+        };
+    }
+
+    function enableEditing(row, tableId) {
+        const cell = row.cells[1];
+        addPerson(cell, tableId);
+    }
+
+    function syncDelete(row, tableId) {
+        const rowIndex = row.rowIndex - 1;
+        const otherTableId = tableId === '1' ? '2' : '1';
+        const otherTableRows = document.getElementById(otherTableId).getElementsByTagName('tbody')[0].rows;
+        const correspondingRow = otherTableRows[rowIndex];
+
+        if (row.classList.contains('has-name')) {
+            row.cells[1].innerHTML = '';
+            row.classList.remove('has-name');
+        }
+
+        if (correspondingRow && correspondingRow.classList.contains('has-name')) {
+            correspondingRow.cells[1].innerHTML = '';
+            correspondingRow.classList.remove('has-name');
+        }
+
+        closeModal();
+    }
+
+    function deleteEntry(row, tableId) {
+        const deleteButton = row.querySelector('.delete-button');
+        deleteButton.onclick = function () {
+            syncDelete(row, tableId);
+        };
+    }
+
+    document.querySelectorAll('.delete-button').forEach(button => {
+        const tableId = button.closest('table').id;
+        const row = button.closest('tr');
+        deleteEntry(row, tableId);
+    });
+
+    for (let i = 0; i < 10; i++) {
+        createEmptyRow('1');
+        createEmptyRow('2');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('nameSelectionModal');
+        modal.style.display = 'none';
+    }
+</script>
