@@ -2,20 +2,30 @@
 
 {% block content %}
 <link rel="stylesheet" href="../static/css/placement.css">
+<link rel="stylesheet" href="../static/css/navbar.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<div class="content">
-    <div class="container">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Your Card Title</h5>
-                <p class="card-text">Some description or content here...</p>
-                <a href="#" class="btn btn-primary">Add</a>
-            </div>
-        </div>
-        <div class="small-box"></div>
-        <div class="small-box"></div>
-        <div class="small-box"></div>
-    </div>
+<div id="content">
+    <h1 class="title">Placements</h1>
+
+    <div id="clickable-box">Group Stage</div>
+
 </div>
+<script>
+    $(document).ready(function () {
+        $("#clickable-box").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/update_content",
+                success: function (response) {
+                    $("#content").html(response.content);
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

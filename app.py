@@ -83,12 +83,18 @@ def placement():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     return render_template('placement.html')
+
+@app.route('/update_content', methods=['POST'])
+def update_content():
+    # Read updated content from a separate HTML file
+    with open('seeding.html', 'r') as file:
+        updated_content = file.read()
+    return jsonify({'content': updated_content})
+
 @app.route('/settings/<tourID>', methods=["POST", "GET"])
 def loadsettings(tourID):
     page = settings(tourID)
     return page
-
-
 
 if __name__ == "__main__":
     
