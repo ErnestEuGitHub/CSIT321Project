@@ -20,7 +20,7 @@ def tournamentCreateParticipant():
             return render_template('tournamentParticipantCreate.html', emptyForm = True)
     
         with dbConnect.engine.connect() as conn:
-            searchEmail = conn.execute(text("SELECT * FROM participant WHERE EMAIL = '" + email +"'"))
+            searchEmail = conn.execute(text("SELECT * FROM regParticipants WHERE EMAIL = '" + email +"'"))
             existing_participants = searchEmail.fetchall()
             # print(rows)
 
@@ -28,7 +28,7 @@ def tournamentCreateParticipant():
                 flash('Participant with this email already exists!', 'error')
                 return render_template('tournamentParticipantCreate.html', invalidEmail = True)
             # Insert the new participant into the database
-            insert_participant_query = text("INSERT INTO participants (EMAIL, NAME) VALUES (:email, :name)")
+            insert_participant_query = text("INSERT INTO participants (EMAIL, NAME) VALUES (:email, :teamName)")
             conn.execute(insert_participant_query, email=email, teamName=teamName)
             
             flash('Participant created successfully!', 'success')
