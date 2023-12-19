@@ -17,12 +17,12 @@ def TourOverviewDetails(tourID):
                 endDate = rows[0][2]
                 gender = rows[0][3]
                 sportName = rows[0][4]
-
+                
                 #for navbar
-                type = 'tournament'
+                navtype = 'tournament'
                 tournamentlist = session["tournav"]
         
-        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, type=type, tournamentlist=tournamentlist)
+        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist)
 
     except Exception as e:
         flash('Oops, an error has occured.', 'error')

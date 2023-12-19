@@ -13,6 +13,6 @@ def home():
         projects = [row._asdict() for row in rows]
 
         #for navbar
-        type = 'project'
+        navtype = 'project'
 
-    return render_template('home.html', projects=projects, type=type)
+    return render_template('home.html', projects=projects, navtype=navtype)

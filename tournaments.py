@@ -5,8 +5,8 @@ from datetime import datetime
 
 def tournaments(projID):
     with dbConnect.engine.connect() as conn:
-        query = "SELECT * FROM tournaments WHERE projID = :projID;"
-        inputs = {'projID': projID}
+        query = "SELECT * FROM tournaments WHERE projID = :projID AND userID = :userID;"
+        inputs = {'projID': projID, 'userID': session["id"]}
         getTour = conn.execute(text(query), inputs)
         rows = getTour.fetchall()
 
@@ -14,6 +14,6 @@ def tournaments(projID):
 
         session["tournav"] = tournamentlist
         #for navbar
-        type = 'tournament'
+        navtype = 'tournament'
 
-    return render_template('tournament.html', tournamentlist=tournamentlist, type=type)
+    return render_template('tournament.html', tournamentlist=tournamentlist, navtype=navtype)
