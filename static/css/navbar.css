@@ -135,6 +135,22 @@
     color: #666;
 }
 
+
+/* Styles specific to Dashboard */
+
+.dashboard .box {
+    width:600px;
+    height:500px;
+    margin: 20px;
+}
+
+/* Minor styling for settings nav bar */
+#dashboardSettingsNav {
+    list-style-type: none;
+    padding-left: 20px;
+    margin: 0;
+}
+
 /* Search box styles */
 .search-container {
     text-align: center;
@@ -206,4 +222,19 @@
 .navbarcontentpadding{
     padding-top: 50px;
     padding-left: 210px;
+}
+
+/* Responsive Screens */
+@media (max-width: 880px) {
+    .dashboard .box {
+        width: 400px;
+        height: 400px;
+    }
+}
+
+@media (max-width: 700px) {
+    .dashboard .box {
+        width: 300px;
+        height: 300px;
+    }
 }
