@@ -33,7 +33,7 @@
     <div class="leftnav">
         <h2>
             {% if navtype == 'tournament' %}
-                Tournaments
+                {{projectName}}
             {% elif navtype == 'project' %}
                 Projects
             {% elif navtype == 'dashboard' %}
@@ -55,8 +55,8 @@
                 <a class="dropdown-toggle" style="cursor: pointer;">
                     Setting
                 </a>
-                <ul id="dashboardSettingsNav" style="display:none">
-                    <li><a href="#">General</a></li>
+                <ul id="dashboardSettingsNav" {% if navexpand == 'Yes' %} style="display:block" {% else %} style="display:none" {% endif %}>
+                    <li><a href="/settings/{{tourID}}">General</a></li>
                     <li><a href="#">Permission</a></li>
                     <li><a href="#">Custom Field</a></li>
                 </ul>
