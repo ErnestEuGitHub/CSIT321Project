@@ -9,6 +9,7 @@ from viewTour import *
 from settings import *
 from home import *
 from tournaments import*
+from createProj import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -71,6 +72,13 @@ def loadCreateTour():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     page = createTour()
+    return page
+
+@app.route('/createProj', methods=["POST", "GET"])
+def loadCreateProj():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    page = createProj()
     return page
 
 @app.route('/get_formats', methods=['POST'])

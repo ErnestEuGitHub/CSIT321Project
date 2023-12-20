@@ -6,7 +6,7 @@
         <div class="search-container">
             <label for="search-input">Tournaments</label>
             <input type="text" placeholder="Search...">
-            <button class="open-form-btn" onclick="openForm()">Create</button>
+            <button class="open-form-btn" onclick="location.href='/createTour'">Create</button>
         </div>
         <div class="form-container" id="myForm">
             <h2>Tournament Form</h2>
@@ -49,5 +49,5 @@
             document.getElementById("myForm").style.display = "none";
         }
     </script>
-    
+
 {% endblock %}

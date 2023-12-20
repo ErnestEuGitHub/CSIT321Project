@@ -12,6 +12,7 @@ def home():
 
         projects = [row._asdict() for row in rows]
 
+        session["projnav"] = projects
         #for navbar
         navtype = 'project'
 

@@ -81,8 +81,19 @@ def createTour():
                     inputs = {'getID':getID}
                     createNewGeneralInfo = conn.execute(text(query), inputs)
 
+                    #for navbar
+                    query = "SELECT * FROM tournaments WHERE projID = :projID AND userID = :userID;"
+                    inputs = {'projID': projID, 'userID': session["id"]}
+                    getTour = conn.execute(text(query), inputs)
+                    rows = getTour.fetchall()
+
+                    tournamentlist = [row._asdict() for row in rows]
+
+                    session["tournav"] = tournamentlist
+                    navtype = 'tournament'
+
                 flash('Tournament Created!', 'success')
-                return render_template('createTour.html', sportlist=sportsOptions)
+                return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype)
             
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
@@ -97,4 +108,7 @@ def createTour():
 
             sportsOptions = [row._asdict() for row in rows]
 
-        return render_template('createTour.html', sportlist=sportsOptions)
+            #for navbar
+            navtype = 'tournament'
+            tournamentlist = session["tournav"]
+        return render_template('createTour.html', sportlist=sportsOptions, navtype=navtype, tournamentlist=tournamentlist)
