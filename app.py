@@ -1,14 +1,9 @@
 from flask import Flask
-from landing import *
-from login import *
-from register import *
-from createTour import *
-from getformat import *
-from dashboard import *
-from viewTour import *
-from settings import *
-from home import *
-from tournaments import*
+from general import *
+
+from user import *
+from tournaments import *
+from projects import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -24,7 +19,7 @@ def loadLanding():
 def loadLogin():
     if "id" in session:
         return redirect(url_for('loadhome'))
-    page = login()
+    page = User.login()
     return page
 
 @app.route('/logout', methods=["POST", "GET"])
@@ -38,14 +33,14 @@ def logout():
 def loadregister():
     if "id" in session:
         return redirect(url_for('loadhome'))
-    page = register()
+    page = User.register()
     return page
 
 @app.route('/home')
 def loadhome():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    page = home()
+    page = Projects.home()
     return page
 
 @app.route('/projects/<projID>')
@@ -60,7 +55,7 @@ def loadtournaments(projID):
             rows = checktour.fetchall()
 
             if rows:
-                page = tournaments(projID)
+                page = Tournaments.tournaments(projID)
                 return page
             
             else:
@@ -70,12 +65,19 @@ def loadtournaments(projID):
 def loadCreateTour():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    page = createTour()
+    page = Tournaments.createTour()
+    return page
+
+@app.route('/createProj', methods=["POST", "GET"])
+def loadCreateProj():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    page = Projects.createProj()
     return page
 
 @app.route('/get_formats', methods=['POST'])
 def getformatspy():
-    formats = getformat()
+    formats = Tournaments.getformat()
     return formats
 
 @app.route('/tournamentOverviewPage/<tourID>')
@@ -90,7 +92,7 @@ def loadTourOverviewWithID(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = TourOverviewDetails(tourID)
+                page = Tournaments.TourOverviewDetails(tourID)
                 return page
             
             else:
@@ -108,7 +110,7 @@ def loaddashboard(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = dashboard(tourID)
+                page = Tournaments.dashboard(tourID)
                 return page
             
             else:
@@ -126,7 +128,7 @@ def loadsettings(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = settings(tourID)
+                page = Tournaments.settings(tourID)
                 return page
             
             else:
