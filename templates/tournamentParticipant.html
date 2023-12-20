@@ -66,18 +66,22 @@
          <a href="#"><h2>Tournament Size</h2></a>         
          <a href="#"><h2>32</h2></a>
       </div>
-      <table class="participantlist">
-         <tr>
-            <th>List of participants</th>
-         </tr> 
-         <tr>
-            <th>Name</th>
-            <th>Email</th>
-         </tr> 
-         <tbody id="myParticipant">
-
+      <table border="1">
+         <thead>
+             <tr>
+                 <th>Email</th>
+                 <th>Team Name</th>
+             </tr>
+         </thead>
+         <tbody>
+             {% for participant in participants %}
+                 <tr>
+                     <td>{{ participant.participantEmail }}</td>
+                     <td>{{ participant.participantTeamName }}</td>
+                 </tr>
+             {% endfor %}
          </tbody>
-      </table>
+     </table>
    </main>
 
 
