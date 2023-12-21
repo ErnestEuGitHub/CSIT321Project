@@ -5,6 +5,8 @@ from user import *
 from tournaments import *
 from projects import *
 from createStructure import *
+from tournamentParticipant import *
+from tournamentParticipantCreate import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -148,12 +150,24 @@ def loadcreateStructure():
     # if "id" not in session:
     #     return redirect(url_for('loadLogin'))
     page = createStructure()
+@app.route('/tournamentDashboard', methods=["POST", "GET"])
+def loadTournamentDashboard():
+    page = tournamentDashboard()
+    return page
+
+@app.route('/tournamentParticipant', methods=["POST", "GET"])
+def loadTournamentParticipant():
+    page = tournamentParticipant()
+    return page
+
+@app.route('/tournamentCreateParticipant', methods=["POST", "GET"])
+def loadTournamentCreateParticipant():
+    page = tournamentCreateParticipant()
     return page
   
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)
 
-if __name__ == "__main__":
-    
+if __name__ == "__main__":    
     app.run(debug=True)
