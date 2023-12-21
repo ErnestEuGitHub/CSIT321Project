@@ -105,15 +105,50 @@
     padding-bottom: 20px;
 }
 
-.box {
+.boxlink{
+    margin: 20px;
+    text-decoration: none;
+    color: black;
+}
+
+.boxlink h2{
+    margin-bottom: 20px;
+}
+
+.boxlink p {
+    font-size: large;
+    color: black;
+}
+
+.boxlink .box {
     width: 380px;
     height: 380px;
-    margin: 20px;
     padding: 20px;
     background-color: #f9f9f9;
     border: 1px solid #ccc;
     border-radius: 5px;
     text-align: center;
+}
+
+.boxlink:hover .box p,
+.boxlink:hover .box h2{
+    color: #666;
+}
+
+
+/* Styles specific to Dashboard */
+
+.dashboard .box {
+    width:600px;
+    height:500px;
+    margin: 20px;
+}
+
+/* Minor styling for settings nav bar */
+#dashboardSettingsNav {
+    list-style-type: none;
+    padding-left: 20px;
+    margin: 0;
 }
 
 /* Search box styles */
@@ -187,4 +222,19 @@
 .navbarcontentpadding{
     padding-top: 50px;
     padding-left: 210px;
+}
+
+/* Responsive Screens */
+@media (max-width: 880px) {
+    .dashboard .box {
+        width: 400px;
+        height: 400px;
+    }
+}
+
+@media (max-width: 700px) {
+    .dashboard .box {
+        width: 300px;
+        height: 300px;
+    }
 }
