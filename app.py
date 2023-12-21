@@ -6,7 +6,6 @@ from createTour import *
 from getformat import *
 from tournamentDashboard import *
 from tournamentParticipant import *
-from tournamentParticipantCreate import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -81,10 +80,6 @@ def loadTournamentParticipant():
     page = tournamentParticipant()
     return page
 
-@app.route('/tournamentCreateParticipant', methods=["POST", "GET"])
-def loadTournamentCreateParticipant():
-    page = tournamentCreateParticipant()
-    return page
 
 
 if __name__ == "__main__":    
