@@ -33,6 +33,8 @@ class User:
                     session["id"] = rows[0][0]
                     session["profileID"] = rows[0][3]
                     session["fname"] = rows[0][4]
+                    session["profileMediaID"] = rows[0][6]
+                    print(session["profileMediaID"])
 
                     #profileID 1 = Org, 2 = Participant, 3 = System Admin
                     if session["profileID"] == 1:
@@ -63,6 +65,7 @@ class User:
             cpassword = request.form.get("cpassword")
             fname = request.form.get("fname")
             lname = request.form.get("lname")
+            profileMediaID = request.form.get("profileMediaID")
 
             emailregex = r"^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$"
             match = bool(re.match(emailregex, email))

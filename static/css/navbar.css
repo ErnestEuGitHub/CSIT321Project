@@ -212,6 +212,19 @@
     margin-right: 10px;
 }
 
+/* Style for lastname of user in nav bar */
+.lastname {
+    color: white;
+    margin-right: 10px;
+}
+
+/* Style for profile pic in nav bar */
+.profileImage {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
 .toprightnav{
     float: right;
     display: flex;
