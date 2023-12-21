@@ -148,15 +148,15 @@
     }
 
     function syncDelete(row) {
-        const rowIndex = row.rowIndex - 1;
+        const rowIdToDelete = row.dataset.rowId;
         const allTables = document.querySelectorAll('.table-container table');
 
         allTables.forEach(table => {
-            const tableRows = table.getElementsByTagName('tbody')[0].rows;
+            const otherTableRows = table.getElementsByTagName('tbody')[0].rows;
 
-            if (tableRows.length > rowIndex) {
-                const correspondingRow = tableRows[rowIndex];
-                if (correspondingRow !== row) {
+            for (let i = 0; i < otherTableRows.length; i++) {
+                const correspondingRow = otherTableRows[i];
+                if (correspondingRow.dataset.rowId === rowIdToDelete && correspondingRow !== row) {
                     const nameCell = correspondingRow.cells[1];
                     nameCell.innerHTML = ''; // Clear the content
                     correspondingRow.classList.remove('has-name'); // Remove 'has-name' class
@@ -171,7 +171,6 @@
         closeModal();
     }
 
-    // Modify deleteEntry function to handle delete button click
     function deleteEntry(row) {
         const deleteButton = row.querySelector('.delete-button');
         deleteButton.addEventListener('click', function (event) {
