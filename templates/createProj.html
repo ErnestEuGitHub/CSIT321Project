@@ -25,65 +25,30 @@
 					<div class="row justify-content-center h-100">
 						<div class="col-xxl-10 col-xl-8 col-lg-8 col-md-9 col-sm-10">
 							<div class="card-body p-5">
-								<h1 class="fs-4 card-title fw-bold mb-4">Create Tournament</h1>
-								<form action="/createTour" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+								<h1 class="fs-4 card-title fw-bold mb-4">Create Proj</h1>
+								<form action="/createProj" method="POST" class="needs-validation" novalidate="" autocomplete="off">
 									
 									<div class="row mb-3 justify-content-sm-center">
 										<div class="mb-4">
-											<label class="mb-2 text-muted" for="tourName">Tournament Name<span class="text-danger">*</span></label>
-											<input id="tourName" type="text" class="form-control" name="tourName" value="{{ tourName }}" placeholder="Eg. Men's Singles Badminton" style="#tourName::placeholder {color: #888;}" required autofocus>
+											<label class="mb-2 text-muted" for="projName">Project Name<span class="text-danger">*</span></label>
+											<input id="projName" type="text" class="form-control" name="projName" value="{{ projName }}" placeholder="Eg. University Invitationals 2025" style="#tourName::placeholder {color: #888;}" required autofocus>
 										</div>
 										
-										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="tourSize">Size of Participants<span class="text-danger">*</span></label>
-											<input id="tourSize" type="number" class="form-control" name="tourSize" value="{{ tourSize }}" min="0" required autofocus>
-										</div>
-
-										<div class="mb-4 col-xl-4">
+										<div class="mb-4 col-xl-6">
 											<label class="mb-2 text-muted" for="startDate">Start Date<span class="text-danger">*</span></label>
 											<input id="startDate" type="date" class="form-control" name="startDate" value="{{ startDate }}" required autofocus>
 										</div>
 
-										<div class="mb-4 col-xl-4">
+										<div class="mb-4 col-xl-6">
 											<label class="mb-2 text-muted" for="endDate">End Date<span class="text-danger">*</span></label>
 											<input id="endDate" type="date" class="form-control" name="endDate" value="{{ endDate }}" required autofocus>
 										</div>
 
-										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="gender">Gender</label>
-											<select id="gender" class="form-select" name="gender" required autofocus>
-												<option value="Male" {% if gender == 'Male' %} selected {% endif %}>Male</option>
-												<option value="Female" {% if gender == 'Female' %} selected {% endif %}>Female</option>
-												<option value="Mixed" {% if gender == 'Mixed' %} selected {% endif %}>Mixed</option>
-											</select>
-										</div>
-
-										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="sport">Sport<span class="text-danger">*</span></label>
-											<select id="sport" class="form-select" name="sport" required autofocus>
-												<option value="">Please select a sport first</option>
-												{% for s in sportlist %}
-													<option value="{{s['sportID']}}" {% if sport == s['sportID'] %} selected {% endif %}>{{s['sportName']}}</option>
-												{% endfor %}
-											</select>
-										</div>
-
-										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="format">Format<span class="text-danger">*</span></label>
-											<select id="format" class="form-select" name="format" required autofocus>
-												
-											</select>
-										</div>
-
-										<!-- <div class="mb-4">
-											<label class="mb-2 text-muted" for="generalInfo">General Info</label>
-											<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" rows="5" required autofocus style="resize: none;">{{ generalInfo }}</textarea>
-										</div> -->
 									</div>
 
 									<div class="d-flex align-items-center">
 										<button type="submit" class="btn btn-primary ms-auto">
-											Create Tournament
+											Create Project
 										</button>
 									</div>
 								</form>
@@ -121,7 +86,7 @@
 					}
 				});
 			}
-			
+
 			// Initial population on page load
 			var selectedSport = $("#sport").val();
 			populateFormatDropdown(selectedSport);
