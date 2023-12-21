@@ -1,6 +1,36 @@
-{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Gamesphere Create Tournament</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="../static/css/navbar.css">
+</head>
 
-{% block content %}
+<body>
+	<section class="h-100">
+		<div class="topnav">
+			<a href="home">GameSphere</a>
+			<div class="toprightnav">
+				<div class="firstname">Welcome {{ session["fname"] }}</div>
+				<div class="dropdown">
+					<a href=""><i class="fa fa-fw fa-user"></i>
+						<div class="dropdown-content">
+							<a href="">Account Settings</a>
+							<a href="/logout">Logout</a>
+						</div>
+				</div>
+			</div>
+		</div>
+		<div class="leftnav">
+			<h2>Projects</h2>
+			<a href="#section1">Olympic</a>
+			<a href="#section2">EPL</a>
+			<a href="#section3">NBA</a>
+			<a href="#section3">World Cup</a>
+		</div>
 		<div class="row justify-content-center">
 			<div class="col navbarcontentpadding">
 				{% for message in get_flashed_messages(category_filter=["error"]) %}
@@ -62,7 +92,7 @@
 											<label class="mb-2 text-muted" for="sport">Sport<span class="text-danger">*</span></label>
 											<select id="sport" class="form-select" name="sport" required autofocus>
 												<option value="">Please select a sport first</option>
-												{% for s in sportlist %}
+												{%for s in sportlist %}
 													<option value="{{s['sportID']}}" {% if sport == s['sportID'] %} selected {% endif %}>{{s['sportName']}}</option>
 												{% endfor %}
 											</select>
@@ -75,10 +105,10 @@
 											</select>
 										</div>
 
-										<!-- <div class="mb-4">
+										<div class="mb-4">
 											<label class="mb-2 text-muted" for="generalInfo">General Info</label>
 											<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" rows="5" required autofocus style="resize: none;">{{ generalInfo }}</textarea>
-										</div> -->
+										</div>
 									</div>
 
 									<div class="d-flex align-items-center">
@@ -121,7 +151,7 @@
 					}
 				});
 			}
-			
+
 			// Initial population on page load
 			var selectedSport = $("#sport").val();
 			populateFormatDropdown(selectedSport);
@@ -134,4 +164,5 @@
     	});
 	</script>
 
-{% endblock %}
+</body>
+</html>
