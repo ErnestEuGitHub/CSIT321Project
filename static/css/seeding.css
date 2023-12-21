@@ -1,0 +1,139 @@
+/* CSS styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px auto;
+    max-width: 1600px;
+    /* Adjust the max-width as needed */
+    overflow-x: auto;
+    /* Enable horizontal scrolling for overflow */
+}
+
+.table-container {
+    width: 48%;
+    /* Set the width of each table container */
+    box-sizing: border-box;
+    padding: 0 10px;
+}
+
+h1 {
+    margin: 0;
+    padding: 10px 0;
+    background-color: #f2f2f2;
+    /* Match background color with table header cell */
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    /* Add a border bottom for separation */
+    font-size: 18px;
+    height: 50px;
+    /* Fixed height for headers */
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    /* Shadow effect for headers */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    /* Shadow effect for tables */
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    /* Match table header cell color */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+td .editable {
+    display: inline-block;
+    min-width: 100px;
+    cursor: pointer;
+}
+
+tr {
+    cursor: pointer;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+.name-cell {
+    display: flex;
+    align-items: center;
+}
+
+.delete-button {
+    cursor: pointer;
+    display: none;
+    /* Initially hide delete button */
+    background: none;
+    border: none;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    margin-left: 5px;
+}
+
+.delete-button:hover {
+    color: red;
+}
+
+td:hover .delete-button {
+    display: inline-block;
+    /* Show delete button on cell hover */
+}
+
+/* Modal CSS */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    cursor: default;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}

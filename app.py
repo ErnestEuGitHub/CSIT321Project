@@ -1,4 +1,5 @@
 from flask import Flask
+from placement import *
 from general import *
 
 from user import *
@@ -118,6 +119,17 @@ def loaddashboard(tourID):
             else:
                 return render_template('notfound.html')
 
+@app.route('/placement', methods=["POST", "GET"])
+def placement():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    return render_template('placement.html')
+
+@app.route('/update_content', methods=['POST'])
+def update_content():
+    updated_content = get_updated_content()
+    return jsonify({'content': updated_content})
+
 @app.route('/settings/<tourID>', methods=["POST", "GET"])
 def loadsettings(tourID):
     if "id" not in session:
@@ -128,6 +140,8 @@ def loadsettings(tourID):
             inputs = {'userID': session["id"], 'tourID': tourID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
+
+
 
 
             if rows:
