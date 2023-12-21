@@ -150,7 +150,10 @@ def loadcreateStructure():
     # if "id" not in session:
     #     return redirect(url_for('loadLogin'))
     page = createStructure()
-
+@app.route('/tournamentDashboard', methods=["POST", "GET"])
+def loadTournamentDashboard():
+    page = tournamentDashboard()
+    return page
 
 @app.route('/tournamentParticipant', methods=["POST", "GET"])
 def loadTournamentParticipant():
