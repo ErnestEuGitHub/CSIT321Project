@@ -153,20 +153,18 @@
 
         allTables.forEach(table => {
             const otherTableRows = table.getElementsByTagName('tbody')[0].rows;
+            const correspondingRow = [...otherTableRows].find(r => r.dataset.rowId === rowIdToDelete);
 
-            for (let i = 0; i < otherTableRows.length; i++) {
-                const correspondingRow = otherTableRows[i];
-                if (correspondingRow.dataset.rowId === rowIdToDelete && correspondingRow !== row) {
-                    const nameCell = correspondingRow.cells[1];
-                    nameCell.innerHTML = ''; // Clear the content
-                    correspondingRow.classList.remove('has-name'); // Remove 'has-name' class
-                }
+            if (correspondingRow && correspondingRow !== row) {
+                const nameCell = correspondingRow.cells[1];
+                nameCell.innerHTML = '';
+                correspondingRow.classList.remove('has-name');
             }
         });
 
         const nameCell = row.cells[1];
-        nameCell.innerHTML = ''; // Clear the content
-        row.classList.remove('has-name'); // Remove 'has-name' class
+        nameCell.innerHTML = '';
+        row.classList.remove('has-name');
 
         closeModal();
     }
