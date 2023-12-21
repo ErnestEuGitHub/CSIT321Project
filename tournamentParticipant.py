@@ -2,8 +2,13 @@ from flask import render_template, request, flash, session
 from database import dbConnect
 import bcrypt
 from sqlalchemy import text
+from general import retrieveDashboardNavName
 
-def tournamentParticipant():
+def tournamentParticipant(tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
         try:
                 with dbConnect.engine.connect() as conn:
                 
@@ -26,9 +31,9 @@ def tournamentParticipant():
 
                         # Get the size of tournament
                         tournamentSize = tournamentSize
-                        
+
                         # Render the HTML template with the participant data and total number
-                        return render_template('tournamentParticipant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize)
+                        return render_template('tournamentParticipant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
 
                         
         

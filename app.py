@@ -166,9 +166,9 @@ def loadcreateStructure():
     page = createStructure()
     return page
   
-@app.route('/tournamentParticipant', methods=["POST", "GET"])
-def loadTournamentParticipant():
-    page = tournamentParticipant()
+@app.route('/tournamentParticipant/<tourID>', methods=["POST", "GET"])
+def loadTournamentParticipant(tourID):
+    page = tournamentParticipant(tourID)
     return page
 
 @app.errorhandler(404)
