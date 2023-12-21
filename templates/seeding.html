@@ -57,6 +57,7 @@
         nameList.innerHTML = '';
 
         namesFromDatabase.forEach(name => {
+
             const listItem = document.createElement('li');
             listItem.textContent = name;
             listItem.onclick = function () {
@@ -67,6 +68,7 @@
     }
 
     function selectName(cell, selectedName, tableId) {
+
         const nameContainer = document.createElement('div');
         nameContainer.className = 'name-cell';
 
@@ -98,21 +100,22 @@
         deleteButton.className = 'delete-button';
         deleteButton.innerHTML = '&#10060;'; // Cross icon HTML entity
 
-        deleteButton.onclick = function () {
-            const rowIndex = row.rowIndex - 1; // Adjust for zero-based index
-            const otherTableId = tableId === '1' ? '2' : '1';
-            const otherTableRows = document.getElementById(otherTableId).getElementsByTagName('tbody')[0].rows;
-            const correspondingRow = otherTableRows[rowIndex];
-
-            row.cells[1].innerHTML = ''; // Clear the name content
+        deleteButton.addEventListener('click', function (event) {
+            event.stopPropagation(); // Stop event propagation for delete button
+            const nameCell = row.cells[1];
+            nameCell.innerHTML = ''; // Clear the name content
             row.classList.remove('has-name'); // Remove 'has-name' class
-            deleteButton.style.display = 'none'; // Hide delete button
 
-            correspondingRow.cells[1].innerHTML = ''; // Clear the corresponding cell in the other table
-            closeModal(); // Close the modal after deletion
-        };
+            // Sync deletion with the corresponding cell in the other table
+            const rowIndex = row.rowIndex - 1; // Adjust for zero-based index
+            const otherTableRows = document.getElementById(tableId === '1' ? '2' : '1').getElementsByTagName('tbody')[0].rows;
+            const correspondingCell = otherTableRows[rowIndex].cells[1];
+            correspondingCell.innerHTML = ''; // Clear the content in the corresponding cell
+        });
+
         return deleteButton;
     }
+
 
     function createEmptyRow(tableId) {
         const container = document.getElementById(tableId).getElementsByTagName('tbody')[0];
@@ -124,7 +127,8 @@
         const cell2 = newRow.insertCell(1);
         cell2.textContent = ''; // Initially empty
 
-        newRow.id = tableId === '1' ? `row_${rowId}` : `second_row_${secondRowId}`;
+        const uniqueId = tableId === '1' ? `row_${rowId}` : `second_row_${secondRowId}`;
+        newRow.dataset.rowId = uniqueId; // Set the data-row-id attribute
 
         if (tableId === '1') {
             rowId++;
@@ -137,42 +141,50 @@
         };
     }
 
+
     function enableEditing(row, tableId) {
         const cell = row.cells[1];
         addPerson(cell, tableId);
     }
 
-    function syncDelete(row, tableId) {
+    function syncDelete(row) {
         const rowIndex = row.rowIndex - 1;
-        const otherTableId = tableId === '1' ? '2' : '1';
-        const otherTableRows = document.getElementById(otherTableId).getElementsByTagName('tbody')[0].rows;
-        const correspondingRow = otherTableRows[rowIndex];
+        const allTables = document.querySelectorAll('.table-container table');
 
-        if (row.classList.contains('has-name')) {
-            row.cells[1].innerHTML = '';
-            row.classList.remove('has-name');
-        }
+        allTables.forEach(table => {
+            const tableRows = table.getElementsByTagName('tbody')[0].rows;
 
-        if (correspondingRow && correspondingRow.classList.contains('has-name')) {
-            correspondingRow.cells[1].innerHTML = '';
-            correspondingRow.classList.remove('has-name');
-        }
+            if (tableRows.length > rowIndex) {
+                const correspondingRow = tableRows[rowIndex];
+                if (correspondingRow !== row) {
+                    const nameCell = correspondingRow.cells[1];
+                    nameCell.innerHTML = ''; // Clear the content
+                    correspondingRow.classList.remove('has-name'); // Remove 'has-name' class
+                }
+            }
+        });
+
+        const nameCell = row.cells[1];
+        nameCell.innerHTML = ''; // Clear the content
+        row.classList.remove('has-name'); // Remove 'has-name' class
 
         closeModal();
     }
 
-    function deleteEntry(row, tableId) {
+    // Modify deleteEntry function to handle delete button click
+    function deleteEntry(row) {
         const deleteButton = row.querySelector('.delete-button');
-        deleteButton.onclick = function () {
-            syncDelete(row, tableId);
-        };
+        deleteButton.addEventListener('click', function (event) {
+            event.stopPropagation(); // Stop event propagation for delete button
+            syncDelete(row);
+        });
     }
 
-    document.querySelectorAll('.delete-button').forEach(button => {
-        const tableId = button.closest('table').id;
-        const row = button.closest('tr');
-        deleteEntry(row, tableId);
+    // Delegate the event handling to the table rows
+    document.querySelectorAll('table tbody tr').forEach(row => {
+        deleteEntry(row);
     });
+
 
     for (let i = 0; i < 10; i++) {
         createEmptyRow('1');
