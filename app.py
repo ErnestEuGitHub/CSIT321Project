@@ -5,6 +5,7 @@ from general import *
 from user import *
 from tournaments import *
 from projects import *
+from createStructure import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
