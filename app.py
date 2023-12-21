@@ -1,5 +1,5 @@
 from flask import Flask
-
+from tournamentParticipant import *
 from general import *
 
 from user import *
@@ -128,6 +128,7 @@ def loadsettings(tourID):
             inputs = {'userID': session["id"], 'tourID': tourID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
+
 
             if rows:
                 page = Tournaments.settings(tourID)
