@@ -14,10 +14,10 @@ def tournamentParticipant(tourID):
                 
                         # Query the 'participants' table
                         queryOne = """
-                        SELECT participantEmail, participantTeamName, GROUP_CONCAT(playerName) AS playerNames
+                        SELECT participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
                         FROM participants JOIN players
                         WHERE participants.participantID = players.participantID
-                        GROUP BY participants.participantID, participantEmail, participantTeamName"""
+                        GROUP BY participants.participantID, participantEmail, participantName"""
                         getparticipants = conn.execute(text(queryOne))
                         participants = getparticipants.fetchall()
 

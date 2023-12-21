@@ -35,7 +35,7 @@ class Tournaments:
             projID = session["currentProj"]
             projectName = retrieveProjectNavName(projID)
     
-        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName)
+        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID)
     
     #Create Tournament
     def createTour():
