@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container h-100 navbarcontentpadding">
+        <h2 class="my-3">Add New Participant</h2>
+        <form>
+            <div class="mb-3">
+                <label for="exampleInputTeamName1" class="form-label">Team Name</label>
+                <input type="teamName" class="form-control" id="exampleInputTeamName">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <button type="cancel" class="btn btn-primary">Cancel</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+
+{% endblock %}

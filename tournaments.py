@@ -165,6 +165,13 @@ class Tournaments:
         navtype = 'dashboard'
         return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
     
+    #Create Participant
+    def createParticipant(tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+        return render_template('createParticipant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+    
 
     #Settings
     def settings(tourID):
