@@ -1,5 +1,4 @@
 from flask import Flask
-from tournamentParticipant import *
 from general import *
 
 from user import *
