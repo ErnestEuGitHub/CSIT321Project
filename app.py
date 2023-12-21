@@ -5,6 +5,7 @@ from user import *
 from tournaments import *
 from projects import *
 from createStructure import *
+from tournamentParticipant import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -151,6 +152,11 @@ def loadcreateStructure():
     page = createStructure()
     return page
   
+@app.route('/tournamentParticipant', methods=["POST", "GET"])
+def loadTournamentParticipant():
+    page = tournamentParticipant()
+    return page
+
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)
