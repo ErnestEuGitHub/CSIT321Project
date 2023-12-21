@@ -157,9 +157,9 @@ def loadTournamentParticipant():
     page = tournamentParticipant()
     return page
 
-@app.route('/tournamentCreateParticipant', methods=["POST", "GET"])
-def loadTournamentCreateParticipant():
-    page = tournamentCreateParticipant()
+@app.route('/tournamentParticipantCreate', methods=["POST", "GET"])
+def loadTournamentParticipantCreate():
+    page = tournamentParticipantCreate()
     return page
   
 @app.errorhandler(404)

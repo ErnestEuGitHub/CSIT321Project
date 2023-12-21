@@ -52,42 +52,26 @@
    </nav>
 
    <main>
-      <header>
-         <h2>Participant</h2>
-         <a href="/tournamentCreateParticipant">
-         <button style="background-color:rgb(0, 216, 205);color:black">Add</button>
-         </a>
-      </header>
-      <div class="participantsize">         
-         <a href="#"><h2>Participant Size</h2></a>         
-         <a href="#"><h2>{{ total_participants }}</h2></a>
-      </div>
-      <div class="tournamentsize">      
-         <a href="#"><h2>Tournament Size</h2></a>         
-         <a href="#"><h2>{{ tournamentSize }}</h2></a>
-      </div>
-      <table class="table table-borderless">
-         <thead>
-             <tr>
-                 <th>Team Name</th>
-                 <th>Team Players</th>
-                 <th>Email</th>
-                 <th></th>
-                 <th></th>
-             </tr>
-         </thead>
-         <tbody>
-             {% for participant in participants %}
-                 <tr>
-                     <td>{{ participant.participantTeamName }}</td>
-                     <td>{{ participant.playerNames }}</td>
-                     <td>{{ participant.participantEmail }}</td>
-                     <td><i class="fa-solid fa-pen-to-square"></i></td>
-                     <td><i class="fa-solid fa-trash"></i></td>
-                 </tr>
-             {% endfor %}
-         </tbody>
-     </table>
+
+      <h1>Create Tournament Participant</h1>
+      
+      {% if error %}
+          <p style="color: red;">Oops, an error has occurred. Please try again.</p>
+      {% endif %}
+      
+      {% if emptyForm %}
+          <p style="color: red;">Please fill in all fields!</p>
+      {% endif %}
+      
+      <form method="post" action="{{ url_for('tournamentCreateParticipant') }}">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" value="{{ email }}" required>
+      
+          <label for="teamName">Team Name:</label>
+          <input type="text" id="teamName" name="teamName" value="{{ teamName }}" required>
+      
+          <button type="submit">Create Participant</button>
+      </form>
    </main>
 
 
