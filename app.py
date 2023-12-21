@@ -1,4 +1,5 @@
 from flask import Flask
+
 from general import *
 
 from user import *
@@ -134,6 +135,21 @@ def loadsettings(tourID):
             else:
                 return render_template('notfound.html')
 
+@app.route('/structure', methods=["POST", "GET"])
+def loadstructure():
+    return render_template('structure.html')
+
+@app.route('/configureStrcture', methods=["POST", "GET"])
+def loadconfigurestructure():
+    return render_template('configureStrcture.html')
+
+@app.route('/createStructure', methods=["POST", "GET"])
+def loadcreateStructure():
+    # if "id" not in session:
+    #     return redirect(url_for('loadLogin'))
+    page = createStructure()
+    return page
+  
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)
