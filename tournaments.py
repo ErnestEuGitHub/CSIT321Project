@@ -170,9 +170,28 @@ class Tournaments:
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
-        return render_template('createParticipant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-    
 
+        if request.method == "POST":
+            participantName = request.form.get("participantName")
+            participantEmail = request.form.get("participantEmail")
+
+            try:
+                with dbConnect.engine.connect() as conn:
+                    query = "INSERT INTO participants (participantName, participantEmail) VALUES (:participantName, :participantEmail)"
+                    inputs = {'participantName': participantName, 'participantEmail':participantEmail}
+                    createNewParticipant = conn.execute(text(query),inputs)
+
+                flash('Tournament Created!', 'success')
+                return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+        
+            except Exception as e:
+                flash('Oops, an error has occured.', 'error')
+                print(f"Error details: {e}")
+            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+        
+        else:
+            return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+        
     #Settings
     def settings(tourID):
         #for navbar
