@@ -7,16 +7,30 @@ def tournamentParticipant():
         try:
                 with dbConnect.engine.connect() as conn:
                 
-                        # Query the 'participant' table
-                        query = "SELECT * FROM participants"
-                        getparticipants = conn.execute(text(query))
+                        # Query the 'participants' table
+                        queryOne = """
+                        SELECT participantEmail, participantTeamName, GROUP_CONCAT(playerName) AS playerNames
+                        FROM participants JOIN players
+                        WHERE participants.participantID = players.participantID
+                        GROUP BY participants.participantID, participantEmail, participantTeamName"""
+                        getparticipants = conn.execute(text(queryOne))
                         participants = getparticipants.fetchall()
 
-                        # Convert the result to a list of dictionaries
-                        participantsList = [participant._asdict() for participant in participants]
+                        # Get the total number of participants
+                        total_participants = len(participants)
+
+                        # Query the 'tournaments' table
+                        queryTwo = "SELECT tourSize FROM tournaments where tourID = '1'"
+                        getTournamentSize = conn.execute(text(queryTwo))
+                        tournamentSize = getTournamentSize.scalar() #scalar only extract the value
+
+                        # Get the size of tournament
+                        tournamentSize = tournamentSize
                         
-                        # Render the HTML template with the participant data
-                        return participantsList
+                        # Render the HTML template with the participant data and total number
+                        return render_template('tournamentParticipant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize)
+
+                        
         
         
 
@@ -24,17 +38,5 @@ def tournamentParticipant():
                 # Handle exceptions (e.g., database connection error)
                 print(f"Error: {e}")
                 flash("An error occurred while retrieving participant data.", "error")
-                return render_template('tournamentDashboard.html')  # Create an 'error.html' template for error handling
-
-def updateNavProjects():
-        with dbConnect.engine.connect() as conn:
-            query = "SELECT * FROM projects WHERE userID = :userID;"
-            inputs = {'userID': session["id"]}
-            getprojs = conn.execute(text(query), inputs)
-            rows = getprojs.fetchall()
-
-            projects = [row._asdict() for row in rows]
-
-            session["projnav"] = projects
-            return projects       
+                return render_template('tournamentDashboard.html')  # Create an 'error.html' template for error handling 
     

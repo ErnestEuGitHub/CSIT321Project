@@ -54,30 +54,36 @@
    <main>
       <header>
          <h2>Participant</h2>
-         <a href="https://www.google.com">
+         <a href="/tournamentCreateParticipant">
          <button style="background-color:rgb(0, 216, 205);color:black">Add</button>
          </a>
       </header>
       <div class="participantsize">         
-         <a href="#"><h2>Participant</h2></a>         
-         <a href="#"><h2>6</h2></a>
+         <a href="#"><h2>Participant Size</h2></a>         
+         <a href="#"><h2>{{ total_participants }}</h2></a>
       </div>
       <div class="tournamentsize">      
          <a href="#"><h2>Tournament Size</h2></a>         
-         <a href="#"><h2>32</h2></a>
+         <a href="#"><h2>{{ tournamentSize }}</h2></a>
       </div>
-      <table border="1">
+      <table class="table table-borderless">
          <thead>
              <tr>
-                 <th>Email</th>
                  <th>Team Name</th>
+                 <th>Team Players</th>
+                 <th>Email</th>
+                 <th></th>
+                 <th></th>
              </tr>
          </thead>
          <tbody>
              {% for participant in participants %}
                  <tr>
-                     <td>{{ participant.participantEmail }}</td>
                      <td>{{ participant.participantTeamName }}</td>
+                     <td>{{ participant.playerNames }}</td>
+                     <td>{{ participant.participantEmail }}</td>
+                     <td><i class="fa-solid fa-pen-to-square"></i></td>
+                     <td><i class="fa-solid fa-trash"></i></td>
                  </tr>
              {% endfor %}
          </tbody>
@@ -87,21 +93,3 @@
 
 </body>
 </html>
-
-
-<tr>
-   <a href="#"><h2>Name</h2></a>         
-   <h2>Man United</h2><a href="#"><i class="fa-solid fa-people-group"></i></a>
-   <h2>Man City</h2><a href="#"><i class="fa-solid fa-people-group"></i></a>
-   <h2>Liverpool</h2><a href="#"><i class="fa-solid fa-people-group"></i></a>
-   <h2>Chelsea</h2><a href="#"><i class="fa-solid fa-people-group"></i></a>
-   <h2>Tottenham</h2><a href="#"><i class="fa-solid fa-people-group"></i></a>
-</tr>
-<tr>
-   <a href="#"><h2>Email</h2></a>         
-   <a href="#"><h2>manunited@gmail.com</h2></a>    
-   <a href="#"><h2>mancity@gmail.com</h2></a>    
-   <a href="#"><h2>liverpool@gmail.com</h2></a>    
-   <a href="#"><h2>chelsea@gmail.com</h2></a>    
-   <a href="#"><h2>tottenham@gmail.com</h2></a>
-</tr>
