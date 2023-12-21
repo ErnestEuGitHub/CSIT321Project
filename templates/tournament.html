@@ -1,53 +1,144 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<style>
+    /* Box styles */
+    .content {
+        margin-left: 200px;
+        padding-top: 50px;
+        /* Adjust padding-top to avoid overlap with topnav */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-bottom: 20px;
+    }
 
-    <div class="content">
-        <div class="search-container">
-            <label for="search-input">Tournaments</label>
-            <input type="text" placeholder="Search...">
-            <button class="open-form-btn" onclick="location.href='/createTour'">Create</button>
-        </div>
-        <div class="form-container" id="myForm">
-            <h2>Tournament Form</h2>
-            <form action="/submit_tournament" method="post">
-                <label for="tournament_name">Tournament Name:</label>
-                <input type="text" id="tournament_name" name="tournament_name"><br><br>
+    .box {
+        width: 380px;
+        height: 380px;
+        margin: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        text-align: center;
+    }
 
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date"><br><br>
+    /* Search box styles */
+    .search-container {
+        text-align: center;
+        width: 100%;
+        padding: 10px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
 
-                <label for="location">Location:</label>
-                <input type="text" id="location" name="location"><br><br>
+    .search-container input[type=text] {
+        padding: 10px;
+        margin-right: 10px;
+        width: 200px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
 
-                <label for="description">Description:</label><br>
-                <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+    .search-container button {
+        padding: 10px 20px;
+        border: none;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-                <input type="submit" value="Create Tournament">
-            </form>
-            <button onclick="closeForm()">Close</button>
-        </div>
-        
-        {% for t in tournamentlist %}
-            <a href="/tournamentOverviewPage/{{t['tourID']}}" class="boxlink">
-                <div class="box">
-                    <h2>Image of Project</h2>
-                    <p>{{t['tourName']}}</p>
-                </div>
-            </a>
-        {% endfor %}
+    .search-container button:hover {
+        background: #45a049;
+    }
 
+    /* Style the form container */
+    .form-container {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f2f2f2;
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 1000;
+    }
+
+    /* Style the button */
+    .open-form-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="content">
+    <div class="search-container">
+        <label for="search-input">Tournaments</label>
+        <input type="text" placeholder="Search...">
+        <button class="open-form-btn" onclick="openForm()">Create</button>
     </div>
+    <div class="form-container" id="myForm">
+        <h2>Tournament Form</h2>
+        <form action="/submit_tournament" method="post">
+            <label for="tournament_name">Tournament Name:</label>
+            <input type="text" id="tournament_name" name="tournament_name"><br><br>
 
-    <script>
-        // JavaScript to open and close the form
-        function openForm() {
-            document.getElementById("myForm").style.display = "block";
-        }
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date"><br><br>
 
-        function closeForm() {
-            document.getElementById("myForm").style.display = "none";
-        }
-    </script>
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location"><br><br>
 
+            <label for="description">Description:</label><br>
+            <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
+
+            <input type="submit" value="Create Tournament">
+        </form>
+        <button onclick="closeForm()">Close</button>
+    </div>
+    <div class="box">
+        <h2>Section 1</h2>
+        <p>This is the content for section 1.</p>
+    </div>
+    <div class="box">
+        <h2>Section 2</h2>
+        <p>This is the content for section 2.</p>
+    </div>
+    <div class="box">
+        <h2>Section 3</h2>
+        <p>This is the content for section 3.</p>
+    </div>
+    <div class="box">
+        <h2>Section 4</h2>
+        <p>This is the content for section 4.</p>
+    </div>
+    <div class="box">
+        <h2>Section 5</h2>
+        <p>This is the content for section 5.</p>
+    </div>
+    <div class="box">
+        <h2>Section 6</h2>
+        <p>This is the content for section 6.</p>
+    </div>
+</div>
+
+<script>
+    // JavaScript to open and close the form
+    function openForm() {
+        document.getElementById("myForm").style.display = "block";
+    }
+
+    function closeForm() {
+        document.getElementById("myForm").style.display = "none";
+    }
+</script>
 {% endblock %}
