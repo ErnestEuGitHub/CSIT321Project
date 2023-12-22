@@ -189,6 +189,24 @@ def loadCreateParticipant(tourID):
             else:
                 return render_template('notfound.html')
             
+@app.route('/editParticipant/<tourID>', methods=["POST", "GET"])
+def loadEditParticipant(tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.editParticipant(tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)

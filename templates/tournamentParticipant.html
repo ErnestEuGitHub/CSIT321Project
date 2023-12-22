@@ -2,7 +2,7 @@
 
 {% block content %}
 
-   <main style="padding-top: 150px;padding-left: 300px">
+   <main style="padding-top: 350px;padding-left: 300px">
       <header>
          <h2 style="position:absolute;top:100px">Participant</h2>
          <a href="/tournamentCreateParticipant">
@@ -10,12 +10,12 @@
          </a>
       </header>
       <div class="participantsize">         
-         <h2>Participant Size</h2>         
-         <h2>{{ total_participants }}</h2>
+         <h4 style="position:absolute;top:200px;left:500px">Participant Size</h4>         
+         <h4 style="position:absolute;top:250px;left:570px">{{ total_participants }}</h4>
       </div>
       <div class="tournamentsize">      
-         <h2>Tournament Size</h2>         
-         <h2>{{ tournamentSize }}</h2>
+         <h4 style="position:absolute;top:200px;right:350px">Tournament Size</h4>         
+         <h4 style="position:absolute;top:250px;right:430px">{{ tournamentSize }}</h4>
       </div>
       <table class="table table-borderless">
          <thead>
@@ -33,8 +33,8 @@
                      <td>{{ participant.participantName }}</td>
                      <td>{{ participant.playerNames }}</td>
                      <td>{{ participant.participantEmail }}</td>
-                     <td><i class="fa-solid fa-pen-to-square"></i></td>
-                     <td><i class="fa-solid fa-trash"></i></td>
+                     <td><i class="bi bi-pen"></i></td>
+                     <td><i class="bi bi-trash"></i></td>
                  </tr>
              {% endfor %}
          </tbody>
