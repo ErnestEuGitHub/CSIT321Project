@@ -237,7 +237,7 @@
     padding-left: 210px;
 }
 
-/* Responsive Screens */
+/* Put all Responsive to Screens codes here*/
 @media (max-width: 880px) {
     .dashboard .box {
         width: 400px;
