@@ -401,3 +401,15 @@ class Tournaments:
         else:
             return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
  
+
+    #Placement
+    def get_updated_content():
+        #for navbar
+        tourID = session["placementTour"]
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        # Logic to read and return updated content from seeding.html
+        with open('templates\seeding.html', 'r') as file:   
+            updated_content = file.read()
+        return updated_content

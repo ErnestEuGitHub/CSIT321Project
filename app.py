@@ -1,11 +1,9 @@
 from flask import Flask
-from placement import *
 from general import *
 
 from user import *
 from tournaments import *
 from projects import *
-from createStructure import *
 from tournamentParticipant import *
 
 app = Flask(__name__)
@@ -119,15 +117,21 @@ def loaddashboard(tourID):
             else:
                 return render_template('notfound.html')
 
-@app.route('/placement', methods=["POST", "GET"])
-def placement():
+@app.route('/placement/<tourID>', methods=["POST", "GET"])
+def placement(tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    return render_template('placement.html')
+    
+    #fornavbar
+    session["placementTour"] = tourID
+    navtype = 'dashboard'
+    tournamentName = retrieveDashboardNavName(tourID)
+
+    return render_template('placement.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
 
 @app.route('/update_content', methods=['POST'])
 def update_content():
-    updated_content = get_updated_content()
+    updated_content = Tournaments.get_updated_content()
     return jsonify({'content': updated_content})
 
 @app.route('/settings/<tourID>', methods=["POST", "GET"])
