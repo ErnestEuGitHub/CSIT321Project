@@ -380,8 +380,6 @@ class Tournaments:
             participantName = request.form.get("participantName")
             participantEmail = request.form.get("participantEmail")
 
-            print(participantName)
-
             try:
                 with dbConnect.engine.connect() as conn:
                     query = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
@@ -401,3 +399,42 @@ class Tournaments:
         else:
             return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
  
+    #Edit Participant
+    def editParticipant(tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+        
+        form_submitted = False
+
+        if request.method == "POST":
+            participantName = request.form.get("participantName")
+            participantEmail = request.form.get("participantEmail")
+
+            try:
+                with dbConnect.engine.connect() as conn:
+                    query = "SELECT * FROM participants WHERE participantID = :participantID AND tourID = :tourID"
+                    inputs = {'participantID': participantID, 'tourID': tourID}
+                    getsfID = conn.execute(text(query), inputs)
+                    rows = getsfID.fetchall()
+                    formatID = rows[0][2]
+
+                    query = "UPDATE tournaments SET participantName = :participantName, participantEmail = :participantEmail,  WHERE participantID = participantID, tourID = :tourID"
+                    inputs = {'participantName': participantName, 'participantEmail': participantEmail}
+                    updateParticipantInfo = conn.execute(text(query), inputs)
+            
+                flash('Participant Information Updated!', 'success')
+            
+            except Exception as e:
+                flash('Oops, an error has occured.', 'error')
+                print(f"Error details: {e}")
+                
+            return render_template('editParticipant.html',participantID=participantID,participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
+        
+        else:
+            with dbConnect.engine.connect() as conn:
+                    queryOne = "SELECT participantName, participantEmail FROM participants WHERE participantID = '1'"
+                    editParticipant = conn.execute(text(queryOne))
+                    participants = editParticipant.fetchall()
+                    
+            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)

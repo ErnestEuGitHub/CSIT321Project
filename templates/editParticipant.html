@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container h-100 navbarcontentpadding">
+        {% for message in get_flashed_messages(category_filter=["error"]) %}
+            {% if message %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% for message in get_flashed_messages(category_filter=["success"]) %}
+            {% if message %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <h2 class="my-3">Edit Participant</h2>
+        <form action="" method="POST">
+            <div class="mb-3">
+                <label for="exampleInputTeamName1" class="form-label">Team Name</label>
+                <input type="teamName" class="form-control" id="participantName" name="participantName">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="participantEmail" name="participantEmail" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+
+{% endblock %}
