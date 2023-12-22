@@ -30,6 +30,21 @@
             </tbody>
         </table>
     </div>
+
+    <div class="table-container">
+        <h1>Group 2</h1>
+        <table id="3">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Initial 10 empty rows for the second table -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!-- Modal for name selection -->
@@ -46,6 +61,7 @@
 <script>
     let rowId = 1;
     let secondRowId = 1;
+    let thirdRowId = 1;
 
     function addPerson(cell, tableId) {
         const namesFromDatabase = ["Alice", "Bob", "Charlie", "David", "Eva", "Frank", "Grace"];
@@ -122,18 +138,22 @@
         const newRow = container.insertRow();
 
         const cell1 = newRow.insertCell(0);
-        cell1.textContent = tableId === '1' ? rowId : secondRowId;
+        cell1.textContent = tableId === '1' ? rowId : (tableId === '2' ? secondRowId : thirdRowId);
 
         const cell2 = newRow.insertCell(1);
         cell2.textContent = ''; // Initially empty
 
-        const uniqueId = tableId === '1' ? `row_${rowId}` : `second_row_${secondRowId}`;
+        const uniqueId = tableId === '1' ? `row_${rowId}` : (tableId === '2' ? `second_row_${secondRowId}` : `third_row_${thirdRowId}`);
         newRow.dataset.rowId = uniqueId; // Set the data-row-id attribute
 
         if (tableId === '1') {
             rowId++;
-        } else {
+        } else if (tableId === '2') {
             secondRowId++;
+            if (secondRowId > 4) return; // Stop creating rows after 4 for Table 2
+        } else {
+            thirdRowId++;
+            if (thirdRowId > 4) return; // Stop creating rows after 4 for Table 3
         }
 
         newRow.onclick = function () {
@@ -145,26 +165,18 @@
     function enableEditing(row, tableId) {
         const cell = row.cells[1];
         addPerson(cell, tableId);
+        event.stopPropagation(); // Add this line to prevent the click from propagating further
     }
 
     function syncDelete(row) {
         const rowIdToDelete = row.dataset.rowId;
-        const allTables = document.querySelectorAll('.table-container table');
+        const allRows = document.querySelectorAll('[data-row-id="' + rowIdToDelete + '"]');
 
-        allTables.forEach(table => {
-            const otherTableRows = table.getElementsByTagName('tbody')[0].rows;
-            const correspondingRow = [...otherTableRows].find(r => r.dataset.rowId === rowIdToDelete);
-
-            if (correspondingRow && correspondingRow !== row) {
-                const nameCell = correspondingRow.cells[1];
-                nameCell.innerHTML = '';
-                correspondingRow.classList.remove('has-name');
-            }
+        allRows.forEach(rowToDelete => {
+            const nameCell = rowToDelete.cells[1];
+            nameCell.innerHTML = '';
+            rowToDelete.classList.remove('has-name');
         });
-
-        const nameCell = row.cells[1];
-        nameCell.innerHTML = '';
-        row.classList.remove('has-name');
 
         closeModal();
     }
@@ -185,11 +197,25 @@
 
     for (let i = 0; i < 10; i++) {
         createEmptyRow('1');
+    }
+    for (let i = 0; i < 4; i++) {
         createEmptyRow('2');
+        createEmptyRow('3');
     }
 
+    // Function to close the modal
     function closeModal() {
         const modal = document.getElementById('nameSelectionModal');
         modal.style.display = 'none';
     }
+
+    // Event listener for clicks on the document
+    document.addEventListener('click', function (event) {
+        const modal = document.getElementById('nameSelectionModal');
+        const modalContent = document.querySelector('.modal-content');
+        if (event.target !== modal && !modalContent.contains(event.target)) {
+            closeModal(); // Close the modal if the click is outside the modal or its content
+        }
+    });
+
 </script>
