@@ -31,7 +31,7 @@
         {% for t in tournamentlist %}
             <a href="/tournamentOverviewPage/{{t['tourID']}}" class="boxlink">
                 <div class="box">
-                    <h2>Image of Project</h2>
+                    <img src="https://drive.google.com/uc?export=view&id={{t['tourImageID']}}" class="tourImage">
                     <p>{{t['tourName']}}</p>
                 </div>
             </a>
