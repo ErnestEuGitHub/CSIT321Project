@@ -170,27 +170,33 @@ class Tournaments:
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        
+        form_submitted = False
 
         if request.method == "POST":
             participantName = request.form.get("participantName")
             participantEmail = request.form.get("participantEmail")
 
+            print(participantName)
+
             try:
                 with dbConnect.engine.connect() as conn:
-                    query = "INSERT INTO participants (participantName, participantEmail) VALUES (:participantName, :participantEmail)"
-                    inputs = {'participantName': participantName, 'participantEmail':participantEmail}
+                    query = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
+                    inputs = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
                     createNewParticipant = conn.execute(text(query),inputs)
+                
+                    # Set form_submitted to True after successful form submission
+                    form_submitted = True
+                    flash('Tournament Created!', 'success')
+                    return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, tourID=tourID, navtype=navtype, tournamentName=tournamentName, form_submitted=form_submitted)
 
-                flash('Tournament Created!', 'success')
-                return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-        
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
         
         else:
-            return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
         
     #Settings
     def settings(tourID):
