@@ -24,7 +24,7 @@
         {% for p in projects %}
             <a href="/projects/{{p['projID']}}" class="boxlink">
                 <div class="box">
-                    <h2>Image of Project</h2>
+                    <img src="https://drive.google.com/uc?export=view&id={{p['projImageID']}}" class="projectImage">
                     <p>{{p['projName']}}</p>
                 </div>
             </a>
