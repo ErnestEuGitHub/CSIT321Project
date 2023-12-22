@@ -165,6 +165,58 @@ class Tournaments:
         navtype = 'dashboard'
         return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
     
+    #Structure
+    def structure(tourID):
+        #for navbar
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        navtype = 'dashboard'
+        return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+    
+    #CreateStructure
+    def createStructure(tourID):
+  
+        #for navbar
+        tournamentName = retrieveDashboardNavName(tourID)
+        navtype = 'dashboard'
+
+        if request.method == "POST":
+            stageSequence = request.form.get("stageSequence")
+            stageName = request.form.get("stageName")
+            numberOfParticipants = request.form.get("numberOfParticipants")
+            stageFormatID = request.form.get("stageFormat")
+            matchFormatID = request.form.get("matchFormat")
+            maxGames = request.form.get("maximumNumberOfGames")
+            stageStatusID = 1
+            elimFormat = request.form.get("elimFormat")
+            tfMatch = request.form.get("34match")
+            roundFormat = request.form.get("roundFormat")
+            winPts = request.form.get("winPoints")
+            drawPts = request.form.get("drawPoints")
+            lossPts = request.form.get("lossPoints")
+            tieBreakers = request.form.getlist("tieBreakerSelect")
+            
+            # if not maxGames:
+            #     maxGames = stageFormatID
+
+            # try:
+                # with dbConnect.engine.connect() as conn:
+
+                #     query = "INSERT INTO stages (stageName, stageSequence, stageFormatID, stageStatusID, tourID, numberOfParticipants, maxGames, tfMatch, matchFormatID) VALUES (:stageName, :stageSequence, :stageFormatID, :stageStatusID, :tourID, :numberOfParticipants, :maxGames, :tfMatch, :matchFormatID)"
+                #     inputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': tourID, 'numberOfParticipants': numberOfParticipants,  'maxGames': maxGames, 'tfMatch': tfMatch, 'matchFormatID': matchFormatID}
+                #     createStructure = conn.execute(text(query), inputs)
+                
+                # flash('Stage Created!', 'success')
+            return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+                
+            # except Exception as e:
+            #         flash('Oops, an error has occured.', 'error')
+            #         print(f"Error details: {e}")
+            # return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+
+        else:
+            return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+        
 
     #Settings
     def settings(tourID):

@@ -2,60 +2,49 @@
 
 {% block content %}
 
-   <main class="dashboard">
+   <div class="container h-100 navbarcontentpadding">
       <header>
-         <h2>Dashboard</h2>
+         <label class="fs-4 fw-bold my-4">Dashboard</label>
       </header>
-      <div class="content">
-         <a href="#" class="boxlink">
-            <div class="box">
-               <h2>Status</h2>
-               <p>
-                  Current Status:
-               </p>
-            </div>
-         </a>
-         <a href="#" class="boxlink">
-            <div class="box">
-               <h2>Participant</h2>
-               <p>
-                  
-               </p>
-            </div>
-         </a>
-         <a href="#" class="boxlink">
-            <div class="box">
-               <h2>Structure</h2>
-               <p>
-                  
-               </p>
-            </div>
-         </a>
-         <a href="#" class="boxlink">
-            <div class="box">
-               <h2>Registration</h2>
-               <p>
-                  
-               </p>
-            </div>
-         </a>
-         <a href="#" class="boxlink">
-            <div class="box">
-               <h2>Placement</h2>
-               <p>
-                  
-               </p>
-            </div>
-         </a>
-         <a href="#" class="boxlink">
-            <div class="box">
-               <h2>Matches</h2>
-               <p>
-                  
-               </p>
-            </div>
-         </a>
+      <div class="d-flex flex-row flex-wrap justify-content-start">
+               <a href="#" class="boxlink">
+                  <div class="col-6 m-3 box">
+                     <h2>Status</h2>
+                     <p>Current Status:</p>
+                  </div>
+               </a>
+               <a href="#" class="boxlink">
+                  <div class="col-6 m-3 box">
+                     <h2>Participant</h2>
+                     <p></p>
+                  </div>
+               </a>
+               <a href="/structure/{{tourID}}" class="boxlink">
+                  <div class="col-6 m-3 box">
+                     <h2>Structure</h2>
+                     <p></p>
+                  </div>
+               </a>  
+               <a href="#" class="boxlink">
+                  <div class="col-6 m-3 box">
+                     <h2>Registration</h2>
+                     <p></p>
+                  </div>
+               </a>
+               <a href="#" class="boxlink">
+                  <div class="col-6 m-3 box">
+                     <h2>Placement</h2>
+                     <p></p>
+                  </div>
+               </a>
+               <a href="#" class="boxlink">
+                  <div class="col-6 m-3 box">
+                     <h2>Matches</h2>
+                     <p></p>
+                  </div>
+               </a>
+         </div>
       </div>
-   </main>
+   </div>
 
 {% endblock %}

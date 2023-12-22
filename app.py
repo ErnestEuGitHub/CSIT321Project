@@ -141,9 +141,6 @@ def loadsettings(tourID):
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
 
-
-
-
             if rows:
                 page = Tournaments.settings(tourID)
                 return page
@@ -151,20 +148,45 @@ def loadsettings(tourID):
             else:
                 return render_template('notfound.html')
 
-@app.route('/structure', methods=["POST", "GET"])
-def loadstructure():
-    return render_template('structure.html')
+@app.route('/structure/<tourID>', methods=["POST", "GET"])
+def loadstructure(tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.structure(tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/createStructure/<tourID>', methods=["POST", "GET"])
+def loadcreatestructure(tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.createStructure(tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
 
 @app.route('/configureStrcture', methods=["POST", "GET"])
 def loadconfigurestructure():
     return render_template('configureStrcture.html')
-
-@app.route('/createStructure', methods=["POST", "GET"])
-def loadcreateStructure():
-    # if "id" not in session:
-    #     return redirect(url_for('loadLogin'))
-    page = createStructure()
-    return page
   
 @app.route('/tournamentParticipant/<tourID>', methods=["POST", "GET"])
 def loadTournamentParticipant(tourID):
