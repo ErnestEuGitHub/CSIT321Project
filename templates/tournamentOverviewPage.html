@@ -3,13 +3,13 @@
 {% block content %}
 
 		<div class="container h-100 navbarcontentpadding">
-			<div class="row justify-content-sm-center h-100">
+			<div>
 				<div class="d-flex justify-content-between">
-                    <h1 class="fs-4 fw-bold my-4 ">{% if not tourName %}No Tournament Name{% else %}{{tourName}}{% endif %}</h1>
+                    <h1 class="fs-4 fw-bold my-4">{% if not tourName %}No Tournament Name{% else %}{{tourName}}{% endif %}</h1>
                     <a href="/dashboard/{{tourID}}" class="btn btn-primary my-4" role="button" aria-disabled="true">Manage</a>
                 </div>
-                <div class="row justify-content-center mb-4 fs-4">
-                    <ul class="nav nav-tabs">
+                <div class="row justify-content-center mb-4">
+                    <ul class="nav nav-pills">
                         <li class="nav-item">
                           <a class="nav-link active" aria-current="page" href="#">Overview</a>
                         </li>
@@ -27,12 +27,12 @@
                         </li>
                       </ul>
                 </div>
-                <div class="row justify-content-center mb-4 fs-4">
+                <div class="row justify-content-center mb-4">
                     <img src="../static\images\soccer-competition-sample.jpg" alt="soccer-competition-sample"
                     height="350px">
                 </div>
-                <div class="row justify-content-center mb-4 fs-4">
-                    <ul class="nav nav-tabs">
+                <div class="row justify-content-center mb-4">
+                    <ul class="nav nav-pills">
                         <li class="nav-item" id="detailsTab">
                             <a class="nav-link active" aria-disabled="false">Details</a>
                         </li>
@@ -49,21 +49,21 @@
                 </div>
 
                 <div id="detailsTabContent" block>
-                    <h4 class="fs-4 mb-4 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</h4>
-                    <h4 class="fs-4 mb-4 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</h4>
+                    <h6 class="mb-4 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</h6>
+                    <h6 class="mb-4 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</h6>
                     <!-- <h4 class="fs-4 mb-4 ">Age Limit: 18 and above</h4> -->
-                    <h4 class="fs-4 mb-4 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</h4>
-                    <h4 class="fs-4 mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h4>
+                    <h6 class="mb-4 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</h6>
+                    <h6 class="mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h6>
 
                 </div>
                 <div id="ruleTabContent" hidden>
-                    <h4 class="fs-4 mb-4 ">Rule 1: Cannot Tackle</h4>
+                    <h6 class="mb-4 ">Rule 1: Cannot Tackle</h6>
                 </div>
                 <div id="prizeTabContent" hidden>
-                    <h4 class="fs-4 mb-4 ">Prize Pool: $1 Billion USD</h4>
+                    <h6 class="mb-4 ">Prize Pool: $1 Billion USD</h6>
                 </div>
                 <div id="contactTabContent" hidden>
-                    <h4 class="fs-4 mb-4 ">Official Email: contact@gamesphere.com</h4>
+                    <h6 class="mb-4 ">Official Email: contact@gamesphere.com</h6>
                 </div>
 			</div>
 		</div>
