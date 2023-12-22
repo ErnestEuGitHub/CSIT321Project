@@ -6,27 +6,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    $(document).ready(function () {
-        $("#clickable-box").click(function () {
-            $.ajax({
-                type: "POST",
-                url: "/update_content",
-                success: function (response) {
-                    $("#content").html(response.content);
-                },
-                error: function (error) {
-                    console.error("Error:", error);
-                }
-            });
-        });
-    });
-</script>
-
 <div id="content">
     <h1 class="title">Placements</h1>
 
-    <div id="clickable-box">Group Stage</div>
+    <div id="clickable-box">
+        <a href="seeding.html">Group Stage</a>
+    </div>
 
 </div>
 

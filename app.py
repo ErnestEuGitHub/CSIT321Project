@@ -5,6 +5,7 @@ from user import *
 from tournaments import *
 from projects import *
 from tournamentParticipant import *
+from placement import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
