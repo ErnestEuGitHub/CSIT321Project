@@ -43,8 +43,13 @@ class Projects:
                 endDate = datetime.strptime(endDate, "%Y-%m-%d")
 
                 try:
+                    with dbConnect.engine.connect() as conn:
+                        query = "INSERT INTO projects (projName, projStartDate, projEndDate, userID) VALUES (:projName, :projStartDate, :projEndDate, :userID)"
+                        inputs = {'projName':projName, 'projStartDate':startDate, 'projEndDate':endDate, 'userID':userID}
+                        createProject = conn.execute(text(query), inputs)
+
                     userID = session["id"]
-                    projects = updateNavProjects(userID)
+                    projects = updateNavProjects()
                     flash('Project Created!', 'success')
                     return render_template('createProj.html', navtype=navtype, projects=projects)
                 
