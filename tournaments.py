@@ -414,7 +414,7 @@ class Tournaments:
             try:
                 with dbConnect.engine.connect() as conn:
                     query = "SELECT * FROM participants WHERE participantID = :participantID AND tourID = :tourID"
-                    inputs = {'participantID': participantID, 'tourID': tourID}
+                    inputs = {'tourID': tourID}
                     getsfID = conn.execute(text(query), inputs)
                     rows = getsfID.fetchall()
                     formatID = rows[0][2]
@@ -429,12 +429,17 @@ class Tournaments:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
                 
-            return render_template('editParticipant.html',participantID=participantID,participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
+            return render_template('editParticipant.html',participantID=participantID, participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
         
         else:
             with dbConnect.engine.connect() as conn:
-                    queryOne = "SELECT participantName, participantEmail FROM participants WHERE participantID = '1'"
-                    editParticipant = conn.execute(text(queryOne))
+                    queryOne = "SELECT participantName, participantEmail FROM participants WHERE tourID = :tourID AND participantID = :participantID"
+                    inputs = {'tourID': tourID, 'participantID': participantID}
+                    editParticipant = conn.execute(text(queryOne),inputs)
                     participants = editParticipant.fetchall()
+                                        
+                    participantName = participants[3][0]
+                    participantEmail = participants[3][1]
                     
-            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
+            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantName=participantName, participantEmail=participantEmail)
+        

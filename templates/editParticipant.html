@@ -23,11 +23,11 @@
         <form action="" method="POST">
             <div class="mb-3">
                 <label for="exampleInputTeamName1" class="form-label">Team Name</label>
-                <input type="teamName" class="form-control" id="participantName" name="participantName">
+                <input id="participantName" type="text" class="form-control" name="participantName" value="{{ participantName }}" >
             </div>
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="participantEmail" name="participantEmail" aria-describedby="emailHelp">
+                <input id="participantEmail" type="email" class="form-control" name="participantEmail" value="{{ participantEmail }}" aria-describedby="emailHelp">
                 <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
             </div>
             <button type="submit" class="btn btn-primary">Add</button>

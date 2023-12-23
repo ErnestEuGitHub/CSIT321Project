@@ -16,17 +16,20 @@ def tournamentParticipant(tourID):
                         queryOne = """
                         SELECT participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
                         FROM participants JOIN players
-                        WHERE participants.participantID = players.participantID
+                        ON participants.participantID = players.participantID
+                        WHERE participants.tourID = :tourID
                         GROUP BY participants.participantID, participantEmail, participantName"""
-                        getparticipants = conn.execute(text(queryOne))
+                        inputOne = {'tourID': tourID}
+                        getparticipants = conn.execute(text(queryOne),inputOne)
                         participants = getparticipants.fetchall()
 
                         # Get the total number of participants
                         total_participants = len(participants)
 
                         # Query the 'tournaments' table
-                        queryTwo = "SELECT tourSize FROM tournaments where tourID = '1'"
-                        getTournamentSize = conn.execute(text(queryTwo))
+                        queryTwo = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+                        inputTwo = {'tourID': tourID}
+                        getTournamentSize = conn.execute(text(queryTwo),inputTwo)
                         tournamentSize = getTournamentSize.scalar() #scalar only extract the value
 
                         # Get the size of tournament
