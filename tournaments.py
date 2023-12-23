@@ -181,39 +181,71 @@ class Tournaments:
         navtype = 'dashboard'
 
         if request.method == "POST":
-            stageSequence = request.form.get("stageSequence")
+
             stageName = request.form.get("stageName")
-            numberOfParticipants = request.form.get("numberOfParticipants")
+            stageSequence = request.form.get("stageSequence")
             stageFormatID = request.form.get("stageFormat")
+            stageStatusID = 1
+            numberOfParticipants = request.form.get("numberOfParticipants")
             matchFormatID = request.form.get("matchFormat")
             maxGames = request.form.get("maximumNumberOfGames")
-            stageStatusID = 1
-            elimFormat = request.form.get("elimFormat")
+            
+            elimFormatID = request.form.get("elimFormatID")
             tfMatch = request.form.get("34match")
-            roundFormat = request.form.get("roundFormat")
+
+            roundFormatID = request.form.get("roundFormatID")
             winPts = request.form.get("winPoints")
             drawPts = request.form.get("drawPoints")
             lossPts = request.form.get("lossPoints")
             tieBreakers = request.form.getlist("tieBreakerSelect")
             
-            # if not maxGames:
-            #     maxGames = stageFormatID
+            if not maxGames:
+                maxGames = matchFormatID
+            
+            try:
+                with dbConnect.engine.connect() as conn:
+                    
+                    stageQuery = """
+                        INSERT INTO stages (stageName, stageSequence, stageFormatID, stageStatusID, tourID, numberOfParticipants, matchFormatID, maxGames)
+                        VALUES (:stageName, :stageSequence, :stageFormatID, :stageStatusID, :tourID, :numberOfParticipants, :matchFormatID, :maxGames)
+                        """
+                    stageInputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': tourID, 'numberOfParticipants': numberOfParticipants, 'matchFormatID': matchFormatID, 'maxGames': maxGames}
+                    conn.execute(text(stageQuery), stageInputs)
+                    IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                    stageID = IDfetch.scalar()
+                    print(f"Inserted stage with stageID: {stageID}")
+                    print(stageFormatID)
 
-            # try:
-                # with dbConnect.engine.connect() as conn:
+                    if stageFormatID == 1:
+                        print("stageFormatID is 1")
+                        # elimFormatQuery = "INSERT INTO elimFormat (elimFormatID, tfMatch, stageID) VALUES (:elimFormatID, :tfMatch, :stageID)"
+                        # elimInputs = {'elimFormatID': elimFormatID, 'tfMatch': tfMatch, 'stageID': stageID}
+                        # conn.execute(text(elimFormatQuery), elimInputs)
 
-                #     query = "INSERT INTO stages (stageName, stageSequence, stageFormatID, stageStatusID, tourID, numberOfParticipants, maxGames, tfMatch, matchFormatID) VALUES (:stageName, :stageSequence, :stageFormatID, :stageStatusID, :tourID, :numberOfParticipants, :maxGames, :tfMatch, :matchFormatID)"
-                #     inputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': tourID, 'numberOfParticipants': numberOfParticipants,  'maxGames': maxGames, 'tfMatch': tfMatch, 'matchFormatID': matchFormatID}
-                #     createStructure = conn.execute(text(query), inputs)
+                    elif stageFormatID == 2:
+                        print("stageFormatID is 2")
+                        # roundFormatQuery = """INSERT INTO roundFormat (roundFormatID, winPts, drawPts, lossPts, stageID) VALUES (:oundFormatID, :winPts, :drawPts, :lossPts, :stageID) RETURNING roundRobinID"""
+                        # roundInputs = {'roundFormatID': roundFormatID, 'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
+                        # conn.execute(text(roundFormatQuery), roundInputs)
+                        # IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                        # roundRobinID = IDfetch.scalar()
+                        # print(f"Inserted stage with stageID: {roundRobinID}")
+
+                        # for tbTypeID in tieBreakers:
+                        #     sequence = tieBreakers.index(tbTypeID)
+                        #     tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
+                        #     tiebreakerInput = {'tbTypeID': tbTypeID, 'sequence': sequence, 'roundRobinID': roundRobinID}
+                        #     createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+                    else:
+                        print("stageFormatID is invalid!")
                 
-                # flash('Stage Created!', 'success')
+                flash('Stage Created!', 'success')
+                return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            
+            except Exception as e:
+                flash('Oops, an error has occured.', 'error')
+                print(f"Error details: {e}")
             return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-                
-            # except Exception as e:
-            #         flash('Oops, an error has occured.', 'error')
-            #         print(f"Error details: {e}")
-            # return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-
         else:
             return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
         
