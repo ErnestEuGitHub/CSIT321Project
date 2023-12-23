@@ -214,28 +214,28 @@ class Tournaments:
                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                     stageID = IDfetch.scalar()
                     print(f"Inserted stage with stageID: {stageID}")
-                    print(stageFormatID)
+                    print(type(stageFormatID))
 
-                    if stageFormatID == 1:
+                    if int(stageFormatID) == 1:
                         print("stageFormatID is 1")
-                        # elimFormatQuery = "INSERT INTO elimFormat (elimFormatID, tfMatch, stageID) VALUES (:elimFormatID, :tfMatch, :stageID)"
-                        # elimInputs = {'elimFormatID': elimFormatID, 'tfMatch': tfMatch, 'stageID': stageID}
-                        # conn.execute(text(elimFormatQuery), elimInputs)
+                        elimFormatQuery = "INSERT INTO elimFormat (elimFormatID, tfMatch, stageID) VALUES (:elimFormatID, :tfMatch, :stageID)"
+                        elimInputs = {'elimFormatID': elimFormatID, 'tfMatch': tfMatch, 'stageID': stageID}
+                        conn.execute(text(elimFormatQuery), elimInputs)
 
-                    elif stageFormatID == 2:
+                    elif int(stageFormatID) == 2:
                         print("stageFormatID is 2")
-                        # roundFormatQuery = """INSERT INTO roundFormat (roundFormatID, winPts, drawPts, lossPts, stageID) VALUES (:oundFormatID, :winPts, :drawPts, :lossPts, :stageID) RETURNING roundRobinID"""
-                        # roundInputs = {'roundFormatID': roundFormatID, 'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
-                        # conn.execute(text(roundFormatQuery), roundInputs)
-                        # IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
-                        # roundRobinID = IDfetch.scalar()
-                        # print(f"Inserted stage with stageID: {roundRobinID}")
+                        roundFormatQuery = """INSERT INTO roundFormat (roundFormatID, winPts, drawPts, lossPts, stageID) VALUES (:roundFormatID, :winPts, :drawPts, :lossPts, :stageID)"""
+                        roundInputs = {'roundFormatID': roundFormatID, 'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
+                        conn.execute(text(roundFormatQuery), roundInputs)
+                        IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                        roundRobinID = IDfetch.scalar()
+                        print(f"Inserted stage with stageID: {roundRobinID}")
 
-                        # for tbTypeID in tieBreakers:
-                        #     sequence = tieBreakers.index(tbTypeID)
-                        #     tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
-                        #     tiebreakerInput = {'tbTypeID': tbTypeID, 'sequence': sequence, 'roundRobinID': roundRobinID}
-                        #     createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+                        for tbTypeID in tieBreakers:
+                            sequence = tieBreakers.index(tbTypeID) + 1
+                            tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
+                            tiebreakerInput = {'tbTypeID': tbTypeID, 'sequence': sequence, 'roundRobinID': roundRobinID}
+                            createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
                     else:
                         print("stageFormatID is invalid!")
                 
