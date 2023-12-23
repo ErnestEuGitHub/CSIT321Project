@@ -13,7 +13,7 @@ def tournamentParticipant(tourID):
                 with dbConnect.engine.connect() as conn:
                 
                         # Query the 'participants' table
-                        queryOne = """
+                        queryOne ="""
                         SELECT participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
                         FROM participants JOIN players
                         ON participants.participantID = players.participantID
