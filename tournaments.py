@@ -400,7 +400,7 @@ class Tournaments:
             return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
  
     #Edit Participant
-    def editParticipant(tourID):
+    def editParticipant(tourID,participantID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
@@ -438,8 +438,8 @@ class Tournaments:
                     editParticipant = conn.execute(text(queryOne),inputs)
                     participants = editParticipant.fetchall()
                                         
-                    participantName = participants[3][0]
-                    participantEmail = participants[3][1]
+                    participantName = participants[0][0]
+                    participantEmail = participants[0][1]
                     
-            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantName=participantName, participantEmail=participantEmail)
+            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantName=participantName, participantEmail=participantEmail, participantID=participantID)
         

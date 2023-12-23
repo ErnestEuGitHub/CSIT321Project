@@ -211,19 +211,19 @@ def loadCreateParticipant(tourID):
             else:
                 return render_template('notfound.html')
             
-@app.route('/editParticipant/<tourID>', methods=["POST", "GET"])
-def loadEditParticipant(tourID):
+@app.route('/editParticipant/<tourID>/<participantID>', methods=["POST", "GET"])
+def loadEditParticipant(tourID, participantID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
-            inputs = {'userID': session["id"], 'tourID': tourID}
+            query = "SELECT * from tournaments JOIN participants ON tournaments.tourID = participants.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND participants.participantID = :participantID"
+            inputs = {'userID': session["id"], 'tourID': tourID, 'participantID': participantID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.editParticipant(tourID)
+                page = Tournaments.editParticipant(tourID,participantID)
                 return page
             
             else:
