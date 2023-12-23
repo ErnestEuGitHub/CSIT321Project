@@ -1,14 +1,7 @@
-from flask import render_template, session
+from flask import session
 from database import dbConnect
 from sqlalchemy import text
 
-def landing():
-        with dbConnect.engine.connect() as conn:
-                result = conn.execute(text("Select * from testtable"))
-                rows = result.fetchall()
-
-                descriptions = [row._asdict() for row in rows]
-                return render_template('index.html', desc=descriptions)
 
 def retrieveDashboardNavName(tourID):
         with dbConnect.engine.connect() as conn:
