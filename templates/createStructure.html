@@ -16,7 +16,7 @@
                     <label for="stageFormat">Select Stage Format</label>
                 </div>
                 <div id="elimFormatSelect" class="form-floating mb-3" hidden>
-                    <select class="form-select" aria-label="Floating label select example" name="elimFormat" id="elimFormat">
+                    <select class="form-select" aria-label="Floating label select example" name="elimFormatID" id="elimFormatID">
                         <option selected>Open this select menu</option>
                         <option value="1">Single Elimination</option>
                         <option value="2">Double Elimination</option>
@@ -24,7 +24,7 @@
                     <label for="elimFormat">Select Elimination Format</label>
                 </div>
                 <div id="roundFormatSelect" class="form-floating mb-3" hidden>
-                    <select class="form-select" aria-label="Floating label select example" name="roundFormat" id="roundFormat">
+                    <select class="form-select" aria-label="Floating label select example" name="roundFormatID" id="roundFormatID">
                         <option selected>Open this select menu</option>
                         <option value="1">Single Round</option>
                         <option value="2">Double Round</option>
@@ -164,9 +164,9 @@
 
         let stageformatselect = document.getElementById("stageFormat");
         let elimSelected = document.getElementById("elimFormatSelect");
-        let elimformatselect = document.getElementById("elimFormat");
+        let elimformatselect = document.getElementById("elimFormatID");
         let roundSelected = document.getElementById("roundFormatSelect");
-        let roundformatselect = document.getElementById("roundFormat");
+        let roundformatselect = document.getElementById("roundFormatID");
         let afterStageFormat= document.getElementById("afterStageFormat");
         let matchformatselect = document.getElementById("matchFormat");
         let bestofgames = document.getElementById("bestofgames");
