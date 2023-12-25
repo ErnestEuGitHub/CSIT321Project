@@ -227,12 +227,11 @@ def loadEditParticipant(tourID, participantID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.editParticipant(tourID,participantID)
+                page = Tournaments.editParticipant(tourID, participantID)
                 return page
-            
             else:
-                return render_template('notfound.html')
-            
+                return render_template('notfound.html', tourID=tourID, participantID=participantID)
+
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)

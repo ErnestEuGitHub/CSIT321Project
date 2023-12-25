@@ -14,7 +14,7 @@ def tournamentParticipant(tourID):
                 
                         # Query the 'participants' table
                         queryOne ="""
-                        SELECT participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+                        SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
                         FROM participants JOIN players
                         ON participants.participantID = players.participantID
                         WHERE participants.tourID = :tourID

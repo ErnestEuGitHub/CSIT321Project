@@ -446,7 +446,7 @@ class Tournaments:
             try:
                 with dbConnect.engine.connect() as conn:
                     query = "SELECT * FROM participants WHERE participantID = :participantID AND tourID = :tourID"
-                    inputs = {'tourID': tourID}
+                    inputs = {'tourID': tourID, 'participantID': participantID}
                     getsfID = conn.execute(text(query), inputs)
                     rows = getsfID.fetchall()
                     formatID = rows[0][2]
