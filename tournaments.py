@@ -445,17 +445,22 @@ class Tournaments:
 
             try:
                 with dbConnect.engine.connect() as conn:
-                    query = "SELECT * FROM participants WHERE participantID = :participantID AND tourID = :tourID"
-                    inputs = {'tourID': tourID, 'participantID': participantID}
-                    getsfID = conn.execute(text(query), inputs)
-                    rows = getsfID.fetchall()
-                    formatID = rows[0][2]
+                    
+                    queryTwo = """
+                    UPDATE participants
+                    SET participantName = :participantName, participantEmail = :participantEmail
+                    WHERE participantID = :participantID AND tourID = :tourID
+                    """
+                    inputTwo = {
+                        'participantName': participantName,
+                        'participantEmail': participantEmail,
+                        'participantID': participantID,
+                        'tourID': tourID
+                    }
+                    updateParticipantInfo = conn.execute(text(queryTwo), inputTwo)
 
-                    query = "UPDATE tournaments SET participantName = :participantName, participantEmail = :participantEmail,  WHERE participantID = participantID, tourID = :tourID"
-                    inputs = {'participantName': participantName, 'participantEmail': participantEmail}
-                    updateParticipantInfo = conn.execute(text(query), inputs)
-            
                 flash('Participant Information Updated!', 'success')
+
             
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
