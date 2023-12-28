@@ -231,6 +231,24 @@ def loadEditParticipant(tourID, participantID):
                 return page
             else:
                 return render_template('notfound.html', tourID=tourID, participantID=participantID)
+            
+@app.route('/deleteParticipant/<tourID>/<participantID>', methods=["POST", "GET"])
+def loadDeleteParticipant(tourID, participantID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments JOIN participants ON tournaments.tourID = participants.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND participants.participantID = :participantID"
+            inputs = {'userID': session["id"], 'tourID': tourID, 'participantID': participantID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.deleteParticipant(tourID, participantID)
+                return page
+            else:
+                page = tournamentParticipant(tourID)
+                return page
 
 @app.errorhandler(404)
 def loadnotfound(error):

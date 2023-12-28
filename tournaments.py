@@ -436,8 +436,6 @@ class Tournaments:
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
-        
-        form_submitted = False
 
         if request.method == "POST":
             participantName = request.form.get("participantName")
@@ -446,27 +444,26 @@ class Tournaments:
             try:
                 with dbConnect.engine.connect() as conn:
                     
-                    queryTwo = """
+                    queryEdit = """
                     UPDATE participants
                     SET participantName = :participantName, participantEmail = :participantEmail
                     WHERE participantID = :participantID AND tourID = :tourID
                     """
-                    inputTwo = {
+                    inputEdit = {
                         'participantName': participantName,
                         'participantEmail': participantEmail,
                         'participantID': participantID,
                         'tourID': tourID
                     }
-                    updateParticipantInfo = conn.execute(text(queryTwo), inputTwo)
-
-                flash('Participant Information Updated!', 'success')
+                    updateParticipantInfo = conn.execute(text(queryEdit), inputEdit)
+                    flash('Participant Information Updated!', 'success')
 
             
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
                 
-            return render_template('editParticipant.html',participantID=participantID, participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
+            return render_template('editParticipant.html',participantID=participantID, participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
         
         else:
             with dbConnect.engine.connect() as conn:
@@ -480,6 +477,51 @@ class Tournaments:
                     
             return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantName=participantName, participantEmail=participantEmail, participantID=participantID)
         
+    # Delete Participant
+    def deleteParticipant(tourID, participantID):       
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID) 
+
+        if request.method == "POST":
+            disabledName = request.form.get("disabledName")
+            disabledEmail = request.form.get("disabledEmail")
+            
+            try:
+
+                with dbConnect.engine.connect() as conn:
+                    # Delete participant from the database
+                    queryDelete = """
+                    DELETE FROM participants
+                    WHERE participantID = :participantID AND tourID = :tourID
+                    """
+                    inputDelete = {
+                        'participantID': participantID,
+                        'tourID': tourID
+                    }
+                    conn.execute(text(queryDelete), inputDelete)
+                    flash('Participant Deleted Successfully!', 'success')
+                    
+                return redirect('tournamentParticipant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID)
+            
+            except Exception as e:
+                flash('Oops, an error has occurred. Details: {}'.format(e), 'error')
+                print(f"Error details: {e}")
+
+            return redirect('tournamentParticipant.html')
+
+        
+        else:
+            with dbConnect.engine.connect() as conn:
+                    queryOne = "SELECT participantName, participantEmail FROM participants WHERE tourID = :tourID AND participantID = :participantID"
+                    inputs = {'tourID': tourID, 'participantID': participantID}
+                    deleteParticipant = conn.execute(text(queryOne),inputs)
+                    participants = deleteParticipant.fetchall()
+                                        
+                    disabledName = participants[0][0]
+                    disabledEmail = participants[0][1]                
+            return render_template('deleteParticipant.html',disabledEmail=disabledEmail, disabledName=disabledName, navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID)
+ 
 
     #Placement
     def get_updated_content():

@@ -47,4 +47,4 @@ def tournamentParticipant(tourID):
                 print(f"Error: {e}")
                 flash("An error occurred while retrieving participant data.", "error")
                 return render_template('tournamentDashboard.html')  # Create an 'error.html' template for error handling 
-    
+     
