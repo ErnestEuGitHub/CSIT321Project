@@ -13,10 +13,10 @@ class Tournaments:
         #for navbar
         projectName = retrieveProjectNavName(projID)
         navtype = 'tournament'
-        return render_template('tournament.html', tournamentlist=tournamentlist, navtype=navtype, projectName=projectName)
+        return render_template('tournament.html', tournamentlist=tournamentlist, navtype=navtype, projectName=projectName, projID=projID)
     
     #Tournament Overview Page
-    def TourOverviewDetails(tourID):
+    def TourOverviewDetails(projID, tourID):
         with dbConnect.engine.connect() as conn:
             query = "SELECT tourName, startDate, endDate, gender, sports.sportName FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
@@ -32,16 +32,16 @@ class Tournaments:
             #for navbar
             navtype = 'tournament'
             tournamentlist = session["tournav"]
-            projID = session["currentProj"]
+            # projID = session["currentProj"]
             projectName = retrieveProjectNavName(projID)
     
-        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID)
+        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID)
     
     #Create Tournament
-    def createTour():
+    def createTour(projID):
         #for navbar
         navtype = 'tournament'
-        projID = session["currentProj"]
+        # projID = session["currentProj"]
 
         if request.method == "POST":
             tourName = request.form.get("tourName")
@@ -63,31 +63,31 @@ class Tournaments:
 
             if not sport:
                 flash('Please select a sport!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=sport, format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=sport, format=format, sportlist=sportsOptions, projID=projID)
             elif not tourName:
                 flash('Please fill in a tournament name!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
             elif len(tourName) > 100:
                 flash('Please keep tournament name less than 100 characters!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
             elif not tourSize:
                 flash('Please Enter a minimum participation size!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
             elif int(tourSize) > 10000:
                 flash('Please enter participant size from 1-10,000!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
             elif int(tourSize) < 0:
                 flash('Please enter participant size from 1-10,000!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
             elif not format:
                 flash('That is not a valid format for the sport!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
             elif not endDate or not startDate:
                 flash('Start or End Dates are not filled!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
             elif endDate < startDate:
                 flash('End Date cannot be earlier than Start Date!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
             # elif len(generalInfo) > 500:
             #     flash('Please keep general info less than 500 characters!', 'error')
             #     return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
@@ -126,7 +126,7 @@ class Tournaments:
                 except Exception as e:
                     flash('Oops, an error has occured.', 'error')
                     print(f"Error details: {e}")
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID)
                 
         else:
             with dbConnect.engine.connect() as conn:
@@ -139,7 +139,7 @@ class Tournaments:
                 #for navbar
                 tournamentlist = updateNavTournaments(projID)
                 projectName = retrieveProjectNavName(projID)
-            return render_template('createTour.html', sportlist=sportsOptions, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName)
+            return render_template('createTour.html', sportlist=sportsOptions, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID)
 
     #Get Format for Create Tournaament
     def getformat():
@@ -158,23 +158,23 @@ class Tournaments:
         return jsonify({"options": options_html})
 
     #Dashboard
-    def dashboard(tourID):
+    def dashboard(projID, tourID):
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
 
         navtype = 'dashboard'
-        return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+        return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
     
     #Structure
-    def structure(tourID):
+    def structure(projID, tourID):
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
 
         navtype = 'dashboard'
-        return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+        return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
     
     #CreateStructure
-    def createStructure(tourID):
+    def createStructure(projID, tourID):
   
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
@@ -240,19 +240,19 @@ class Tournaments:
                         print("stageFormatID is invalid!")
                 
                 flash('Stage Created!', 'success')
-                return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+                return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
             
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
         else:
-            return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
         
 
    
     #Settings
-    def settings(tourID):
+    def settings(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         navexpand = 'Yes'
@@ -280,28 +280,28 @@ class Tournaments:
 
                 if not tourName:
                     flash('Please fill in a tournament name!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
+                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif len(tourName) > 100:
                     flash('Please keep tournament name less than 100 characters!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
+                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif not tourSize:
                     flash('Please Enter a minimum participation size!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
+                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif int(tourSize) > 10000:
                     flash('Please enter participant size from 1-10,000!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
+                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif int(tourSize) < 0:
                     flash('Please enter participant size from 1-10,000!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
+                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif not format:
                     flash('That is not a valid format for the sport!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
+                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif not endDate or not startDate:
                     flash('Start or End Dates are not filled!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
+                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif endDate < startDate:
                     flash('End Date cannot be earlier than Start Date!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
+                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 else:
             
                     try:
@@ -398,51 +398,50 @@ class Tournaments:
                     prize = ""
                     contact = ""
         
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID)
-  
+            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+      
     #View Participant List
-    def participant(tourID):
+    def participant(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
 
         try:
-                with dbConnect.engine.connect() as conn:
-                
-                        # Query the 'participants' table
-                        queryOne ="""
-                        SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
-                        FROM participants JOIN players
-                        ON participants.participantID = players.participantID
-                        WHERE participants.tourID = :tourID
-                        GROUP BY participants.participantID, participantEmail, participantName"""
-                        inputOne = {'tourID': tourID}
-                        getparticipants = conn.execute(text(queryOne),inputOne)
-                        participants = getparticipants.fetchall()
+            with dbConnect.engine.connect() as conn:            
+                # Query the 'participants' table
+                queryOne ="""
+                SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+                FROM participants JOIN players
+                ON participants.participantID = players.participantID
+                WHERE participants.tourID = :tourID
+                GROUP BY participants.participantID, participantEmail, participantName"""
+                inputOne = {'tourID': tourID}
+                getparticipants = conn.execute(text(queryOne),inputOne)
+                participants = getparticipants.fetchall()
 
-                        # Get the total number of participants
-                        total_participants = len(participants)
+                # Get the total number of participants
+                total_participants = len(participants)
 
-                        # Query the 'tournaments' table
-                        queryTwo = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
-                        inputTwo = {'tourID': tourID}
-                        getTournamentSize = conn.execute(text(queryTwo),inputTwo)
-                        tournamentSize = getTournamentSize.scalar() #scalar only extract the value
+                # Query the 'tournaments' table
+                queryTwo = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+                inputTwo = {'tourID': tourID}
+                getTournamentSize = conn.execute(text(queryTwo),inputTwo)
+                tournamentSize = getTournamentSize.scalar() #scalar only extract the value
 
-                        # Get the size of tournament
-                        tournamentSize = tournamentSize
+                # Get the size of tournament
+                tournamentSize = tournamentSize
 
-                        # Render the HTML template with the participant data and total number
-                        return render_template('participant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-                  
+                # Render the HTML template with the participant data and total number
+                return render_template('participant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+
         except Exception as e:
-                # Handle exceptions (e.g., database connection error)
-                print(f"Error: {e}")
-                flash("An error occurred while retrieving participant data.", "error")
-                return render_template('tournamentDashboard.html')  # Create an 'error.html' template for error handling 
-           
+            # Handle exceptions (e.g., database connection error)
+            print(f"Error: {e}")
+            flash("An error occurred while retrieving participant data.", "error")
+            return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
+       
     #Create Participant
-    def createParticipant(tourID):
+    def createParticipant(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
@@ -462,18 +461,18 @@ class Tournaments:
                     # Set form_submitted to True after successful form submission
                     form_submitted = True
                     flash('Tournament Created!', 'success')
-                    return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, tourID=tourID, navtype=navtype, tournamentName=tournamentName, form_submitted=form_submitted)
+                    return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, tourID=tourID, navtype=navtype, tournamentName=tournamentName, form_submitted=form_submitted, projID=projID)
 
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
+            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted, projID=projID)
         
         else:
-            return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted)
+            return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted, projID=projID)
  
     #Edit Participant
-    def editParticipant(tourID,participantID):
+    def editParticipant(projID, tourID, participantID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
@@ -504,7 +503,7 @@ class Tournaments:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
                 
-            return render_template('editParticipant.html',participantID=participantID, participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('editParticipant.html',participantID=participantID, participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
         
         else:
             with dbConnect.engine.connect() as conn:
@@ -516,10 +515,10 @@ class Tournaments:
                     participantName = participants[0][0]
                     participantEmail = participants[0][1]
                     
-            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantName=participantName, participantEmail=participantEmail, participantID=participantID)
+            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantName=participantName, participantEmail=participantEmail, participantID=participantID, projID=projID)
         
     # Delete Participant
-    def deleteParticipant(tourID, participantID):       
+    def deleteParticipant(projID, tourID, participantID):       
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID) 
@@ -543,7 +542,7 @@ class Tournaments:
                     conn.execute(text(queryDelete), inputDelete)
                     flash('Participant Deleted Successfully!', 'success')
                     
-                return redirect('participant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID)
+                return redirect('participant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
             
             except Exception as e:
                 flash('Oops, an error has occurred. Details: {}'.format(e), 'error')
@@ -561,7 +560,7 @@ class Tournaments:
                                         
                     disabledName = participants[0][0]
                     disabledEmail = participants[0][1]                
-            return render_template('deleteParticipant.html',disabledEmail=disabledEmail, disabledName=disabledName, navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID)
+            return render_template('deleteParticipant.html',disabledEmail=disabledEmail, disabledName=disabledName, navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
  
 
     #Placement
