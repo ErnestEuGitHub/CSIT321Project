@@ -4,7 +4,6 @@ from general import *
 from user import *
 from tournaments import *
 from projects import *
-from tournamentParticipant import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -192,9 +191,9 @@ def loadcreatestructure(projID, tourID):
 def loadconfigurestructure():
     return render_template('configureStrcture.html')
   
-@app.route('/<projID>/tournamentParticipant/<tourID>', methods=["POST", "GET"])
-def loadTournamentParticipant(projID, tourID):
-    page = tournamentParticipant(projID, tourID)
+@app.route('/<projID>/participant/<tourID>', methods=["POST", "GET"])
+def loadpParticipant(projID, tourID):
+    page = Tournaments.participant(projID, tourID)
     return page
 
 @app.route('/<projID>/createParticipant/<tourID>', methods=["POST", "GET"])
