@@ -4,7 +4,7 @@ import bcrypt
 from sqlalchemy import text
 from general import retrieveDashboardNavName
 
-def tournamentParticipant(tourID):
+def tournamentParticipant(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
@@ -36,7 +36,7 @@ def tournamentParticipant(tourID):
                         tournamentSize = tournamentSize
 
                         # Render the HTML template with the participant data and total number
-                        return render_template('tournamentParticipant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+                        return render_template('tournamentParticipant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
                         
         
