@@ -192,7 +192,7 @@ def loadconfigurestructure():
     return render_template('configureStrcture.html')
   
 @app.route('/<projID>/participant/<tourID>', methods=["POST", "GET"])
-def loadpParticipant(projID, tourID):
+def loadParticipant(projID, tourID):
     page = Tournaments.participant(projID, tourID)
     return page
 

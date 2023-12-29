@@ -399,7 +399,47 @@ class Tournaments:
                     contact = ""
         
             return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
-        
+      
+    #View Participant List
+    def participant(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        try:
+            with dbConnect.engine.connect() as conn:            
+                # Query the 'participants' table
+                queryOne ="""
+                SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+                FROM participants JOIN players
+                ON participants.participantID = players.participantID
+                WHERE participants.tourID = :tourID
+                GROUP BY participants.participantID, participantEmail, participantName"""
+                inputOne = {'tourID': tourID}
+                getparticipants = conn.execute(text(queryOne),inputOne)
+                participants = getparticipants.fetchall()
+
+                # Get the total number of participants
+                total_participants = len(participants)
+
+                # Query the 'tournaments' table
+                queryTwo = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+                inputTwo = {'tourID': tourID}
+                getTournamentSize = conn.execute(text(queryTwo),inputTwo)
+                tournamentSize = getTournamentSize.scalar() #scalar only extract the value
+
+                # Get the size of tournament
+                tournamentSize = tournamentSize
+
+                # Render the HTML template with the participant data and total number
+                return render_template('participant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+
+        except Exception as e:
+            # Handle exceptions (e.g., database connection error)
+            print(f"Error: {e}")
+            flash("An error occurred while retrieving participant data.", "error")
+            return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
+       
     #Create Participant
     def createParticipant(projID, tourID):
         #for navbar
@@ -432,7 +472,7 @@ class Tournaments:
             return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted, projID=projID)
  
     #Edit Participant
-    def editParticipant(projID, tourID,participantID):
+    def editParticipant(projID, tourID, participantID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
@@ -502,13 +542,13 @@ class Tournaments:
                     conn.execute(text(queryDelete), inputDelete)
                     flash('Participant Deleted Successfully!', 'success')
                     
-                return redirect('tournamentParticipant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
+                return redirect('participant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
             
             except Exception as e:
                 flash('Oops, an error has occurred. Details: {}'.format(e), 'error')
                 print(f"Error details: {e}")
 
-            return redirect('tournamentParticipant.html')
+            return redirect('participant.html')
 
         
         else:
