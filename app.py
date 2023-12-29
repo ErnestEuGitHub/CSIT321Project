@@ -1,6 +1,6 @@
 from flask import Flask
 from general import *
-
+from stages import *
 from user import *
 from tournaments import *
 from projects import *
@@ -170,8 +170,8 @@ def loadstructure(tourID):
             else:
                 return render_template('notfound.html')
             
-@app.route('/createStructure/<tourID>', methods=["POST", "GET"])
-def loadcreatestructure(tourID):
+@app.route('/createStage/<tourID>', methods=["POST", "GET"])
+def loadcreatestage(tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -182,15 +182,47 @@ def loadcreatestructure(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.createStructure(tourID)
+                page = Tournaments.createStage(tourID)
                 return page
             
             else:
                 return render_template('notfound.html')
 
-@app.route('/configureStrcture', methods=["POST", "GET"])
-def loadconfigurestructure():
-    return render_template('configureStrcture.html')
+@app.route('/configureStage/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadconfigurestage(tourID, stageID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Stage.configureStage(tourID, stageID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+
+@app.route('/deleteStage/<tourID>/<stageID>', methods=["POST", "GET"])
+def loaddeletestage(tourID, stageID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Stage.deleteStage(tourID, stageID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
   
 @app.route('/tournamentParticipant/<tourID>', methods=["POST", "GET"])
 def loadTournamentParticipant(tourID):
