@@ -561,7 +561,35 @@ class Tournaments:
                     disabledName = participants[0][0]
                     disabledEmail = participants[0][1]                
             return render_template('deleteParticipant.html',disabledEmail=disabledEmail, disabledName=disabledName, navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
- 
+
+    #View Moderator List
+    def moderator(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        try:
+            with dbConnect.engine.connect() as conn:            
+                # Query the 'participants' table
+                queryModeratorList ="""
+                SELECT users.email, moderators.moderatorID
+                FROM moderators JOIN users
+                ON moderators.userID = users.userID
+                WHERE moderators.tourID = :tourID
+                GROUP BY moderators.moderatorID"""
+                inputModeratorList = {'tourID': tourID}
+                getmoderators = conn.execute(text(queryModeratorList),inputModeratorList)
+                moderators = getmoderators.fetchall()
+
+
+                # Render the HTML template with the participant data and total number
+                return render_template('moderator.html',moderators=moderators, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+
+        except Exception as e:
+            # Handle exceptions (e.g., database connection error)
+            print(f"Error: {e}")
+            flash("An error occurred while retrieving participant data.", "error")
+            return render_template('moderator.html')  # Create an 'error.html' template for error handling 
 
     #Placement
     def get_updated_content():

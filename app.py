@@ -248,6 +248,11 @@ def loadDeleteParticipant(projID, tourID, participantID):
             else:
                 page = Tournaments.participant(projID, tourID)
                 return page
+            
+@app.route('/<projID>/moderator/<tourID>', methods=["POST", "GET"])
+def loadModerator(projID, tourID):
+    page = Tournaments.moderator(projID, tourID)
+    return page
 
 @app.errorhandler(404)
 def loadnotfound(error):
