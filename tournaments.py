@@ -560,7 +560,7 @@ class Tournaments:
                                         
                     disabledName = participants[0][0]
                     disabledEmail = participants[0][1]                
-            return render_template('deleteParticipant.html',disabledEmail=disabledEmail, disabledName=disabledName, navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID)
+            return render_template('deleteParticipant.html',disabledEmail=disabledEmail, disabledName=disabledName, navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
  
 
     #Placement

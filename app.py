@@ -215,7 +215,7 @@ def loadCreateParticipant(projID, tourID):
                 return render_template('notfound.html')
             
 @app.route('/<projID>/editParticipant/<tourID>/<participantID>', methods=["POST", "GET"])
-def loadEditParticipant(tourID, participantID):
+def loadEditParticipant(projID, tourID, participantID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -226,13 +226,13 @@ def loadEditParticipant(tourID, participantID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.editParticipant(tourID, participantID)
+                page = Tournaments.editParticipant(projID, tourID, participantID)
                 return page
             else:
                 return render_template('notfound.html', tourID=tourID, participantID=participantID)
             
-@app.route('/deleteParticipant/<tourID>/<participantID>', methods=["POST", "GET"])
-def loadDeleteParticipant(tourID, participantID):
+@app.route('/<projID>/deleteParticipant/<tourID>/<participantID>', methods=["POST", "GET"])
+def loadDeleteParticipant(projID, tourID, participantID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -243,10 +243,10 @@ def loadDeleteParticipant(tourID, participantID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.deleteParticipant(tourID, participantID)
+                page = Tournaments.deleteParticipant(projID, tourID, participantID)
                 return page
             else:
-                page = tournamentParticipant(tourID)
+                page = Tournaments.participant(projID, tourID)
                 return page
 
 @app.errorhandler(404)
