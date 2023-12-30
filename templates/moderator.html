@@ -4,43 +4,27 @@
 <div class="container h-100 navbarcontentpadding">
     <main>
         <header class="d-flex justify-content-between">
-            <label class="fs-4 fw-bold my-4">Participant</label>
-            <a href="/createParticipant/{{tourID}}" class="btn btn-primary my-4" role="button" aria-disabled="true">Add Participant</a>
+            <label class="fs-4 fw-bold my-4">Moderator</label>
+            <a href="/{{projID}}/createParticipant/{{tourID}}" class="btn btn-primary my-4" role="button" aria-disabled="true">Add Participant</a>
         </header>
-        <div class="d-flex justify-content-around flex-wrap text-center m-4">
-            <div class="card">
-                <div class="card-body">
-                    <h4>Participant Size</h4>         
-                    <h4>{{ total_participants }}</h4>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <h4>Tournament Size</h4>         
-                    <h4>{{ tournamentSize }}</h4>
-                </div>
-            </div>
-        </div>
         <table class="table">
             <thead>
                 <tr>
-                    <th>Team Name</th>
-                    <th>Team Players</th>
                     <th>Email</th>
+                    <th>ID</th>
                     <th></th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                {% for participant in participants %}
+                {% for moderator in moderators %}
                     <tr>
-                        <td>{{ participant.participantName }}</td>
-                        <td>{{ participant.playerNames }}</td>
-                        <td>{{ participant.participantEmail }}</td>
+                        <td>{{ moderator.email }}</td>
+                        <td>{{ moderator.moderatorID }}</td>
                         <td>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
                                 <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
-                        </svg>
+                            </svg>
                         </td>
                         <td>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-dash" viewBox="0 0 16 16">

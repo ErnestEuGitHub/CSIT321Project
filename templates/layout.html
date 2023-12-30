@@ -17,8 +17,10 @@
 </head>
 
 <body>
-
     <div class="topnav">
+        <button class="navbar-toggler" type="button" onclick="toggleNavBar()">
+            <i class="bi bi-list"></i>
+        </button>
         <a href="/home">GameSphere</a>
         <div class="toprightnav">
             <div class="firstname">Welcome {{ session["fname"] }}</div>
@@ -45,6 +47,7 @@
         </div>
     </div>
 
+    
     <div class="leftnav">
         <h2>
             {% if navtype == 'tournament' %}
@@ -57,29 +60,37 @@
         </h2>
         {% if navtype == 'tournament' %}
             {% for t in tournamentlist %}
-                <a href="/tournamentOverviewPage/{{t['tourID']}}">{{t['tourName']}}</a>
+                <a href="/{{projID}}/tournamentOverviewPage/{{t['tourID']}}">{{t['tourName']}}</a>
             {% endfor %}
         {% elif navtype == 'project' %}
             {% for p in projects %}
-                <a href="/projects/{{p['projID']}}">{{p['projName']}}</a>
+                <!-- <a href="/projects/{{p['projID']}}">{{p['projName']}}</a> -->
+                <div class="dropdown project-dropdown">
+                    <a class="dropdown-toggle" style="cursor: pointer;">
+                        <span class="text-content">{{p['projName']}}</span>
+                    </a>
+                    <ul class="projSettingsNav" {% if navexpand == 'Yes' %} style="display:block" {% else %} style="display:none" {% endif %}>
+                        <li><a href="/settings/{{p['projID']}}">Settings</a></li>
+                    </ul>
+                </div>
             {% endfor %}
             
         {% elif navtype == 'dashboard' %}
-            <a href="/dashboard/{{tourID}}">Dashboard</a>
+            <a href="/{{projID}}/dashboard/{{tourID}}">Dashboard</a>
             <div class="dropdown" id="settingDropdown">
                 <a class="dropdown-toggle" style="cursor: pointer;">
                     Setting
                 </a>
                 <ul id="dashboardSettingsNav" {% if navexpand == 'Yes' %} style="display:block" {% else %} style="display:none" {% endif %}>
-                    <li><a href="/settings/{{tourID}}">General</a></li>
+                    <li><a href="/{{projID}}/settings/{{tourID}}">General</a></li>
                     <li><a href="#">Permission</a></li>
                     <li><a href="#">Custom Field</a></li>
                 </ul>
             </div>
-            <a href="/structure/{{tourID}}">Structure</a>
+            <a href="/{{projID}}/structure/{{tourID}}">Structure</a>
             <a href="#">Registration</a>
-            <a href="/tournamentParticipant/{{tourID}}">Participant</a>
-            <a href="/placement/{{tourID}}">Placement</a>
+            <a href="/{{projID}}/participant/{{tourID}}">Participant</a>
+            <a href="/{{projID}}/placement/{{tourID}}">Placement</a>
             <a href="#">Match</a>
             <a href="#">Final Standing</a>
             <a href="#">Public Page</a>
@@ -98,13 +109,60 @@
         var settingDropdown = document.getElementById('settingDropdown');
         var dashboardSettingsNav = document.getElementById('dashboardSettingsNav');
 
-        // Check if elements exist before adding event listener
-        if (settingDropdown && dashboardSettingsNav) {
-            settingDropdown.addEventListener('click', function () {
-                dashboardSettingsNav.style.display = (dashboardSettingsNav.style.display === 'block' || dashboardSettingsNav.style.display === '') ? 'none' : 'block';
+            // Check if elements exist before adding event listener
+            if (settingDropdown && dashboardSettingsNav) {
+                settingDropdown.addEventListener('click', function () {
+                    dashboardSettingsNav.style.display = (dashboardSettingsNav.style.display === 'block' || dashboardSettingsNav.style.display === '') ? 'none' : 'block';
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var projectDropdowns = document.querySelectorAll('.project-dropdown');
+
+            projectDropdowns.forEach(function (projectDropdown) {
+                var dropdownToggle = projectDropdown.querySelector('.dropdown-toggle');
+                var settingsNav = projectDropdown.querySelector('.projSettingsNav');
+
+            // Check if elements exist before adding event listener
+                if (dropdownToggle && settingsNav) {
+                    dropdownToggle.addEventListener('click', function () {
+                        settingsNav.style.display = (settingsNav.style.display === 'block' || settingsNav.style.display === '') ? 'none' : 'block';
+                    });
+                }
             });
+        });
+
+
+
+        function toggleNavBar() {
+            var navBar = document.getElementsByClassName("leftnav")[0];
+            var getcontent = document.getElementsByClassName("content")
+            var getnavpadding = document.getElementsByClassName("navbarcontentpadding")
+            var currentLeft = navBar.style.left;
+
+            if (getcontent.length > 0) {
+                var content = getcontent[0]
+
+                if (currentLeft == '-220px' || !currentLeft) {
+                    navBar.style.left = '0';
+                    // content.classList.add("ml-3");
+                } else {
+                    navBar.style.left = '-220px';
+                    // content.classList.add("ml-3");
+                }
+            } else if (getnavpadding.length > 0) {
+                var navpadding = getnavpadding[0]
+
+                if (currentLeft == '-220px' || !currentLeft) {
+                    navBar.style.left = '0';
+                    // navpadding.style.paddingLeft = "210px";
+                } else {
+                    navBar.style.left = '-220px';
+                    // navpadding.style.paddingLeft = "0px";
+                }
+            }
         }
-    });
     </script>
 
 </body>

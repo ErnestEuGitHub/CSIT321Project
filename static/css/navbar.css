@@ -68,13 +68,15 @@
     position: fixed;
     top: 50px;
     /* Adjust top position to avoid overlapping */
-    left: 0;
+    left: -220px;
     background-color: #f0f0f0;
     overflow-x: hidden;
     padding-top: 20px;
-    padding-left: 40px;
+    padding-left: 20px;
     z-index: 998;
+    transition: 0.3s all ease-in-out;
     /* Ensure leftnav is below topnav but above other content */
+    
 }
 
 .leftnav h2 {
@@ -96,13 +98,14 @@
 
 /* Box styles */
 .content {
-    margin-left: 200px;
+    margin-left: 0px;
     padding-top: 50px;
     /* Adjust padding-top to avoid overlap with topnav */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     padding-bottom: 20px;
+    transition: 0.3s all ease-in-out;
 }
 
 .boxlink{ 
@@ -163,6 +166,21 @@
     padding-left: 20px;
     margin: 0;
 }
+
+.projSettingsNav{
+    list-style-type: none;
+    padding-left: 20px;
+    margin: 0;
+}
+
+.dropdown-toggle {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+
 
 /* Search box styles */
 .search-container {
@@ -247,5 +265,23 @@
 
 .navbarcontentpadding{
     padding-top: 50px;
-    padding-left: 210px;
+    /* padding-left: 210px; */
+}
+
+.navbar-toggler {
+    background-color: #333; /* Set button background color to black */
+    color: #333;
+    border: none; /* Remove button border */
+    outline: none; /* Remove focus outline */
+    padding-right: 0;
+    box-shadow: none; /* Remove focus outline */
+}
+
+.navbar-toggler i {
+    color: white; /* Set button icon color to white */
+}
+
+/* padding for more than 5rem */
+.ps-10{
+    padding-left: 10rem!important;
 }

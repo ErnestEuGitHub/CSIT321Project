@@ -4,7 +4,6 @@ from stages import *
 from user import *
 from tournaments import *
 from projects import *
-from tournamentParticipant import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -62,11 +61,11 @@ def loadtournaments(projID):
             else:
                 return render_template('notfound.html')
 
-@app.route('/createTour', methods=["POST", "GET"])
-def loadCreateTour():
+@app.route('/<projID>/createTour', methods=["POST", "GET"])
+def loadCreateTour(projID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    page = Tournaments.createTour()
+    page = Tournaments.createTour(projID)
     return page
 
 @app.route('/createProj', methods=["POST", "GET"])
@@ -81,8 +80,8 @@ def getformatspy():
     formats = Tournaments.getformat()
     return formats
 
-@app.route('/tournamentOverviewPage/<tourID>')
-def loadTourOverviewWithID(tourID):
+@app.route('/<projID>/tournamentOverviewPage/<tourID>')
+def loadTourOverviewWithID(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -93,14 +92,14 @@ def loadTourOverviewWithID(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.TourOverviewDetails(tourID)
+                page = Tournaments.TourOverviewDetails(projID, tourID)
                 return page
             
             else:
                 return render_template('notfound.html')
 
-@app.route('/dashboard/<tourID>', methods=["POST", "GET"])
-def loaddashboard(tourID):
+@app.route('/<projID>/dashboard/<tourID>', methods=["POST", "GET"])
+def loaddashboard(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -111,14 +110,14 @@ def loaddashboard(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.dashboard(tourID)
+                page = Tournaments.dashboard(projID, tourID)
                 return page
             
             else:
                 return render_template('notfound.html')
 
-@app.route('/placement/<tourID>', methods=["POST", "GET"])
-def placement(tourID):
+@app.route('/<projID>/placement/<tourID>', methods=["POST", "GET"])
+def placement(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     
@@ -127,15 +126,15 @@ def placement(tourID):
     navtype = 'dashboard'
     tournamentName = retrieveDashboardNavName(tourID)
 
-    return render_template('placement.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+    return render_template('placement.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
 @app.route('/update_content', methods=['POST'])
 def update_content():
     updated_content = Tournaments.get_updated_content()
     return jsonify({'content': updated_content})
 
-@app.route('/settings/<tourID>', methods=["POST", "GET"])
-def loadsettings(tourID):
+@app.route('/<projID>/settings/<tourID>', methods=["POST", "GET"])
+def loadsettings(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -146,14 +145,14 @@ def loadsettings(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.settings(tourID)
+                page = Tournaments.settings(projID, tourID)
                 return page
             
             else:
                 return render_template('notfound.html')
 
-@app.route('/structure/<tourID>', methods=["POST", "GET"])
-def loadstructure(tourID):
+@app.route('/<projID>/structure/<tourID>', methods=["POST", "GET"])
+def loadstructure(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -164,7 +163,7 @@ def loadstructure(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.structure(tourID)
+                page = Tournaments.structure(projID, tourID)
                 return page
             
             else:
@@ -190,6 +189,7 @@ def loadcreatestage(tourID):
 
 @app.route('/configureStage/<tourID>/<stageID>', methods=["POST", "GET"])
 def loadconfigurestage(tourID, stageID):
+
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -202,7 +202,6 @@ def loadconfigurestage(tourID, stageID):
             if rows:
                 page = Stage.configureStage(tourID, stageID)
                 return page
-            
             else:
                 return render_template('notfound.html')
 
@@ -223,14 +222,15 @@ def loaddeletestage(tourID, stageID):
             
             else:
                 return render_template('notfound.html')
-  
-@app.route('/tournamentParticipant/<tourID>', methods=["POST", "GET"])
-def loadTournamentParticipant(tourID):
-    page = tournamentParticipant(tourID)
+
+
+@app.route('/<projID>/participant/<tourID>', methods=["POST", "GET"])
+def loadParticipant(projID, tourID):
+    page = Tournaments.participant(projID, tourID)
     return page
 
-@app.route('/createParticipant/<tourID>', methods=["POST", "GET"])
-def loadCreateParticipant(tourID):
+@app.route('/<projID>/createParticipant/<tourID>', methods=["POST", "GET"])
+def loadCreateParticipant(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -241,12 +241,52 @@ def loadCreateParticipant(tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.createParticipant(tourID)
+                page = Tournaments.createParticipant(projID, tourID)
                 return page
             
             else:
                 return render_template('notfound.html')
             
+@app.route('/<projID>/editParticipant/<tourID>/<participantID>', methods=["POST", "GET"])
+def loadEditParticipant(projID, tourID, participantID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments JOIN participants ON tournaments.tourID = participants.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND participants.participantID = :participantID"
+            inputs = {'userID': session["id"], 'tourID': tourID, 'participantID': participantID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.editParticipant(projID, tourID, participantID)
+                return page
+            else:
+                return render_template('notfound.html', tourID=tourID, participantID=participantID)
+            
+@app.route('/<projID>/deleteParticipant/<tourID>/<participantID>', methods=["POST", "GET"])
+def loadDeleteParticipant(projID, tourID, participantID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments JOIN participants ON tournaments.tourID = participants.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND participants.participantID = :participantID"
+            inputs = {'userID': session["id"], 'tourID': tourID, 'participantID': participantID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.deleteParticipant(projID, tourID, participantID)
+                return page
+            else:
+                page = Tournaments.participant(projID, tourID)
+                return page
+            
+@app.route('/<projID>/moderator/<tourID>', methods=["POST", "GET"])
+def loadModerator(projID, tourID):
+    page = Tournaments.moderator(projID, tourID)
+    return page
+
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)
