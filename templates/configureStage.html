@@ -4,32 +4,18 @@
     <div class="container h-100 navbarcontentpadding">
         <div>
             <div>
-                <label class="fs-4 fw-bold my-4">Create Stage</label>
+                <label class="fs-4 fw-bold my-4">Configure Stage {{stageID}}</label>
             </div>
-            <form action="/createStructure/{{tourID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+            <form action="/configureStage/{{projID}}/{{tourID}}/{{stageID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off">
                 <div class="form-floating mb-3">
                     <select class="form-select" aria-label="Floating label select example" name="stageFormat" id="stageFormat">
-                        <option selected>Open this select menu</option>
-                        <option value="1">Elimination</option>
-                        <option value="2">Round Robin</option>
+                        <option>Open this select menu</option>
+                        <option {% if stageFormatID == 1 %} selected {% endif %} value="1">Single Elimination</option>
+                        <option {% if stageFormatID == 2 %} selected {% endif %} value="2">Double Elimination</option>
+                        <option {% if stageFormatID == 3 %} selected {% endif %} value="3">Single Round Robin</option>
+                        <option {% if stageFormatID == 4 %} selected {% endif %} value="4">Double Round Robin</option>
                     </select>
                     <label for="stageFormat">Select Stage Format</label>
-                </div>
-                <div id="elimFormatSelect" class="form-floating mb-3" hidden>
-                    <select class="form-select" aria-label="Floating label select example" name="elimFormatID" id="elimFormatID">
-                        <option selected>Open this select menu</option>
-                        <option value="1">Single Elimination</option>
-                        <option value="2">Double Elimination</option>
-                    </select>
-                    <label for="elimFormat">Select Elimination Format</label>
-                </div>
-                <div id="roundFormatSelect" class="form-floating mb-3" hidden>
-                    <select class="form-select" aria-label="Floating label select example" name="roundFormatID" id="roundFormatID">
-                        <option selected>Open this select menu</option>
-                        <option value="1">Single Round</option>
-                        <option value="2">Double Round</option>
-                    </select>
-                    <label for="roundFormat">Select Round Robin Format</label>
                 </div>
                 <div id="afterStageFormat" hidden>
                     <div class="mb-3">
@@ -50,21 +36,25 @@
                     </div>
                     <div id="generalTabContent">
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" name="stageSequence" id="stageSequence">
-                            <label for="stage sequence">Stage Sequence</label>
+                            <input type="number" class="form-control" name="stageSequence" id="stageSequence" value="{{ stageSequence }}">
+                            <label for="stageSequence">Stage Sequence</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control" name="stageName" id="stageName">
-                            <label for="stage name">Stage Name</label>
+                            <input type="text" class="form-control" name="stageName" id="stageName" value="{{ stageName}}">
+                            <label for="stageName">Stage Name</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control" name="numberOfParticipants" id="numberOfParticipants"> 
-                            <label for="number of participants">Number of participants</label>
+                            <input type="number" class="form-control" name="numberOfParticipants" id="numberOfParticipants" value="{{ numberOfParticipants }}"> 
+                            <label for="numberOfParticipants">Number of participants</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" name="numberOfGroups" id="numberOfGroups" value="{{ numberOfGroups }}"> 
+                            <label for="numberOfGroups">Number of groups</label>
                         </div>
                         <div id="tfMatchSelect"class="form-floating mb-3">
                         <select class="form-select" aria-label="Floating label select example" name="34match" id="34match">
-                            <option value="1">Yes</option>
-                            <option value="2" selected>No</option>
+                            <option {% if tfMatch == 1 %} selected {% endif %} value="1">Yes</option>
+                            <option {% if tfMatch == 2 or not tfMatch %} selected {% endif %} value="2">No</option>
                         </select>
                         <label for="34match">Enable 3rd/4th Match</label>
                         </div>
@@ -76,15 +66,15 @@
                         </label>
                         <div class="input-group">
                             <div class="form-floating mb-3">
-                                <input type="number" aria-label="winPoints" class="form-control" name="winPoints" id="winPoints">
+                                <input type="number" aria-label="winPoints" class="form-control" name="winPoints" id="winPoints" value="{{winPts}}">
                                 <label for="winPoints">Win</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="number" aria-label="drawPoints" class="form-control" name="drawPoints" id="drawPoints">
+                                <input type="number" aria-label="drawPoints" class="form-control" name="drawPoints" id="drawPoints" value="{{drawPts}}">
                                 <label for="drawPoints">Draw</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="number" aria-label="losePoints" class="form-control" name="lossPoints" id="lossPoints">
+                                <input type="number" aria-label="losePoints" class="form-control" name="lossPoints" id="lossPoints" value="{{lossPts}}">
                                 <label for="lossPoints">Loss</label>
                             </div>
                         </div>
@@ -93,6 +83,24 @@
                                 <label class="mb-3">Tiebreakers (Top to Bottom Sequence)</label>
                                 <button type="button" class="btn btn-primary" id="addTiebreakerBtn">Add Tiebreakers</button>
                             </div>
+                            {% for tb in tieBreakers %}
+                                <div class="container mb-3 tieBreaker">
+                                    <div class="card">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <select class="form-select mx-3" aria-label="Default select example" name="tieBreakerSelect" id="tieBreakerSelect">
+                                                <option>Open this select menu</option>
+                                                <option {% if tb['tbTypeID'] == 1 %} selected {% endif %} value="1">Points (Head to head)</option>
+                                                <option {% if tb['tbTypeID'] == 2 %} selected {% endif %} value="2">Overall Match Win Draw Loss</option>
+                                                <option {% if tb['tbTypeID'] == 3 %} selected {% endif %} value="3">Overall Score </option>
+                                                <option {% if tb['tbTypeID'] == 4 %} selected {% endif %} value="4">Head to Head Score </option>
+                                                <option {% if tb['tbTypeID'] == 5 %} selected {% endif %} value="5">Overall Score Difference </option>
+                                                <option {% if tb['tbTypeID'] == 6 %} selected {% endif %} value="6">Head to Head Score Difference </option>
+                                            </select>
+                                            <button type="button" class="btn btn-primary justify-content-center" onclick="removeTiebreaker(this)"><i class="bi bi-trash3-fill"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
                     <div id="placementTabContent" hidden>
@@ -100,32 +108,41 @@
                     <div class="form-floating mb-3" id="matchSettingTabContent" hidden>
                         <div class="form-floating mb-3">
                             <select class="form-select" aria-label="Floating label select example" name="matchFormat" id="matchFormat">
-                                <option value="1" selected>Single Game</option>
-                                <option value="2">Home and Away</option>
-                                <option value="3">Best of</option>
+                                <option {% if matchFormatID == 1 %} selected {% endif %} value="1">Single Game</option>
+                                <option {% if matchFormatID == 2 %} selected {% endif %} value="2">Home and Away</option>
+                                <option {% if matchFormatID == 3 %} selected {% endif %} value="3" >Best of</option>
                             </select>
                             <label for="matchFormat">Format</label>
                         </div>
                         <div class="form-floating mb-3" hidden id="bestofgames">
                             <div class="form-floating mb-3">
-                                <input type="number" class="form-control" name="maximumNumberOfGames" id="maximumNumberOfGames"> 
+                                <input type="number" class="form-control" name="maximumNumberOfGames" id="maximumNumberOfGames" value="{{ maxGames }}"> 
                                 <label for="maximumNumberOfGames">Maximum Number of Games</label>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary mb-3">Create Stage</button>
-                    <a href="/structure/{{tourID}}" class="btn btn-secondary mb-3" role="button" aria-disabled="true">Back</a>
+                    <button type="submit" class="btn btn-primary mb-3">Confirm</button>
+                    <a href="/structure/{{projID}}/{{tourID}}" class="btn btn-secondary mb-3" role="button" aria-disabled="true">Back</a>
                 </div>
             </form>
         </div>
     </div>
-    </section>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script>
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+        let stageformatselect = document.getElementById("stageFormat");
+        let elimSelected = document.getElementById("elimFormatSelect");
+        let elimformatselect = document.getElementById("elimFormatID");
+        let roundSelected = document.getElementById("roundFormatSelect");
+        let roundformatselect = document.getElementById("roundFormatID");
+        let afterStageFormat= document.getElementById("afterStageFormat");
+        let matchformatselect = document.getElementById("matchFormat");
+        let bestofgames = document.getElementById("bestofgames");
+        let tfMatchSelect = document.getElementById("tfMatchSelect");
 
         let generalTab = document.getElementById("generalTab");
         let advancedTab = document.getElementById("advancedTab");
@@ -135,13 +152,83 @@
         let advancedTabContent = document.getElementById("advancedTabContent");
         let placementTabContent = document.getElementById("placementTabContent");
         let matchSettingTabContent = document.getElementById("matchSettingTabContent");
-        
+
+        let tieBreakerContainer = document.getElementById("tieBreakerContainer");
+        let addTiebreakersBtn = document.getElementById("addTiebreakerBtn");
+
+        let loadInputsExecuted = false;
+
+        function onPageLoad() {
+            console.log("Function executed on page load");
+            
+            switch (stageformatselect.value){
+                case "1":
+                case "2":
+                    afterStageFormat.hidden = false;
+                    advancedTab.hidden = true;
+                    tfMatchSelect.hidden = false;
+                    break;
+                case "3":
+                case "4":
+                    afterStageFormat.hidden = false;
+                    advancedTab.hidden = false;
+                    tfMatchSelect.hidden = true;
+                    break;
+                default:
+                    afterStageFormat.hidden = true;
+                    break;
+            }
+
+            switch (matchformatselect.value){
+                case "3":
+                    bestofgames.hidden = false;
+                    break;
+                default:
+                    bestofgames.hidden = true;
+                    break;
+            }
+
+            // Set the flag to true after executing the function
+            loadInputsExecuted = true;
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            // Check if the function hasn't been executed yet
+            if (!loadInputsExecuted) {
+                onPageLoad();
+            }
+        });
+     
+        stageformatselect.addEventListener("change", stageselectFormat);
+        matchformatselect.addEventListener("change", matchselectFormat);
+
+        function stageselectFormat() {
+            switch (stageformatselect.value){
+                case "1":
+                case "2":
+                    afterStageFormat.hidden = false;
+                    advancedTab.hidden = true;
+                    tfMatchSelect.hidden = false;
+                    break;
+                case "3":
+                case "4":
+                    afterStageFormat.hidden = false;
+                    advancedTab.hidden = false;
+                    tfMatchSelect.hidden = true;
+                    break;
+                default:
+                    afterStageFormat.hidden = true;
+                    break;
+            }
+        }
+
         generalTab.addEventListener("click", function(){tabFn(generalTab);});
         advancedTab.addEventListener("click", function(){tabFn(advancedTab);});
         placementTab.addEventListener("click", function(){tabFn(placementTab);});
         matchSettingTab.addEventListener("click", function(){tabFn(matchSettingTab);});
 
         function tabFn(tabClicked) {
+
+            console.log("clicked on!" + tabClicked.id);
             const tabs = [generalTab, advancedTab, placementTab, matchSettingTab];
             const tabsContent = [generalTabContent, advancedTabContent, placementTabContent, matchSettingTabContent];
 
@@ -161,67 +248,6 @@
             }
         }
 
-        let stageformatselect = document.getElementById("stageFormat");
-        let elimSelected = document.getElementById("elimFormatSelect");
-        let elimformatselect = document.getElementById("elimFormatID");
-        let roundSelected = document.getElementById("roundFormatSelect");
-        let roundformatselect = document.getElementById("roundFormatID");
-        let afterStageFormat= document.getElementById("afterStageFormat");
-        let matchformatselect = document.getElementById("matchFormat");
-        let bestofgames = document.getElementById("bestofgames");
-        let tfMatchSelect = document.getElementById("tfMatchSelect");
-     
-        stageformatselect.addEventListener("change", stageselectFormat);
-        elimformatselect.addEventListener("change", elimselectFormat);
-        roundformatselect.addEventListener("change", roundselectFormat);
-        matchformatselect.addEventListener("change", matchselectFormat);
-
-        function stageselectFormat() {
-            switch (stageformatselect.value){
-                case "1":
-                    elimSelected.hidden = false;
-                    roundSelected.hidden = true;
-                    afterStageFormat.hidden = true;
-                    break;
-                case "2":
-                    roundSelected.hidden = false;
-                    elimSelected.hidden = true;
-                    afterStageFormat.hidden = true;
-                    break;
-                default:
-                    elimSelected.hidden = true;
-                    roundSelected.hidden = true;
-                    afterStageFormat.hidden = true;
-                    break;
-            }
-        }
-
-        // Can be optimized (ID 1)
-        function elimselectFormat() {
-            if (elimformatselect.value == 1 || elimformatselect.value == 2){
-                afterStageFormat.hidden = false;
-                advancedTab.hidden = true;
-                tfMatchSelect.hidden = false;
-            } else {
-                afterStageFormat.hidden = true;
-                advancedTab.hidden = false;
-                tfMatchSelect.hidden = true;
-            }  
-        }
-
-        // Can be optimized (ID 1)
-        function roundselectFormat() {
-            if (roundformatselect.value == 1 || roundformatselect.value == 2){
-                afterStageFormat.hidden = false;
-                advancedTab.hidden = false;
-                tfMatchSelect.hidden = true;
-            } else {
-                afterStageFormat.hidden = true;
-                tfMatchSelect.hidden = false;
-            }  
-           
-        }
-
         function matchselectFormat() {
             switch (matchformatselect.value){
                 case "3":
@@ -233,8 +259,6 @@
             }
         }
 
-        let tieBreakerContainer = document.getElementById("tieBreakerContainer");
-        let addTiebreakersBtn = document.getElementById("addTiebreakerBtn");
         addTiebreakersBtn.addEventListener("click", addTiebreaker);
         
         function addTiebreaker () {
