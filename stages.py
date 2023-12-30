@@ -7,7 +7,7 @@ from general import *
 class Stage:
 
     #configureStage
-    def configureStage(tourID, stageID):
+    def configureStage(projID, tourID, stageID):
 
         tournamentName = retrieveDashboardNavName(tourID)
         navtype = 'dashboard'
@@ -85,7 +85,7 @@ class Stage:
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         else:
             tournamentName = retrieveDashboardNavName(tourID)
             navtype = 'dashboard'
@@ -142,22 +142,22 @@ class Stage:
                         tbRows = result.fetchall()
                         tieBreakers = [row._asdict() for row in tbRows]
                         
-                        return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID=stageID,
+                        return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                        stageName = stageName, stageSequence = stageSequence, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
                                        numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, maxGames = maxGames, winPts = winPts, drawPts = drawPts, lossPts = lossPts, tieBreakers = tieBreakers)
                     else:
                         print("Cannot get any information on stageFormat")
 
 
-                return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID=stageID)   
+                return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID)   
                     
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
             
         
-    def deleteStage(tourID, stageID):
+    def deleteStage(projID, tourID, stageID):
 
         tournamentName = retrieveDashboardNavName(tourID)
         navtype = 'dashboard'
@@ -177,6 +177,6 @@ class Stage:
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, tourID=tourID))
+            return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID))
         else:
-            return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, tourID=tourID))
+            return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID))

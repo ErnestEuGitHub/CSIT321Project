@@ -218,18 +218,18 @@ class Tournaments:
                     stageList += stage_html
                 
                     
-            return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageList=stageList)
+            return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageList=stageList)
         
         except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-                return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+                return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         
     
 
     #CreateStage
     @staticmethod
-    def createStage(tourID):
+    def createStage(projID, tourID):
         
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
@@ -296,14 +296,14 @@ class Tournaments:
                 flash('Stage Created!', 'success')
 
                 # return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-                return redirect(url_for("loadstructure", tourID=tourID))
+                return redirect(url_for("loadstructure", projID=projID, tourID=tourID))
                 
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         else:
-            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         
     #Settings
     def settings(projID, tourID):
