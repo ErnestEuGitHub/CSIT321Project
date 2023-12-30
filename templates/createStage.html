@@ -6,7 +6,7 @@
             <div>
                 <label class="fs-4 fw-bold my-4">Create Stage</label>
             </div>
-            <form action="/createStage/{{tourID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+            <form action="/createStage/{{projID}}/{{tourID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off">
                 <div class="form-floating mb-3">
                     <select class="form-select" aria-label="Floating label select example" name="stageFormat" id="stageFormat">
                         <option selected>Open this select menu</option>
@@ -106,7 +106,7 @@
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary mb-3">Create Stage</button>
-                    <a href="/structure/{{tourID}}" class="btn btn-secondary mb-3" role="button" aria-disabled="true">Back</a>
+                    <a href="/structure/{{projID}}/{{tourID}}" class="btn btn-secondary mb-3" role="button" aria-disabled="true">Back</a>
                 </div>
             </form>
         </div>
