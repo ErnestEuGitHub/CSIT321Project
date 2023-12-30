@@ -445,32 +445,47 @@ class Tournaments:
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
-        
-        form_submitted = False
+        participantName = None
+        participantEmail = None
+        playerName1 = None
+        playerName2 = None
 
         if request.method == "POST":
             participantName = request.form.get("participantName")
             participantEmail = request.form.get("participantEmail")
+            playerName1 = request.form.get("playerName1")
+            playerName2 = request.form.get("playerName2")
 
             try:
                 with dbConnect.engine.connect() as conn:
-                    query = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
-                    inputs = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
-                    createNewParticipant = conn.execute(text(query),inputs)
-                
-                    # Set form_submitted to True after successful form submission
-                    form_submitted = True
-                    flash('Tournament Created!', 'success')
-                    return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, tourID=tourID, navtype=navtype, tournamentName=tournamentName, form_submitted=form_submitted, projID=projID)
+                    queryParticipant = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
+                    inputParticipant = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
+                    createNewParticipant = conn.execute(text(queryParticipant),inputParticipant)
+                    
+                    participantID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+                    
+                    if playerName1 != "":
+                        queryPlayer1 = "INSERT INTO players (playerName, participantID) VALUES (:playerName1, :participantID)"
+                        inputPlayer1 = {'playerName1': playerName1, 'participantID': participantID}
+                        createNewPlayer1 = conn.execute(text(queryPlayer1), inputPlayer1)
+
+                    if playerName2 != "":
+                        queryPlayer2 = "INSERT INTO players (playerName, participantID) VALUES (:playerName2, :participantID)"
+                        inputPlayer2 = {'playerName2': playerName2, 'participantID': participantID}
+                        createNewPlayer2 = conn.execute(text(queryPlayer2),inputPlayer2)
+    
+                    flash('Participant Created!', 'success')
+                    return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, participantID=participantID, playerName1=playerName1, playerName2=playerName2, tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
 
             except Exception as e:
-                flash('Oops, an error has occured.', 'error')
+                flash('Oops, an error has occured haha.', 'error')
                 print(f"Error details: {e}")
-            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted, projID=projID)
+                
+            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, participantID=participantID, playerName1=playerName1, playerName2=playerName2, tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
         
         else:
-            return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted, projID=projID)
- 
+            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, playerName1=playerName1, playerName2=playerName2, tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
+
     #Edit Participant
     def editParticipant(projID, tourID, participantID):
         #for navbar
