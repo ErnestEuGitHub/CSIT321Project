@@ -121,7 +121,7 @@ class Tournaments:
                         projectName = retrieveProjectNavName(projID)
 
                     flash('Tournament Created!', 'success')
-                    return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName)
+                    return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName, projID=projID)
                 
                 except Exception as e:
                     flash('Oops, an error has occured.', 'error')
