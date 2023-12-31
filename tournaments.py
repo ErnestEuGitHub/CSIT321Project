@@ -462,7 +462,7 @@ class Tournaments:
 
         try:
             with dbConnect.engine.connect() as conn:            
-                # Query the 'participants' table
+                # Query the 'participants' table and 'players' tables
                 queryOne ="""
                 SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
                 FROM participants LEFT JOIN players
