@@ -22,18 +22,7 @@
 
         <h2 class="my-3">New Participant</h2>
         <form action="" method="POST">
-            <ul class="nav nav-tabs mb-4">
-                <li class="nav-item" id="BasicInformationTab">
-                    <a class="nav-link active" aria-current="page" href="#" data-bs-toggle="tab" data-bs-target="#BasicInformation" aria-controls="BasicInformation" aria-selected="true" style="color: black;">Basic Information</a>
-                </li>
-                <li class="nav-item" id="Player1Tab">
-                    <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#Player1" aria-controls="Player1" aria-selected="false" style="color: black;">Player 1</a>
-                </li>
-                <li class="nav-item" id="Player2Tab">
-                    <a class="nav-link" href="#" data-bs-toggle="tab" data-bs-target="#Player2" aria-controls="Player2" aria-selected="false" style="color: black;">Player 2</a>
-                </li>
-            </ul>
-            <div class="tab-pane fade show active" id="BasicInformation" role="tabpanel" aria-labelledby="BasicInformationTab"> 
+            <div id="BasicInformation" > 
                 <div class="mb-3">
                     <label for="exampleInputTeamName1" class="form-label">Team Name</label>
                     <input type="text" class="form-control" id="participantName" name="participantName" required>
@@ -44,56 +33,43 @@
                     <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="Player1" role="tabpanel" aria-labelledby="Player1Tab">
-                <div class="mb-3">
-                    <label for="exampleInputPlayerName1" class="form-label">Player Name</label>
-                    <input type="text" class="form-control" id="playerName1" name="playerName1">
+            <div class="mb-3" id="addPlayerContainer">
+                <div class="d-flex justify-content-between mb-3">
+                    <label class="mb-3">Players</label>
+                    <button type="button" class="btn btn-primary" id="addPlayerBtn">Add Players</button>
                 </div>
             </div>
-            <div class="tab-pane fade" id="Player2" role="tabpanel" aria-labelledby="Player2Tab">
-                <div class="mb-3">
-                    <label for="exampleInputPlayerName2" class="form-label">Player Name</label>
-                    <input type="text" class="form-control" id="playerName2" name="playerName2">
-                </div>
-            </div>
-            <div>
+            <div id="Submit">
                 <button type="submit" class="btn btn-primary">Add</button>
             </div>
         </form>
     </div>
 
     <script>
-        let BasicInformationTab = document.getElementById("BasicInformationTab");
-        let Player1Tab = document.getElementById("Player1Tab");
-        let Player2Tab = document.getElementById("Player2Tab");
-        let BasicInformation = document.getElementById("BasicInformation");
-        let Player1 = document.getElementById("Player1");
-        let Player2 = document.getElementById("Player2");
-        
-        BasicInformationTab.addEventListener("click", function(){tabFn(BasicInformationTab);});
-        Player1Tab.addEventListener("click", function(){tabFn(Player1Tab);});
-        Player2Tab.addEventListener("click", function(){tabFn(Player2Tab);});
 
-        function tabFn(tabClicked) {
-            const tabs = [BasicInformationTab, Player1Tab, Player2Tab];
-            const tabsContent = [BasicInformation, Player1, Player2];
+        let addPlayerContainer = document.getElementById("addPlayerContainer");
+        let addPlayerBtn = document.getElementById("addPlayerBtn");
+        addPlayerBtn.addEventListener("click", addPlayer);
 
-            for (tab of tabs){
-                if (tabClicked === tab){
-                    tab.firstElementChild.classList.add("active");
-                    for(tabC of tabsContent){
-                        if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)){
-                            tabC.hidden = false;
-                        } else {
-                            tabC.hidden = true;
-                        }
-                    }
-                } else {
-                    tab.firstElementChild.classList.remove("active");
-                }
-            }
+        function addPlayer () {
+            const div = document.createElement("div");
+            div.className = "container mb-3 player";
+            div.innerHTML = `<div class="card">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <input type="text" class="form-control mx-3" placeholder="Enter Player Name" name="playerName"></input>
+                                    <button type="button" class="btn btn-primary justify-content-center" onclick="removePlayer(this)"><i class="bi bi-trash3-fill"></i></button>
+                                </div>
+                            </div>`;
+            
+            addPlayerContainer.appendChild(div);
         }
 
+        function removePlayer(player) {
+            const closestAncestor = player.closest('.player')
+            if (closestAncestor) {
+                closestAncestor.remove();
+            }
+        }
     </script>
 
 {% endblock %}
