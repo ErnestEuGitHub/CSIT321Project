@@ -465,7 +465,7 @@ class Tournaments:
                 # Query the 'participants' table
                 queryOne ="""
                 SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
-                FROM participants JOIN players
+                FROM participants LEFT JOIN players
                 ON participants.participantID = players.participantID
                 WHERE participants.tourID = :tourID
                 GROUP BY participants.participantID, participantEmail, participantName"""
@@ -477,9 +477,9 @@ class Tournaments:
                 total_participants = len(participants)
 
                 # Query the 'tournaments' table
-                queryTwo = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
-                inputTwo = {'tourID': tourID}
-                getTournamentSize = conn.execute(text(queryTwo),inputTwo)
+                queryThree = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+                inputThree = {'tourID': tourID}
+                getTournamentSize = conn.execute(text(queryThree),inputThree)
                 tournamentSize = getTournamentSize.scalar() #scalar only extract the value
 
                 # Get the size of tournament
@@ -494,7 +494,7 @@ class Tournaments:
             flash("An error occurred while retrieving participant data.", "error")
             return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
        
-    #Create Participant
+    #Create Participant and Players
     def createParticipant(projID, tourID):
         #for navbar
         navtype = 'dashboard'

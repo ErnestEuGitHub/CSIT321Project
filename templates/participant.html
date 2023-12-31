@@ -25,8 +25,8 @@
             <thead>
                 <tr>
                     <th>Team Name</th>
+                    <th>Team Email</th>
                     <th>Team Players</th>
-                    <th>Email</th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -36,8 +36,8 @@
                 {% for participant in participants %}
                     <tr>
                         <td>{{ participant.participantName }}</td>
-                        <td>{{ participant.playerNames }}</td>
                         <td>{{ participant.participantEmail }}</td>
+                        <td>{{ participant.playerNames }}</td>
                         <td>
                             <a href="/editParticipant/{{projID}}/{{tourID}}/{{ participant.participantID }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
