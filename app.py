@@ -75,6 +75,42 @@ def loadCreateProj():
     page = Projects.createProj()
     return page
 
+@app.route('/settings/<projID>', methods=["POST", "GET"])
+def loadProjSettings(projID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from projects WHERE userID = :userID AND projID = :projID"
+            inputs = {'userID': session["id"], 'projID': projID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Projects.ProjSettings(projID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/endProj/<projID>', methods=["POST", "GET"])
+def loadSuspendProj(projID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from projects WHERE userID = :userID AND projID = :projID"
+            inputs = {'userID': session["id"], 'projID': projID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Projects.SuspendProj(projID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+
 @app.route('/get_formats', methods=['POST'])
 def getformatspy():
     formats = Tournaments.getformat()
@@ -133,7 +169,8 @@ def update_content():
     updated_content = Tournaments.get_updated_content()
     return jsonify({'content': updated_content})
 
-@app.route('/settings/<projID>/<tourID>', methods=["POST", "GET"])
+
+@app.route('/settings/general/<projID>/<tourID>', methods=["POST", "GET"])
 def loadsettings(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
@@ -146,6 +183,24 @@ def loadsettings(projID, tourID):
 
             if rows:
                 page = Tournaments.settings(projID, tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/suspendTour/<projID>/<tourID>', methods=["POST", "GET"])
+def loadSuspendTour(projID, tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.SuspendTour(projID, tourID)
                 return page
             
             else:

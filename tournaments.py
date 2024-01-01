@@ -314,15 +314,22 @@ class Tournaments:
 
         if request.method == "POST":
             identifier = request.form.get("formIdentifier")
+            action = request.form.get('action')
 
-            with dbConnect.engine.connect() as conn:
-                query = "SELECT * FROM sports"
-                result = conn.execute(text(query))
-                rows = result.fetchall()
+            if action == 'delete':
+                print('action form delete triggered!')
+                return redirect(url_for('loadSuspendTour', projID=projID, tourID=tourID))
+            
+            else:
+                print('action form delete not triggered, update form.')
+                with dbConnect.engine.connect() as conn:
+                    query = "SELECT * FROM sports"
+                    result = conn.execute(text(query))
+                    rows = result.fetchall()
 
-                sportsOptions = [row._asdict() for row in rows]
+                    sportsOptions = [row._asdict() for row in rows]
 
-            if identifier == "general":
+                # if identifier == "general":
 
                 tourName = request.form.get("tourName")
                 tourSize = request.form.get("tourSize")
@@ -331,31 +338,33 @@ class Tournaments:
                 gender = request.form.get("gender")
                 sport = request.form.get("sport")
                 format = request.form.get("format")
+                getstatus = request.form.get("status")
+                status = int(getstatus)
 
                 if not tourName:
                     flash('Please fill in a tournament name!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif len(tourName) > 100:
                     flash('Please keep tournament name less than 100 characters!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif not tourSize:
                     flash('Please Enter a minimum participation size!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif int(tourSize) > 10000:
                     flash('Please enter participant size from 1-10,000!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif int(tourSize) < 0:
                     flash('Please enter participant size from 1-10,000!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif not format:
                     flash('That is not a valid format for the sport!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif not endDate or not startDate:
                     flash('Start or End Dates are not filled!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 elif endDate < startDate:
                     flash('End Date cannot be earlier than Start Date!', 'error')
-                    return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
                 else:
             
                     try:
@@ -366,17 +375,17 @@ class Tournaments:
                             rows = getsfID.fetchall()
                             formatID = rows[0][2]
 
-                            query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = :formatID WHERE tourID = :tourID"
-                            inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'sportID':sport, 'formatID':formatID, 'tourID':tourID}
+                            query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = :formatID, statusID = :statusID WHERE tourID = :tourID"
+                            inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'tourID':tourID}
                             updateGeneralInfo = conn.execute(text(query), inputs)
                     
-                        flash('General Information Updated!', 'success')
+                        # flash('General Information Updated!', 'success')
                     
                     except Exception as e:
-                        flash('Oops, an error has occured.', 'error')
+                        flash('Oops, an error has occured in updating general details tab.', 'error')
                         print(f"Error details: {e}")
 
-            elif identifier == "details":
+                # elif identifier == "details":
 
                 generalDesc = request.form.get("generalDesc")
                 rules = request.form.get("rules")
@@ -388,13 +397,13 @@ class Tournaments:
                         inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'tourID':tourID}
                         updateDetails = conn.execute(text(query), inputs)
                 
-                    flash('Details Updated!', 'success')
+                    # flash('Details Updated!', 'success')
                 
                 except Exception as e:
-                    flash('Oops, an error has occured.', 'error')
+                    flash('Oops, an error has occured in updating details tab.', 'error')
                     print(f"Error details: {e}")
 
-            elif identifier == "contact":
+                # elif identifier == "contact":
 
                 contact = request.form.get("contact")
                 
@@ -404,13 +413,14 @@ class Tournaments:
                         inputs = {'contact':contact, 'tourID':tourID}
                         updateDetails = conn.execute(text(query), inputs)
                 
-                    flash('Contact Updated!', 'success')
+                    # flash('Contact Updated!', 'success')
                 
                 except Exception as e:
-                    flash('Oops, an error has occured.', 'error')
+                    flash('Oops, an error has occured in updating contact tab.', 'error')
                     print(f"Error details: {e}")
 
-            return redirect(url_for('loadsettings', tourID=tourID, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName))
+                flash('Tournament Details Updated!', 'success')
+                return redirect(url_for('loadsettings', tourID=tourID, projID=projID))
 
 
         else:
@@ -422,7 +432,7 @@ class Tournaments:
 
                 sportsOptions = [row._asdict() for row in rows]
                 
-                query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
+                query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName, tournaments.statusID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
                 inputs = {'tourID': tourID}
                 result = conn.execute(text(query), inputs)
                 rows = result.fetchall()
@@ -434,6 +444,10 @@ class Tournaments:
                 gender = rows[0][4]
                 sport = rows[0][5]
                 format = rows[0][6]
+                status = rows[0][7]
+
+                if status == 5:
+                    return redirect(url_for('loadSuspendTour', projID=projID, tourID=tourID))
 
                 #getting details and contact information
                 query = "SELECT * FROM generalInfo WHERE tourID = :tourID"
@@ -451,8 +465,90 @@ class Tournaments:
                     rules = ""
                     prize = ""
                     contact = ""
+      
+            return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
         
-            return render_template('settings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+    #End Tournament
+    def SuspendTour(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        navexpand = 'Yes'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "POST":
+            getstatus = request.form.get("status")
+            status = int(getstatus)
+
+            if status == 5:
+                return redirect(url_for('loadSuspendTour', projID=projID, tourID=tourID))
+
+            try:
+                with dbConnect.engine.connect() as conn:
+                    query = "UPDATE tournaments SET statusID = :statusID WHERE tourID = :tourID"
+                    inputs = {'statusID':status,'tourID':tourID}
+                    updateStatus = conn.execute(text(query), inputs)
+
+                    flash('Status Updated!', 'success')
+                    return redirect(url_for('loadsettings', projID=projID, tourID=tourID))
+        
+            except Exception as e:
+                flash('Oops, an error has occured while changing status for tournament.', 'error')
+                print(f"Error details: {e}")
+                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+
+        else:
+            try:
+                with dbConnect.engine.connect() as conn:
+                    query = "UPDATE tournaments SET statusID = 5 WHERE tourID = :tourID"
+                    inputs = {'tourID': tourID}
+                    result = conn.execute(text(query), inputs)
+
+                    #getting general tab information
+                    query = "SELECT * FROM sports"
+                    result = conn.execute(text(query))
+                    rows = result.fetchall()
+
+                    sportsOptions = [row._asdict() for row in rows]
+                    
+                    query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName, tournaments.statusID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
+                    inputs = {'tourID': tourID}
+                    result = conn.execute(text(query), inputs)
+                    rows = result.fetchall()
+
+                    tourName = rows[0][0]
+                    tourSize = rows[0][1]
+                    startDate = rows[0][2]
+                    endDate = rows[0][3]
+                    gender = rows[0][4]
+                    sport = rows[0][5]
+                    format = rows[0][6]
+                    status = rows[0][7]
+
+                    #getting details and contact information
+                    query = "SELECT * FROM generalInfo WHERE tourID = :tourID"
+                    inputs = {'tourID': tourID}
+                    result = conn.execute(text(query), inputs)
+                    rows = result.fetchall()
+
+                    if rows:
+                        generalDesc = rows[0][1]
+                        rules = rows[0][2]
+                        prize = rows[0][3]
+                        contact = rows[0][4]
+                    else: 
+                        generalDesc = ""
+                        rules = ""
+                        prize = ""
+                        contact = ""
+
+                flash('This tournament is Suspended!', 'error')
+                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+
+            except Exception as e:
+                flash('Oops, an error has occured while ending tournament.', 'error')
+                print(f"Error details: {e}")
+                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
+         
       
     #View Participant List
     def participant(projID, tourID):
@@ -495,6 +591,7 @@ class Tournaments:
             return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
        
     #Create Participant and Players
+
     def createParticipant(projID, tourID):
         #for navbar
         navtype = 'dashboard'
