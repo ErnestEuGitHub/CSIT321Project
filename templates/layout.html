@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="/static/css/navbar.css">
-
 
 <head>
     <title>
@@ -70,23 +70,26 @@
             {% endfor %}
             
         {% elif navtype == 'dashboard' %}
+
             <a href="/tournamentOverviewPage/{{projID}}/{{tourID}}"><i class="bi bi-arrow-left"></i></a>
             <h2>{{tournamentName}}</h2>
+
             <a href="/dashboard/{{projID}}/{{tourID}}">Dashboard</a>
             <div class="dropdown" id="settingDropdown">
                 <a class="dropdown-toggle" style="cursor: pointer;">
                     Setting
                 </a>
                 <ul id="dashboardSettingsNav" style="display:none">
-                    <li><a href="/{{projID}}/settings/{{tourID}}">General</a></li>
+                    <li><a href="/settings/{{projID}}/{{tourID}}">General</a></li>
+
                     <li><a href="#">Permission</a></li>
                     <li><a href="#">Custom Field</a></li>
                 </ul>
             </div>
-            <a href="/{{projID}}/structure/{{tourID}}">Structure</a>
+            <a href="/structure/{{projID}}/{{tourID}}">Structure</a>
             <a href="#">Registration</a>
-            <a href="/{{projID}}/tournamentParticipant/{{tourID}}">Participant</a>
-            <a href="/{{projID}}/placement/{{tourID}}">Placement</a>
+            <a href="/participant/{{projID}}/{{tourID}}">Participant</a>
+            <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
             <a href="#">Match</a>
             <a href="#">Final Standing</a>
             <a href="#">Public Page</a>

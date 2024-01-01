@@ -19,19 +19,58 @@
                 </div>
             {% endif %}
         {% endfor %}
-        <h2 class="my-3">Add New Participant</h2>
+
+        <h2 class="my-3">New Participant</h2>
         <form action="" method="POST">
-            <div class="mb-3">
-                <label for="exampleInputTeamName1" class="form-label">Team Name</label>
-                <input type="teamName" class="form-control" id="participantName" name="participantName">
+            <div id="BasicInformation" > 
+                <div class="mb-3">
+                    <label for="exampleInputTeamName1" class="form-label">Team Name</label>
+                    <input type="text" class="form-control" id="participantName" name="participantName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Email address</label>
+                    <input type="text" class="form-control" id="participantEmail" name="participantEmail" aria-describedby="emailHelp">
+                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="participantEmail" name="participantEmail" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            <div class="mb-3" id="addPlayerContainer">
+                <div class="d-flex justify-content-between mb-3">
+                    <label class="mb-3">Players</label>
+                    <button type="button" class="btn btn-primary" id="addPlayerBtn">Add Players</button>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Add</button>
+            <div id="Submit">
+                <button type="submit" class="btn btn-primary">Add</button>
+                <a href="/participant/{{projID}}/{{tourID}}" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+            </div>
         </form>
     </div>
+
+    <script>
+
+        let addPlayerContainer = document.getElementById("addPlayerContainer");
+        let addPlayerBtn = document.getElementById("addPlayerBtn");
+        addPlayerBtn.addEventListener("click", addPlayer);
+
+        function addPlayer () {
+            const div = document.createElement("div");
+            div.className = "container mb-3 player";
+            div.innerHTML = `<div class="card">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <input type="text" class="form-control mx-3" placeholder="Enter Player Name" name="playerName"></input>
+                                    <button type="button" class="btn btn-primary justify-content-center" onclick="removePlayer(this)"><i class="bi bi-trash3-fill"></i></button>
+                                </div>
+                            </div>`;
+            
+            addPlayerContainer.appendChild(div);
+        }
+
+        function removePlayer(player) {
+            const closestAncestor = player.closest('.player')
+            if (closestAncestor) {
+                closestAncestor.remove();
+            }
+        }
+    </script>
 
 {% endblock %}

@@ -121,7 +121,7 @@ class Tournaments:
                         projectName = retrieveProjectNavName(projID)
 
                     flash('Tournament Created!', 'success')
-                    return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName)
+                    return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName, projID=projID)
                 
                 except Exception as e:
                     flash('Oops, an error has occured.', 'error')
@@ -166,20 +166,75 @@ class Tournaments:
         return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
     
     #Structure
+
     def structure(projID, tourID):
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
 
         navtype = 'dashboard'
-        return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+        try:
+            with dbConnect.engine.connect() as conn:
+                    
+                structureQuery = "SELECT stageName, stageSequence, stageFormatID, stageStatusID, stageID FROM stages WHERE tourID = :tourID AND stageStatusID <> 4"
+                inputs = {'tourID': tourID}
+                result = conn.execute(text(structureQuery), inputs)
+                rows = result.fetchall()
+                print(rows)
+                stages = [row._asdict() for row in rows]
+                print(stages)
+
+                stageList = ''
+                
+                for stage in stages:
+                    
+                    if int(stage["stageFormatID"]) == 1:
+                        stage["stageFormatID"] = "Single Elimination"
+                    elif int(stage["stageFormatID"]) == 2:
+                        stage["stageFormatID"] = "Double Elimination"
+                    elif int(stage["stageFormatID"]) == 3:
+                        stage["stageFormatID"] = "Single Round Robin"
+                    elif int(stage["stageFormatID"]) == 4:
+                        stage["stageFormatID"] = "Double Round Robin"
+                    else:
+                        print("Invalid stage format!!!")
+
+                    stage_html = f'''
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between" id="{stage["stageID"]}">
+                                                <label>{stage["stageSequence"]}. {stage["stageName"]} - {stage["stageFormatID"]}</label>
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true">
+                                                    Edit
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="/configureStage/{tourID}/{stage["stageID"]}">Configure</a></li>
+                                                    <li><a class="dropdown-item" href="#" onclick="deleteStage({tourID}, {stage["stageID"]})">Delete</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                '''
+                    
+                    stageList += stage_html
+                
+                    
+            return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageList=stageList)
+        
+        except Exception as e:
+                flash('Oops, an error has occured.', 'error')
+                print(f"Error details: {e}")
+                return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+        
     
-    #CreateStructure
-    def createStructure(projID, tourID):
-  
+
+    #CreateStage
+    @staticmethod
+    def createStage(projID, tourID):
+        
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
         navtype = 'dashboard'
-
+        
         if request.method == "POST":
 
             stageName = request.form.get("stageName")
@@ -187,18 +242,17 @@ class Tournaments:
             stageFormatID = request.form.get("stageFormat")
             stageStatusID = 1
             numberOfParticipants = request.form.get("numberOfParticipants")
+            numberOfGroups = request.form.get("numberOfGroups")
             matchFormatID = request.form.get("matchFormat")
             maxGames = request.form.get("maximumNumberOfGames")
             
-            elimFormatID = request.form.get("elimFormatID")
             tfMatch = request.form.get("34match")
 
-            roundFormatID = request.form.get("roundFormatID")
             winPts = request.form.get("winPoints")
             drawPts = request.form.get("drawPoints")
             lossPts = request.form.get("lossPoints")
             tieBreakers = request.form.getlist("tieBreakerSelect")
-            
+
             if not maxGames:
                 maxGames = matchFormatID
             
@@ -206,51 +260,51 @@ class Tournaments:
                 with dbConnect.engine.connect() as conn:
                     
                     stageQuery = """
-                        INSERT INTO stages (stageName, stageSequence, stageFormatID, stageStatusID, tourID, numberOfParticipants, matchFormatID, maxGames)
-                        VALUES (:stageName, :stageSequence, :stageFormatID, :stageStatusID, :tourID, :numberOfParticipants, :matchFormatID, :maxGames)
+                        INSERT INTO stages (stageName, stageSequence, stageFormatID, stageStatusID, tourID, numberOfParticipants, numberOfGroups, matchFormatID, maxGames)
+                        VALUES (:stageName, :stageSequence, :stageFormatID, :stageStatusID, :tourID, :numberOfParticipants, :numberOfGroups, :matchFormatID, :maxGames)
                         """
-                    stageInputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': tourID, 'numberOfParticipants': numberOfParticipants, 'matchFormatID': matchFormatID, 'maxGames': maxGames}
+                    stageInputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': tourID, 
+                                   'numberOfParticipants': numberOfParticipants, 'numberOfGroups': numberOfGroups, 'matchFormatID': matchFormatID, 'maxGames': maxGames}
                     conn.execute(text(stageQuery), stageInputs)
                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                     stageID = IDfetch.scalar()
-                    print(f"Inserted stage with stageID: {stageID}")
-                    print(type(stageFormatID))
 
-                    if int(stageFormatID) == 1:
-                        print("stageFormatID is 1")
-                        elimFormatQuery = "INSERT INTO elimFormat (elimFormatID, tfMatch, stageID) VALUES (:elimFormatID, :tfMatch, :stageID)"
-                        elimInputs = {'elimFormatID': elimFormatID, 'tfMatch': tfMatch, 'stageID': stageID}
+                    if int(stageFormatID) == 1 or int(stageFormatID) == 2:
+                        print("stageFormatID is" + stageFormatID)
+                        elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
+                        elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                         conn.execute(text(elimFormatQuery), elimInputs)
 
-                    elif int(stageFormatID) == 2:
-                        print("stageFormatID is 2")
-                        roundFormatQuery = """INSERT INTO roundFormat (roundFormatID, winPts, drawPts, lossPts, stageID) VALUES (:roundFormatID, :winPts, :drawPts, :lossPts, :stageID)"""
-                        roundInputs = {'roundFormatID': roundFormatID, 'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
+                    elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
+                        print("stageFormatID is "+ stageFormatID)
+                        roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
+                        roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
                         conn.execute(text(roundFormatQuery), roundInputs)
                         IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                         roundRobinID = IDfetch.scalar()
-                        print(f"Inserted stage with stageID: {roundRobinID}")
 
-                        for tbTypeID in tieBreakers:
-                            sequence = tieBreakers.index(tbTypeID) + 1
+                        print(tieBreakers)
+
+                        for i in range(len(tieBreakers)):
+                            sequence = i + 1
                             tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
-                            tiebreakerInput = {'tbTypeID': tbTypeID, 'sequence': sequence, 'roundRobinID': roundRobinID}
+                            tiebreakerInput = {'tbTypeID': tieBreakers[i], 'sequence': sequence, 'roundRobinID': roundRobinID}
                             createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
                     else:
                         print("stageFormatID is invalid!")
                 
                 flash('Stage Created!', 'success')
-                return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
-            
+
+                # return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+                return redirect(url_for("loadstructure", projID=projID, tourID=tourID))
+                
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         else:
-            return render_template('createStructure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         
-
-   
     #Settings
     def settings(projID, tourID):
         #for navbar
@@ -411,7 +465,7 @@ class Tournaments:
                     rules = ""
                     prize = ""
                     contact = ""
-        
+      
             return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
         
     #End Tournament
@@ -494,41 +548,86 @@ class Tournaments:
                 flash('Oops, an error has occured while ending tournament.', 'error')
                 print(f"Error details: {e}")
                 return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID)
-            
+         
+      
+    #View Participant List
+    def participant(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
 
-    #Create Participant
+        try:
+            with dbConnect.engine.connect() as conn:            
+                # Query the 'participants' table and 'players' tables
+                queryOne ="""
+                SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+                FROM participants LEFT JOIN players
+                ON participants.participantID = players.participantID
+                WHERE participants.tourID = :tourID
+                GROUP BY participants.participantID, participantEmail, participantName"""
+                inputOne = {'tourID': tourID}
+                getparticipants = conn.execute(text(queryOne),inputOne)
+                participants = getparticipants.fetchall()
+
+                # Get the total number of participants
+                total_participants = len(participants)
+
+                # Query the 'tournaments' table
+                queryThree = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+                inputThree = {'tourID': tourID}
+                getTournamentSize = conn.execute(text(queryThree),inputThree)
+                tournamentSize = getTournamentSize.scalar() #scalar only extract the value
+
+                # Get the size of tournament
+                tournamentSize = tournamentSize
+
+                # Render the HTML template with the participant data and total number
+                return render_template('participant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+
+        except Exception as e:
+            # Handle exceptions (e.g., database connection error)
+            print(f"Error: {e}")
+            flash("An error occurred while retrieving participant data.", "error")
+            return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
+       
+    #Create Participant and Players
+
     def createParticipant(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
-        
-        form_submitted = False
 
         if request.method == "POST":
             participantName = request.form.get("participantName")
             participantEmail = request.form.get("participantEmail")
+            playerName = request.form.getlist("playerName")
 
             try:
                 with dbConnect.engine.connect() as conn:
-                    query = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
-                    inputs = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
-                    createNewParticipant = conn.execute(text(query),inputs)
-                
-                    # Set form_submitted to True after successful form submission
-                    form_submitted = True
-                    flash('Tournament Created!', 'success')
-                    return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, tourID=tourID, navtype=navtype, tournamentName=tournamentName, form_submitted=form_submitted, projID=projID)
+                    queryParticipant = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
+                    inputParticipant = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
+                    createNewParticipant = conn.execute(text(queryParticipant),inputParticipant)
+                    
+                    participantID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()                    
+                    
+                    for i, playerName in enumerate(playerName, start=1):
+                        queryPlayer = "INSERT INTO players (playerName, participantID) VALUES (:playerName, :participantID)"
+                        inputPlayer = {'playerName': playerName, 'participantID': participantID}
+                        createNewPlayer = conn.execute(text(queryPlayer), inputPlayer)
+    
+                    flash('Participant Created!', 'success')
+                    return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, participantID=participantID, playerName=playerName, tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
 
             except Exception as e:
-                flash('Oops, an error has occured.', 'error')
+                flash('Oops, an error has occured haha.', 'error')
                 print(f"Error details: {e}")
-            return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted, projID=projID)
-        
+                
+            return render_template('createParticipant.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID) 
         else:
-            return render_template('createParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, form_submitted=form_submitted, projID=projID)
- 
+            return render_template('createParticipant.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
+
     #Edit Participant
-    def editParticipant(projID, tourID,participantID):
+    def editParticipant(projID, tourID, participantID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
@@ -598,13 +697,13 @@ class Tournaments:
                     conn.execute(text(queryDelete), inputDelete)
                     flash('Participant Deleted Successfully!', 'success')
                     
-                return redirect('tournamentParticipant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
+                return redirect('participant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
             
             except Exception as e:
                 flash('Oops, an error has occurred. Details: {}'.format(e), 'error')
                 print(f"Error details: {e}")
 
-            return redirect('tournamentParticipant.html')
+            return redirect('participant.html')
 
         
         else:
@@ -616,8 +715,36 @@ class Tournaments:
                                         
                     disabledName = participants[0][0]
                     disabledEmail = participants[0][1]                
-            return render_template('deleteParticipant.html',disabledEmail=disabledEmail, disabledName=disabledName, navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID)
- 
+            return render_template('deleteParticipant.html',disabledEmail=disabledEmail, disabledName=disabledName, navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
+
+    #View Moderator List
+    def moderator(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        try:
+            with dbConnect.engine.connect() as conn:            
+                # Query the 'participants' table
+                queryModeratorList ="""
+                SELECT users.email, moderators.moderatorID
+                FROM moderators JOIN users
+                ON moderators.userID = users.userID
+                WHERE moderators.tourID = :tourID
+                GROUP BY moderators.moderatorID"""
+                inputModeratorList = {'tourID': tourID}
+                getmoderators = conn.execute(text(queryModeratorList),inputModeratorList)
+                moderators = getmoderators.fetchall()
+
+
+                # Render the HTML template with the participant data and total number
+                return render_template('moderator.html',moderators=moderators, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+
+        except Exception as e:
+            # Handle exceptions (e.g., database connection error)
+            print(f"Error: {e}")
+            flash("An error occurred while retrieving participant data.", "error")
+            return render_template('moderator.html')  # Create an 'error.html' template for error handling 
 
     #Placement
     def get_updated_content():
