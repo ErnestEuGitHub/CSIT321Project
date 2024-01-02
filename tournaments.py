@@ -720,25 +720,32 @@ class Tournaments:
         tournamentName = retrieveDashboardNavName(tourID) 
 
         if request.method == "POST":
-            disabledName = request.form.get("disabledName")
-            disabledEmail = request.form.get("disabledEmail")
+            participantName = request.form.get("participantName")
+            participantEmail = request.form.get("participantEmail")
+            playerName = request.form.getlist("playerName")
+            playerID = request.form.getlist("playerID")
+            playerList = list(zip(playerName, playerID))
             
             try:
 
                 with dbConnect.engine.connect() as conn:
                     # Delete participant from the database
-                    queryDelete = """
-                    DELETE FROM participants
-                    WHERE participantID = :participantID AND tourID = :tourID
-                    """
-                    inputDelete = {
-                        'participantID': participantID,
-                        'tourID': tourID
-                    }
-                    conn.execute(text(queryDelete), inputDelete)
-                    flash('Participant Deleted Successfully!', 'success')
-                    
-                return redirect('participant.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, participantID=participantID, projID=projID)
+                        queryDelete = """
+                        DELETE participants, players FROM participants
+                        LEFT JOIN players ON participants.participantID = players.participantID
+                        WHERE players.playerID = :playerID 
+                        AND participants.participantID = :participantID 
+                        AND participants.tourID = :tourID
+                        """
+                        inputDelete = {
+                            'playerID': playerID,  # Corrected key
+                            'participantID': participantID,
+                            'tourID': tourID
+                        }
+                        conn.execute(text(queryDelete), inputDelete)
+                        flash('Participant Deleted Successfully!', 'success')                 
+                
+                return redirect(url_for("loadParticipant", projID=projID, tourID=tourID))
             
             except Exception as e:
                 flash('Oops, an error has occurred. Details: {}'.format(e), 'error')
