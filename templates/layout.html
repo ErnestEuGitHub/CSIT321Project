@@ -49,40 +49,39 @@
 
     
     <div class="leftnav">
-        <h2>
-            {% if navtype == 'tournament' %}
-                {{projectName}}
-            {% elif navtype == 'project' %}
-                Projects
-            {% elif navtype == 'dashboard' %}
-                {{tournamentName}}
-            {% endif %}
-        </h2>
         {% if navtype == 'tournament' %}
+            <a href="/home"><i class="bi bi-arrow-left"></i></a>
+            <h2>{{projectName}}</h2>
             {% for t in tournamentlist %}
                 <a href="/tournamentOverviewPage/{{projID}}/{{t['tourID']}}">{{t['tourName']}}</a>
             {% endfor %}
         {% elif navtype == 'project' %}
+            <h2>Projects</h2>
             {% for p in projects %}
-                <!-- <a href="/projects/{{p['projID']}}">{{p['projName']}}</a> -->
                 <div class="dropdown project-dropdown">
+                    <a href="/projects/{{p['projID']}}">{{p['projName']}}</a>
                     <a class="dropdown-toggle" style="cursor: pointer;">
-                        <span class="text-content">{{p['projName']}}</span>
+                        <!-- <span class="text-content">{{p['projName']}}</span> -->
                     </a>
-                    <ul class="projSettingsNav" {% if navexpand == 'Yes' %} style="display:block" {% else %} style="display:none" {% endif %}>
+                    <ul class="projSettingsNav" style="display:none">
                         <li><a href="/settings/{{p['projID']}}">Settings</a></li>
                     </ul>
                 </div>
             {% endfor %}
             
         {% elif navtype == 'dashboard' %}
+
+            <a href="/tournamentOverviewPage/{{projID}}/{{tourID}}"><i class="bi bi-arrow-left"></i></a>
+            <h2>{{tournamentName}}</h2>
+
             <a href="/dashboard/{{projID}}/{{tourID}}">Dashboard</a>
             <div class="dropdown" id="settingDropdown">
                 <a class="dropdown-toggle" style="cursor: pointer;">
                     Setting
                 </a>
-                <ul id="dashboardSettingsNav" {% if navexpand == 'Yes' %} style="display:block" {% else %} style="display:none" {% endif %}>
-                    <li><a href="/settings/{{projID}}/{{tourID}}">General</a></li>
+                <ul id="dashboardSettingsNav" style="display:none">
+                    <li><a href="/settings/general/{{projID}}/{{tourID}}">General</a></li>
+
                     <li><a href="#">Permission</a></li>
                     <li><a href="#">Custom Field</a></li>
                 </ul>
