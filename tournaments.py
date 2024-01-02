@@ -637,25 +637,20 @@ class Tournaments:
 
     #Edit Participant
     def editParticipant(projID, tourID, participantID):
+        #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
 
         if request.method == "POST":
-            print(request.form)
             participantName = request.form.get("participantName")
             participantEmail = request.form.get("participantEmail")
             playerName = request.form.getlist("playerName")
             playerID = request.form.getlist("playerID")
-
-            print("PlayerName: ", playerName)
-            print("PlayerID: ", playerID)
-
             playerList = list(zip(playerName, playerID))
 
             for playerName, playerID in playerList:
                 print("PlayerID:", playerID, "PlayerName:", playerName)
                 print(playerList)
-
 
             with dbConnect.engine.connect() as conn:
                 # Update participant information in the database
@@ -692,32 +687,32 @@ class Tournaments:
             
         else:
             with dbConnect.engine.connect() as conn:
-                    queryOne = """SELECT participantName, participantEmail, playerName, playerID
-                    FROM participants LEFT JOIN players
-                    ON participants.participantID = players.participantID
-                    WHERE participants.tourID = :tourID AND participants.participantID = :participantID"""
-                    inputOne = {'tourID': tourID, 'participantID': participantID}
-                    editParticipant = conn.execute(text(queryOne),inputOne)
-                    participants = editParticipant.fetchall()          
+                queryOne = """SELECT participantName, participantEmail, playerName, playerID
+                FROM participants LEFT JOIN players
+                ON participants.participantID = players.participantID
+                WHERE participants.tourID = :tourID AND participants.participantID = :participantID"""
+                inputOne = {'tourID': tourID, 'participantID': participantID}
+                editParticipant = conn.execute(text(queryOne),inputOne)
+                participants = editParticipant.fetchall()          
 
-                    # Check if the participant exists
-                    if participants:
-                        participantName = participants[0][0]  # Assuming participantName is the first column
-                        participantEmail = participants[0][1]  # Assuming participantEmail is the second column
+                # Check if the participant exists
+                if participants:
+                    participantName = participants[0][0]  # Assuming participantName is the first column
+                    participantEmail = participants[0][1]  # Assuming participantEmail is the second column
 
-                        # Fetch all player names for the participant
-                        playerList = [(row[2], row[3]) for row in participants if row[2] is not None and row[3] is not None]  
-                        # Assuming playerID is the third column
-                        # Assuming playerName is the forth column
+                    # Fetch all player names for the participant
+                    playerList = [(row[2], row[3]) for row in participants if row[2] is not None and row[3] is not None]  
+                    # Assuming playerID is the third column
+                    # Assuming playerName is the forth column
 
-                        # Now, you have participant information and a list of player names
-                        # You can use participantID, participantName, participantEmail, and playerNames in your template or further processing
-                    else:
-                        # Handle the case when the participant does not exist
-                        flash('Participant not found!', 'error')
+                    # Now, you have participant information and a list of player names
+                    # You can use participantID, participantName, participantEmail, and playerNames in your template or further processing
+                else:
+                    # Handle the case when the participant does not exist
+                    flash('Participant not found!', 'error')
                         
             return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, playerList=playerList, participantName=participantName, participantEmail=participantEmail, participantID=participantID)
-        
+    
     # Delete Participant
     def deleteParticipant(projID, tourID, participantID):       
         #for navbar
@@ -779,7 +774,7 @@ class Tournaments:
                         flash('Participant not found!', 'error')
                         
             return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, playerList=playerList, participantName=participantName, participantEmail=participantEmail, participantID=participantID)
-        
+    
     #View Moderator List
     def moderator(projID, tourID):
         #for navbar
