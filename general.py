@@ -44,7 +44,7 @@ def updateNavParticipants(participantID):
         
 def updateNavTournaments(projID):
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * FROM tournaments WHERE projID = :projID AND userID = :userID;"
+            query = "SELECT * FROM tournaments WHERE projID = :projID AND userID = :userID AND (statusID IS NULL OR statusID != 5);"
             inputs = {'projID': projID, 'userID': session["id"]}
             getTour = conn.execute(text(query), inputs)
             rows = getTour.fetchall()
@@ -56,7 +56,7 @@ def updateNavTournaments(projID):
         
 def updateNavProjects():
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * FROM projects WHERE userID = :userID;"
+            query = "SELECT * FROM projects WHERE userID = :userID AND (statusID IS NULL OR statusID != 5);"
             inputs = {'userID': session["id"]}
             getprojs = conn.execute(text(query), inputs)
             rows = getprojs.fetchall()
