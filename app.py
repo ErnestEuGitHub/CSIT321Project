@@ -128,8 +128,11 @@ def loadTourOverviewWithID(projID, tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.TourOverviewDetails(projID, tourID)
-                return page
+                if rows[0][9] == 5:
+                    return redirect(url_for('loadtournaments', projID=projID))
+                else:
+                    page = Tournaments.TourOverviewDetails(projID, tourID)
+                    return page
             
             else:
                 return render_template('notfound.html')
@@ -146,8 +149,11 @@ def loaddashboard(projID, tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.dashboard(projID, tourID)
-                return page
+                if rows[0][9] == 5:
+                    return redirect(url_for('loadtournaments', projID=projID))
+                else:
+                    page = Tournaments.dashboard(projID, tourID)
+                    return page
             
             else:
                 return render_template('notfound.html')
