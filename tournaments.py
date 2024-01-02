@@ -31,7 +31,7 @@ class Tournaments:
             
             #for navbar
             navtype = 'tournament'
-            tournamentlist = session["tournav"]
+            tournamentlist = updateNavTournaments(projID)
             # projID = session["currentProj"]
             projectName = retrieveProjectNavName(projID)
     
