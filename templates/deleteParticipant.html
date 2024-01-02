@@ -22,7 +22,10 @@
         <form action="" method="POST">
             <header class="d-flex justify-content-between">
                 <label class="fs-4 fw-bold my-4">Delete Participant / Player</label>
-                <a href="/participant/{{projID}}/{{tourID}}"><button type="submit" class="btn btn-primary my-4"role="button" aria-disabled="true">Delete Participant</button></a>
+                <div>
+                    <a href="/participant/{{projID}}/{{tourID}}"><button type="submit" class="btn btn-primary my-4"role="button" aria-disabled="true">Delete Participant</button></a>
+                    <a href="/participant/{{projID}}/{{tourID}}" class="btn btn-secondary my-4" role="button" aria-disabled="true">Back</a>
+                </div>
             </header>            
             <div class="mb-3">
                 <label for="exampleInputTeamName1" class="form-label">Team Name</label>
@@ -42,7 +45,6 @@
                     <input id="{{ playerList[1] }}" type="text" class="form-control" name="playerID" value="{{ playerList[1] }}" hidden>
                 </div>
             {% endfor %}
-            <a href="/participant/{{projID}}/{{tourID}}" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
         </form>
     </div>
 
