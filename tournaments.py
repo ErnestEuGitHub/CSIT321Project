@@ -107,14 +107,13 @@ class Tournaments:
                         rows = getsfID.fetchall()
                         formatID = rows[0][2]
 
-                        query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID)"
-                        inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':userID}
+                        query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
+                        createNewGeneralInfo = conn.execute(text(query))
+                        getID = createNewGeneralInfo.lastrowid
+            
+                        query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID)"
+                        inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':userID, 'generalInfoID':getID}
                         createTournament = conn.execute(text(query), inputs)
-                        getID = createTournament.lastrowid
-
-                        query = "INSERT INTO generalInfo (tourID) VALUES (:getID)"
-                        inputs = {'getID':getID}
-                        createNewGeneralInfo = conn.execute(text(query), inputs)
 
                         #for navbar
                         tournamentlist = updateNavTournaments(projID)
@@ -126,6 +125,9 @@ class Tournaments:
                 except Exception as e:
                     flash('Oops, an error has occured.', 'error')
                     print(f"Error details: {e}")
+                    #for navbar
+                    tournamentlist = updateNavTournaments(projID)
+                    projectName = retrieveProjectNavName(projID)
                 return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID)
                 
         else:
@@ -306,7 +308,7 @@ class Tournaments:
             return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         
     #Settings
-    def settings(projID, tourID):
+    def settingsGeneral(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         navexpand = 'Yes'
@@ -393,8 +395,14 @@ class Tournaments:
 
                 try:
                     with dbConnect.engine.connect() as conn:
-                        query = "UPDATE generalInfo SET generalInfoDesc = :generalDesc, rules = :rules, prize = :prize WHERE tourID = :tourID"
-                        inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'tourID':tourID}
+                        query = "SELECT generalInfoID from tournaments WHERE tourID = :tourID"
+                        inputs = {'tourID':tourID}
+                        getGeneralInfoID = conn.execute(text(query), inputs)
+                        rows = getGeneralInfoID.fetchall()
+                        generalInfoID = rows[0][0]
+
+                        query = "UPDATE generalInfo SET generalInfoDesc = :generalDesc, rules = :rules, prize = :prize WHERE generalInfoID = :generalInfoID"
+                        inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'generalInfoID':generalInfoID}
                         updateDetails = conn.execute(text(query), inputs)
                 
                     # flash('Details Updated!', 'success')
@@ -409,8 +417,8 @@ class Tournaments:
                 
                 try:
                     with dbConnect.engine.connect() as conn:
-                        query = "UPDATE generalInfo SET contact = :contact WHERE tourID = :tourID"
-                        inputs = {'contact':contact, 'tourID':tourID}
+                        query = "UPDATE generalInfo SET contact = :contact WHERE generalInfoID = :generalInfoID"
+                        inputs = {'contact':contact, 'generalInfoID':generalInfoID}
                         updateDetails = conn.execute(text(query), inputs)
                 
                     # flash('Contact Updated!', 'success')
@@ -432,7 +440,7 @@ class Tournaments:
 
                 sportsOptions = [row._asdict() for row in rows]
                 
-                query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName, tournaments.statusID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
+                query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.generalInfoID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
                 inputs = {'tourID': tourID}
                 result = conn.execute(text(query), inputs)
                 rows = result.fetchall()
@@ -445,13 +453,14 @@ class Tournaments:
                 sport = rows[0][5]
                 format = rows[0][6]
                 status = rows[0][7]
+                generalInfoID = rows[0][8]
 
                 if status == 5:
                     return redirect(url_for('loadSuspendTour', projID=projID, tourID=tourID))
 
                 #getting details and contact information
-                query = "SELECT * FROM generalInfo WHERE tourID = :tourID"
-                inputs = {'tourID': tourID}
+                query = "SELECT * FROM generalInfo WHERE generalInfoID = :generalInfoID"
+                inputs = {'generalInfoID': generalInfoID}
                 result = conn.execute(text(query), inputs)
                 rows = result.fetchall()
 

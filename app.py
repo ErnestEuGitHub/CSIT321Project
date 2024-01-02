@@ -188,7 +188,7 @@ def loadsettings(projID, tourID):
             rows = checktour.fetchall()
 
             if rows:
-                page = Tournaments.settings(projID, tourID)
+                page = Tournaments.settingsGeneral(projID, tourID)
                 return page
             
             else:
