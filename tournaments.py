@@ -606,7 +606,6 @@ class Tournaments:
             return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
        
     #Create Participant and Players
-
     def createParticipant(projID, tourID):
         #for navbar
         navtype = 'dashboard'

@@ -296,7 +296,7 @@ def loadCreateParticipant(projID, tourID):
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments JOIN participants ON tournaments.tourID = participants.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID"
+            query = "SELECT * from tournaments WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID"
             inputs = {'userID': session["id"], 'tourID': tourID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
