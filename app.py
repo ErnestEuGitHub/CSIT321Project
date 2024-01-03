@@ -6,6 +6,7 @@ from tournaments import *
 from projects import *
 from tournamentParticipant import *
 from placement import *
+from seeding import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -119,7 +120,15 @@ def loaddashboard(tourID):
                 return render_template('notfound.html')
 
 @app.route('/placement/<tourID>', methods=["POST", "GET"])
-def placement(tourID):
+def loadPlacement(tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+
+    page = placement(tourID)
+    return page
+
+@app.route('/seeding/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadSeeding(tourID, stageID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     
@@ -128,12 +137,8 @@ def placement(tourID):
     navtype = 'dashboard'
     tournamentName = retrieveDashboardNavName(tourID)
 
-    return render_template('placement.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-
-@app.route('/update_content', methods=['POST'])
-def update_content():
-    updated_content = Tournaments.get_updated_content()
-    return jsonify({'content': updated_content})
+    page = seeding(tourID, stageID)
+    return page
 
 @app.route('/settings/<tourID>', methods=["POST", "GET"])
 def loadsettings(tourID):
