@@ -804,6 +804,7 @@ class Tournaments:
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID) 
+        
 
         if request.method == "POST":
             print(request.form)
@@ -844,18 +845,18 @@ class Tournaments:
 
         try:
             with dbConnect.engine.connect() as conn:            
-                # Query the 'participants' table
+                
+                # Query the 'moderator' table
                 queryModeratorList ="""
-                SELECT users.email, moderators.moderatorID
-                FROM moderators JOIN users
-                ON moderators.userID = users.userID
+                SELECT users.email, GROUP_CONCAT(permissionName) AS permissionName
+                FROM users JOIN moderators JOIN moderatorPermissions JOIN permissions
+                ON moderators.userID = users.userID AND moderators.moderatorID = moderatorPermissions.moderatorID AND moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID
                 GROUP BY moderators.moderatorID"""
                 inputModeratorList = {'tourID': tourID}
                 getmoderators = conn.execute(text(queryModeratorList),inputModeratorList)
                 moderators = getmoderators.fetchall()
-
-
+                
                 # Render the HTML template with the participant data and total number
                 return render_template('moderator.html',moderators=moderators, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
@@ -864,6 +865,30 @@ class Tournaments:
             print(f"Error: {e}")
             flash("An error occurred while retrieving participant data.", "error")
             return render_template('moderator.html')  # Create an 'error.html' template for error handling 
+                
+    #Create Participant and Players
+    def createModerator(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "POST":
+            moderatorName = request.form.get("moderatorName")
+            moderatorEmail = request.form.get("moderatortEmail")
+
+            with dbConnect.engine.connect() as conn:
+                queryParticipant = "INSERT INTO moderators (moderatorName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
+                inputParticipant = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
+                createNewParticipant = conn.execute(text(queryParticipant),inputParticipant)
+                
+
+
+                flash('Participant Created!', 'success')
+            
+            return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+        else:
+            return render_template('createModerator.html',tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
+
 
     #Placement
     def get_updated_content():

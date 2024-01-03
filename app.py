@@ -370,6 +370,24 @@ def loadModerator(projID, tourID):
     page = Tournaments.moderator(projID, tourID)
     return page
 
+@app.route('/createModerator/<projID>/<tourID>', methods=["POST", "GET"])
+def loadCreateModerator(projID, tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.createModerator(projID, tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)
