@@ -170,17 +170,12 @@ def loadPlacement(projID, tourID):
     page = placement(projID, tourID)
     return page
 
-@app.route('/seeding/<tourID>/<stageID>', methods=["POST", "GET"])
-def loadSeeding(tourID, stageID):
+@app.route('/seeding/<projID>/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadSeeding(projID, tourID, stageID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     
-    #fornavbar
-    #session["placementTour"] = tourID
-    navtype = 'dashboard'
-    tournamentName = retrieveDashboardNavName(tourID)
-    
-    page = seeding(tourID, stageID)
+    page = seeding(projID, tourID, stageID)
     return page
 
 @app.route('/settings/general/<projID>/<tourID>', methods=["POST", "GET"])

@@ -36,7 +36,7 @@
                         <div class="me-5">
                             <p>{{ i + 1 }}</p>
                         </div>
-                        <div class="selected-participants"></div>
+                        <div class="selected-participants{{i + 1}}"></div>
                     </div>
                     {% endfor %}
                 </div>
@@ -52,20 +52,22 @@
             </div>
         </div>
     </div>
-    {% for i in range(numberOfGroups) %}
+    
     <div class="panel panel-default">
+        {% for i in range(numberOfGroups) %}
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center mb-3">
                 <h3 class="card-title">Group {{i + 1}}</h3>
             </div>
             <div class="card-content">
                 <div class="container">
-                    {% for i in range(numberOfParticipants // numberOfGroups) %}
+                    {% for j in range(numberOfParticipants // numberOfGroups) %}
                     <div class="participant-row d-flex justify-content-between align-items-center"
                         data-bs-toggle="modal" data-bs-target="#myModal">
                         <div class="me-5">
-                            <p>{{ i + 1 }}</p>
+                            <p>{{ j + 1 }}</p>
                         </div>
+                        <div class="GrpSelected-participants"></div>
                     </div>
                     {% endfor %}
                 </div>
@@ -125,18 +127,31 @@
 
         $(document).ready(function () {
             let selectedParticipantsHTML = ''; // To store selected names temporarily
+            let selectedParticipantsHTMLArray = [];
 
             function updateSelectedParticipants() {
+                selectedParticipantsHTMLArray = [];
                 selectedParticipantsHTML = '';
-                $('.participant-row input:checked').each(function () {
+                $('.participant-row input:checked').each(function (index) {
                     const participantName = $(this).closest('.participant-row').find('.participant-label').text().trim();
-                    selectedParticipantsHTML += `<p>${participantName}</p>`;
+                    selectedParticipantsHTML = `<p>${participantName}</p>`;
+                    selectedParticipantsHTMLArray.push(`<p>${participantName}</p>`);
+
+                    const selectedParticipantsElement = $(`.selected-participants${index + 1}`);
+                    selectedParticipantsElement.html(selectedParticipantsHTML);
                 });
+
+                console.log(selectedParticipantsHTMLArray);
+
+                // Update each .GrpSelected-participants element
+                $('.GrpSelected-participants').each(function (index) {
+                    $(this).html(selectedParticipantsHTMLArray[index] || ''); // Use empty string if index is out of bounds
+                    });
             }
 
             function resetModal() {
                 $('.form-check-input').prop('checked', false);
-                updateSelectedParticipants();
+                // updateSelectedParticipants();
                 $('.modal-backdrop').remove();
                 $('body').css('overflow', 'auto');
             }
@@ -151,14 +166,14 @@
                 if (!$(event.target).closest('.form-check-input').length) {
                     const checkbox = $(this).find('.form-check-input');
                     checkbox.prop('checked', !checkbox.prop('checked'));
-                    updateSelectedParticipants();
+                    // updateSelectedParticipants();
                 }
             });
 
             // Save Changes button functionality
             $('#saveChangesBtn').on('click', function () {
-                $('.selected-participants').html(selectedParticipantsHTML);
                 $('#myModal').modal('hide');
+                updateSelectedParticipants()
                 // Perform other actions on saving changes if needed
             });
 

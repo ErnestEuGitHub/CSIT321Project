@@ -3,9 +3,8 @@ from database import dbConnect
 from sqlalchemy import text
 from general import *
 
-def seeding(tourID, stageID):
+def seeding(projID, tourID, stageID):
     #fornavbar
-    session["placementTour"] = tourID
     navtype = 'dashboard'
     tournamentName = retrieveDashboardNavName(tourID)
 
@@ -26,4 +25,6 @@ def seeding(tourID, stageID):
         participantID = [row._asdict() for row in rows]
         participantName = [row._asdict() for row in rows]
 
-    return render_template('seeding.html', participantID=participantID, participantName=participantName, numberOfParticipants=numberOfParticipants, numberOfGroups=numberOfGroups, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+        count = 1
+
+    return render_template('seeding.html', participantID=participantID, participantName=participantName, numberOfParticipants=numberOfParticipants, numberOfGroups=numberOfGroups, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, count=count)

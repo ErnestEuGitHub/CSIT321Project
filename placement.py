@@ -4,9 +4,8 @@ import bcrypt
 from sqlalchemy import text
 from general import *
 
-def placement(tourID):
+def placement(projID, tourID):
     #fornavbar
-    session["placementTour"] = tourID
     navtype = 'dashboard'
     tournamentName = retrieveDashboardNavName(tourID)
 
@@ -18,4 +17,4 @@ def placement(tourID):
 
         placementStages = [row._asdict() for row in rows]
  
-    return render_template('placement.html', placementStages=placementStages, navtype=navtype, tournamentName=tournamentName, tourID=tourID)
+    return render_template('placement.html', placementStages=placementStages, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
