@@ -611,29 +611,23 @@ class Tournaments:
             participantEmail = request.form.get("participantEmail")
             playerName = request.form.getlist("playerName")
 
-            try:
-                with dbConnect.engine.connect() as conn:
-                    queryParticipant = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
-                    inputParticipant = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
-                    createNewParticipant = conn.execute(text(queryParticipant),inputParticipant)
-                    
-                    participantID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()                    
-                    
-                    for i, playerName in enumerate(playerName, start=1):
-                        queryPlayer = "INSERT INTO players (playerName, participantID) VALUES (:playerName, :participantID)"
-                        inputPlayer = {'playerName': playerName, 'participantID': participantID}
-                        createNewPlayer = conn.execute(text(queryPlayer), inputPlayer)
-    
-                    flash('Participant Created!', 'success')
-                    return render_template('createParticipant.html',participantName=participantName, participantEmail=participantEmail, participantID=participantID, playerName=playerName, tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
-
-            except Exception as e:
-                flash('Oops, an error has occured haha.', 'error')
-                print(f"Error details: {e}")
+            with dbConnect.engine.connect() as conn:
+                queryParticipant = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
+                inputParticipant = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
+                createNewParticipant = conn.execute(text(queryParticipant),inputParticipant)
                 
-            return render_template('createParticipant.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID) 
+                participantID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()                    
+                
+                for i, playerName in enumerate(playerName, start=1):
+                    queryPlayer = "INSERT INTO players (playerName, participantID) VALUES (:playerName, :participantID)"
+                    inputPlayer = {'playerName': playerName, 'participantID': participantID}
+                    createNewPlayer = conn.execute(text(queryPlayer), inputPlayer)
+
+                flash('Participant Created!', 'success')
+            
+            return redirect(url_for("loadParticipant", projID=projID, tourID=tourID))
         else:
-            return render_template('createParticipant.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
+            return render_template('createParticipant.html',tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
 
     #Edit Participant
     def editParticipant(projID, tourID, participantID):
@@ -745,14 +739,14 @@ class Tournaments:
                     else:
                         # Delete participant from the database when there is player(s)
                         queryDeleteParticipantAndPlayer = """
-                        DELETE participants, players FROM participants
-                        LEFT JOIN players ON participants.participantID = players.participantID
-                        WHERE players.playerID = :playerID
-                        AND participants.participantID = :participantID 
-                        AND participants.tourID = :tourID
+                            DELETE participants, players FROM participants
+                            LEFT JOIN players ON participants.participantID = players.participantID
+                            WHERE players.playerID IN :playerIDs
+                            AND participants.participantID = :participantID 
+                            AND participants.tourID = :tourID
                         """
                         inputDeleteParticipantAndPlayer = {
-                            'playerID': playerID, 
+                            'playerIDs': playerID,  # Make sure playerID is a list of player IDs
                             'participantID': participantID,
                             'tourID': tourID
                         }
