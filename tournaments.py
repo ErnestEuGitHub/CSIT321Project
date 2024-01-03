@@ -873,14 +873,17 @@ class Tournaments:
         tournamentName = retrieveDashboardNavName(tourID)
 
         if request.method == "POST":
-            moderatorName = request.form.get("moderatorName")
-            moderatorEmail = request.form.get("moderatortEmail")
+            SetupTournament = request.form.get("SetupTournament")
+            SetupStructure = request.form.get("SetupStructure")
+            ManageRegistration = request.form.get("ManageRegistration")
+            ManageParticipant = request.form.get("ManageParticipant")
+            PlaceParticipant = request.form.get("PlaceParticipant")
+            ManageFinalStanding = request.form.get("ManageFinalStanding")
+            ReportResult = request.form.get("ReportResult")
+            print("Request Form 1:",SetupTournament)
+            print("Request Form 2:",SetupStructure)
 
-            with dbConnect.engine.connect() as conn:
-                queryParticipant = "INSERT INTO moderators (moderatorName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
-                inputParticipant = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
-                createNewParticipant = conn.execute(text(queryParticipant),inputParticipant)
-                
+            with dbConnect.engine.connect() as conn:               
 
 
                 flash('Participant Created!', 'success')

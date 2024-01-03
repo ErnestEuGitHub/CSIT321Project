@@ -20,18 +20,35 @@
             {% endif %}
         {% endfor %}
 
-        <h2 class="my-3">New moderator</h2>
+        <h2 class="my-3">New Moderator</h2>
         <form action="/createModerator/{{projID}}/{{tourID}}" method="POST">
-            <div id="BasicInformation" > 
-                <div class="mb-3">
-                    <label for="exampleInputModeratorName" class="form-label">Moderator Name</label>
-                    <input type="text" class="form-control" id="moderatorName" name="moderatorName" required>
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputModeratorEmail" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="moderatorEmail" name="moderatorEmail" aria-describedby="emailHelp">
-                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="SetupTournament" name="SetupTournament">
+                <label class="form-check-label" for="SetupTournament">Setup Tournament</label>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="SetupStructure" name="SetupStructure">
+                <label class="form-check-label" for="SetupStructure">Setup Structure</label>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="ManageRegistration" name="ManageRegistration">
+                <label class="form-check-label" for="ManageRegistration">Manage Registration</label>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="ManageParticipant" name="ManageParticipant">
+                <label class="form-check-label" for="ManageParticipant">Manage Participant</label>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="PlaceParticipant" name="PlaceParticipant">
+                <label class="form-check-label" for="PlaceParticipant">Place Participant</label>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="ManageFinalStanding" name="ManageFinalStanding">
+                <label class="form-check-label" for="ManageFinalStanding">Manage Final Standing</label>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="ReportResult" name="ReportResult">
+                <label class="form-check-label" for="ReportResult">Report Result</label>
             </div>
             <div id="Submit">
                 <button type="submit" class="btn btn-primary">Add</button>
