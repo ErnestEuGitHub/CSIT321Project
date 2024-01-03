@@ -13,22 +13,3 @@
     align-items: flex-start;
     padding-bottom: 20px;
 }
-
-.title {
-    text-align: left;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    margin-left: 20px;
-}
-
-/* CSS for the box */
-#clickable-box {
-    width: 200px;
-    height: 100px;
-    background-color: lightblue;
-    text-align: center;
-    line-height: 100px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    margin-left: 20px;
-}

@@ -1,195 +1,176 @@
-<link rel="stylesheet" href="../static/css/seeding.css">
+{% extends "layout.html" %}
 
-<div class="container">
-    <div class="table-container">
-        <h1>Seeding</h1>
-        <table id="1">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Initial 10 empty rows -->
-            </tbody>
-        </table>
+{% block content %}
+
+<link rel="stylesheet" href="/static/css/seeding.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+    crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="content">
+    <div class="panel panel-default">
+        <div class="card mb-3 mb-sm-0">
+            <div class="card-header d-flex justify-content-between align-items-center mb-3">
+                <h2 class="card-title mb-0">Seeding</h2>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                    data-bs-target="#myModal">Add</button>
+            </div>
+            <div class="card-content">
+                <div class="container">
+                    <div class="d-flex justify-content-start align-items-center mb-3">
+                        <div class="me-5">
+                            <h4>#</h4>
+                        </div>
+                        <div>
+                            <h4>Name</h4>
+                        </div>
+                    </div>
+                    <hr>
+                    <!-- Dynamic content -->
+                    {% for i in range(numberOfParticipants) %}
+                    <div class="participant-row d-flex align-items-center" data-bs-toggle="modal"
+                        data-bs-target="#myModal">
+                        <div class="me-5">
+                            <p>{{ i + 1 }}</p>
+                        </div>
+                        <div class="selected-participants"></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="grid-flex align-end">
+                    <div class="size-content">
+                        <button class="btn btn-primary">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for i in range(numberOfGroups) %}
+    <div class="panel panel-default">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center mb-3">
+                <h3 class="card-title">Group {{i + 1}}</h3>
+            </div>
+            <div class="card-content">
+                <div class="container">
+                    {% for i in range(numberOfParticipants // numberOfGroups) %}
+                    <div class="participant-row d-flex justify-content-between align-items-center"
+                        data-bs-toggle="modal" data-bs-target="#myModal">
+                        <div class="me-5">
+                            <p>{{ i + 1 }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 
-    <div class="table-container">
-        <h1>Group 1</h1>
-        <table id="2">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Initial 10 empty rows for the second table -->
-            </tbody>
-        </table>
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="myModalLabel">Add Participant to the stage</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-check mb-3" style="display: flex; justify-content: flex-start;">
+                            <input class="form-check-input" type="checkbox" id="selectAll">
+                            <label class="form-check-label" for="selectAll">
+                                Select All
+                            </label>
+                        </div>
+                        <hr>
+                        <div id="participantList" style="text-align: left;">
+                            {% for participant in participantName %}
+                            <div class="form-check participant-row">
+                                <label class="form-check-label participant-label" style="cursor: pointer;">
+                                    <input class="form-check-input" type="checkbox"
+                                        value="{{ participant['participantId'] }}">
+                                    {{ participant['participantName'] }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- Modal for name selection -->
-<div id="nameSelectionModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2>Select a Name</h2>
-        <ul id="nameList">
-            <!-- Names will be populated dynamically -->
-        </ul>
-    </div>
-</div>
+    <script>
+        $(document).ready(function () {
+            $('#selectAll').on('change', function () {
+                $('.participant-row input[type="checkbox"]').prop('checked', $(this).prop('checked'));
+            });
 
-<script>
-    let rowId = 1;
-    let secondRowId = 1;
-
-    function addPerson(cell, tableId) {
-        const namesFromDatabase = ["Alice", "Bob", "Charlie", "David", "Eva", "Frank", "Grace"];
-
-        const modal = document.getElementById('nameSelectionModal');
-        modal.style.display = 'block';
-
-        const nameList = document.getElementById('nameList');
-        nameList.innerHTML = '';
-
-        namesFromDatabase.forEach(name => {
-
-            const listItem = document.createElement('li');
-            listItem.textContent = name;
-            listItem.onclick = function () {
-                selectName(cell, name, tableId);
-            };
-            nameList.appendChild(listItem);
+            $('.participant-row input[type="checkbox"]').on('change', function () {
+                const allChecked = $('.participant-row input[type="checkbox"]:checked').length === $('.participant-row input[type="checkbox"]').length;
+                $('#selectAll').prop('checked', allChecked);
+            });
         });
-    }
 
-    function selectName(cell, selectedName, tableId) {
+        $(document).ready(function () {
+            let selectedParticipantsHTML = ''; // To store selected names temporarily
 
-        const nameContainer = document.createElement('div');
-        nameContainer.className = 'name-cell';
-
-        const editableContent = document.createElement('span');
-        editableContent.className = 'editable';
-        editableContent.textContent = selectedName;
-
-        const deleteButton = createDeleteButton(cell.parentNode, tableId); // Pass the row and tableId
-
-        nameContainer.appendChild(editableContent);
-        nameContainer.appendChild(deleteButton);
-
-        cell.innerHTML = '';
-        cell.appendChild(nameContainer);
-        cell.parentNode.classList.add('has-name');
-
-        // Sync changes with the corresponding cell in the other table
-        const rowIndex = cell.parentNode.rowIndex - 1;
-        const otherTableId = tableId === '1' ? '2' : '1';
-        const otherTableRows = document.getElementById(otherTableId).getElementsByTagName('tbody')[0].rows;
-        const correspondingCell = otherTableRows[rowIndex].cells[1];
-        correspondingCell.innerHTML = nameContainer.innerHTML;
-
-        closeModal(); // Close the modal after selecting a name
-    }
-
-    function createDeleteButton(row, tableId) {
-        const deleteButton = document.createElement('button');
-        deleteButton.className = 'delete-button';
-        deleteButton.innerHTML = '&#10060;'; // Cross icon HTML entity
-
-        deleteButton.addEventListener('click', function (event) {
-            event.stopPropagation(); // Stop event propagation for delete button
-            const nameCell = row.cells[1];
-            nameCell.innerHTML = ''; // Clear the name content
-            row.classList.remove('has-name'); // Remove 'has-name' class
-
-            // Sync deletion with the corresponding cell in the other table
-            const rowIndex = row.rowIndex - 1; // Adjust for zero-based index
-            const otherTableRows = document.getElementById(tableId === '1' ? '2' : '1').getElementsByTagName('tbody')[0].rows;
-            const correspondingCell = otherTableRows[rowIndex].cells[1];
-            correspondingCell.innerHTML = ''; // Clear the content in the corresponding cell
-        });
-
-        return deleteButton;
-    }
-
-
-    function createEmptyRow(tableId) {
-        const container = document.getElementById(tableId).getElementsByTagName('tbody')[0];
-        const newRow = container.insertRow();
-
-        const cell1 = newRow.insertCell(0);
-        cell1.textContent = tableId === '1' ? rowId : secondRowId;
-
-        const cell2 = newRow.insertCell(1);
-        cell2.textContent = ''; // Initially empty
-
-        const uniqueId = tableId === '1' ? `row_${rowId}` : `second_row_${secondRowId}`;
-        newRow.dataset.rowId = uniqueId; // Set the data-row-id attribute
-
-        if (tableId === '1') {
-            rowId++;
-        } else {
-            secondRowId++;
-        }
-
-        newRow.onclick = function () {
-            enableEditing(newRow, tableId);
-        };
-    }
-
-
-    function enableEditing(row, tableId) {
-        const cell = row.cells[1];
-        addPerson(cell, tableId);
-    }
-
-    function syncDelete(row) {
-        const rowIdToDelete = row.dataset.rowId;
-        const allTables = document.querySelectorAll('.table-container table');
-
-        allTables.forEach(table => {
-            const otherTableRows = table.getElementsByTagName('tbody')[0].rows;
-            const correspondingRow = [...otherTableRows].find(r => r.dataset.rowId === rowIdToDelete);
-
-            if (correspondingRow && correspondingRow !== row) {
-                const nameCell = correspondingRow.cells[1];
-                nameCell.innerHTML = '';
-                correspondingRow.classList.remove('has-name');
+            function updateSelectedParticipants() {
+                selectedParticipantsHTML = '';
+                $('.participant-row input:checked').each(function () {
+                    const participantName = $(this).closest('.participant-row').find('.participant-label').text().trim();
+                    selectedParticipantsHTML += `<p>${participantName}</p>`;
+                });
             }
+
+            function resetModal() {
+                $('.form-check-input').prop('checked', false);
+                updateSelectedParticipants();
+                $('.modal-backdrop').remove();
+                $('body').css('overflow', 'auto');
+            }
+
+            // Listen for checkbox changes
+            $('.form-check-input').on('change', function () {
+                updateSelectedParticipants();
+            });
+
+            // Handling the row click
+            $('.participant-row').on('click', function (event) {
+                if (!$(event.target).closest('.form-check-input').length) {
+                    const checkbox = $(this).find('.form-check-input');
+                    checkbox.prop('checked', !checkbox.prop('checked'));
+                    updateSelectedParticipants();
+                }
+            });
+
+            // Save Changes button functionality
+            $('#saveChangesBtn').on('click', function () {
+                $('.selected-participants').html(selectedParticipantsHTML);
+                $('#myModal').modal('hide');
+                // Perform other actions on saving changes if needed
+            });
+
+            // Event triggered after the modal is completely hidden
+            $('#myModal').on('hidden.bs.modal', function () {
+                resetModal();
+            });
+
+            // Event triggered when the modal is shown
+            $('#myModal').on('shown.bs.modal', function () {
+                $('body').css('overflow', 'hidden');
+            });
         });
-
-        const nameCell = row.cells[1];
-        nameCell.innerHTML = '';
-        row.classList.remove('has-name');
-
-        closeModal();
-    }
-
-    function deleteEntry(row) {
-        const deleteButton = row.querySelector('.delete-button');
-        deleteButton.addEventListener('click', function (event) {
-            event.stopPropagation(); // Stop event propagation for delete button
-            syncDelete(row);
-        });
-    }
-
-    // Delegate the event handling to the table rows
-    document.querySelectorAll('table tbody tr').forEach(row => {
-        deleteEntry(row);
-    });
-
-
-    for (let i = 0; i < 10; i++) {
-        createEmptyRow('1');
-        createEmptyRow('2');
-    }
-
-    function closeModal() {
-        const modal = document.getElementById('nameSelectionModal');
-        modal.style.display = 'none';
-    }
-</script>
+    </script>
+    {% endblock %}

@@ -1,103 +1,61 @@
 /* CSS styles */
-body {
+* {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-.container {
+.content {
     display: flex;
     justify-content: space-between;
-    margin: 20px auto;
+    margin-top: 20px;
+    margin-left: 240px;
     max-width: 1600px;
     /* Adjust the max-width as needed */
     overflow-x: auto;
     /* Enable horizontal scrolling for overflow */
 }
 
-.table-container {
-    width: 48%;
-    /* Set the width of each table container */
-    box-sizing: border-box;
-    padding: 0 10px;
+/* Styles for panel 1 */
+.panel {
+    flex: 1;
+    margin-right: 20px;
 }
 
-h1 {
-    margin: 0;
-    padding: 10px 0;
-    background-color: #f2f2f2;
-    /* Match background color with table header cell */
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-    /* Add a border bottom for separation */
-    font-size: 18px;
-    height: 50px;
-    /* Fixed height for headers */
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    /* Shadow effect for headers */
+/* Styles for panel 2 */
+.panel:last-child {
+    margin-right: 0;
+    /* Removing margin for the last panel */
 }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-    table-layout: fixed;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    /* Shadow effect for tables */
-}
-
-th,
-td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-}
-
-th {
-    background-color: #f2f2f2;
-    /* Match table header cell color */
-    white-space: nowrap;
+.card .card-content {
+    flex: 1;
     overflow: hidden;
-    text-overflow: ellipsis;
+    word-wrap: break-word;
 }
 
-td .editable {
-    display: inline-block;
-    min-width: 100px;
+.participant-row {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease;
     cursor: pointer;
 }
 
-tr {
+.participant-row:hover {
+    background-color: #f0f0f0;
+    /* Change this to the desired hover color */
+}
+
+.participant-row:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.participant-label {
     cursor: pointer;
-}
-
-tr:hover {
-    background-color: #f5f5f5;
-}
-
-.name-cell {
-    display: flex;
-    align-items: center;
-}
-
-.delete-button {
-    cursor: pointer;
-    display: none;
-    /* Initially hide delete button */
-    background: none;
-    border: none;
-    font-size: 16px;
-    line-height: 1;
-    padding: 0;
-    margin-left: 5px;
-}
-
-.delete-button:hover {
-    color: red;
-}
-
-td:hover .delete-button {
-    display: inline-block;
-    /* Show delete button on cell hover */
 }
 
 /* Modal CSS */
@@ -115,7 +73,7 @@ td:hover .delete-button {
 }
 
 .modal-content {
-    background-color: #fefefe;
+    background-color: #fef4f4;
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
@@ -124,16 +82,24 @@ td:hover .delete-button {
     cursor: pointer;
 }
 
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+.form-check-input {
+    margin-right: 5px;
+    /* Adjust margin as needed */
 }
 
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+/* Change the checkbox color */
+.form-check-input[type="checkbox"]:not(:checked) {
+    background-color: #333;
+    border-color: #333;
+}
+
+/* Change the checkbox color when checked */
+.form-check-input[type="checkbox"]:checked {
+    background-color: #333;
+    border-color: #333;
+}
+
+/* Change the checkmark color */
+.form-check-input[type="checkbox"]:checked::before {
+    background-color: #fff;
 }
