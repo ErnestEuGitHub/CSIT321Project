@@ -21,7 +21,7 @@
         {% endfor %}
 
         <h2 class="my-3">Edit Participant</h2>
-        <form action="" method="POST">
+        <form action="/editParticipant/<projID>/<tourID>/<participantID>" method="POST">
             <div class="mb-3">
                 <label for="exampleInputTeamName1" class="form-label">Team Name</label>
                 <input type="text" class="form-control" name="participantName" value="{{ participantName }}" required>
