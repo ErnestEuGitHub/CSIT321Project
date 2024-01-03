@@ -725,24 +725,38 @@ class Tournaments:
             playerName = request.form.getlist("playerName")
             playerID = request.form.getlist("playerID")
             playerList = list(zip(playerName, playerID))
-            
+            print("Player List: ",playerList)
             try:
-
-                with dbConnect.engine.connect() as conn:
-                    # Delete participant from the database
-                        queryDelete = """
-                        DELETE participants, players FROM participants
-                        LEFT JOIN players ON participants.participantID = players.participantID
-                        WHERE players.playerID = :playerID 
-                        AND participants.participantID = :participantID 
-                        AND participants.tourID = :tourID
+                with dbConnect.engine.connect() as conn:   
+                    # Check if playerList is empty
+                    if not playerList:
+                        # Delete participant from the database when there is no player
+                        queryDeleteParticipantsOnly = """
+                        DELETE FROM participants
+                        WHERE participantID = :participantID 
+                        AND tourID = :tourID
                         """
-                        inputDelete = {
-                            'playerID': playerID,  # Corrected key
+                        inputDeleteParticipantsOnly = {
                             'participantID': participantID,
                             'tourID': tourID
                         }
-                        conn.execute(text(queryDelete), inputDelete)
+                        conn.execute(text(queryDeleteParticipantsOnly), inputDeleteParticipantsOnly)
+                        flash('Participant Deleted Successfully!', 'success')
+                    else:
+                        # Delete participant from the database when there is player(s)
+                        queryDeleteParticipantAndPlayer = """
+                        DELETE participants, players FROM participants
+                        LEFT JOIN players ON participants.participantID = players.participantID
+                        WHERE players.playerID = :playerID
+                        AND participants.participantID = :participantID 
+                        AND participants.tourID = :tourID
+                        """
+                        inputDeleteParticipantAndPlayer = {
+                            'playerID': playerID, 
+                            'participantID': participantID,
+                            'tourID': tourID
+                        }
+                        conn.execute(text(queryDeleteParticipantAndPlayer), inputDeleteParticipantAndPlayer)
                         flash('Participant Deleted Successfully!', 'success')                 
                 
                 return redirect(url_for("loadParticipant", projID=projID, tourID=tourID))
@@ -780,7 +794,45 @@ class Tournaments:
                         # Handle the case when the participant does not exist
                         flash('Participant not found!', 'error')
                         
+            
             return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, playerList=playerList, participantName=participantName, participantEmail=participantEmail, participantID=participantID)
+  
+    # Delete Player
+    def deletePlayer(projID, tourID, participantID, playerID):       
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID) 
+
+        if request.method == "POST":
+            print(request.form)
+            playerID = request.form.get("playerID")
+            print(playerID)
+            
+            try:
+
+                with dbConnect.engine.connect() as conn:
+                    # Delete participant from the database
+                        queryDeletePlayerOnly = """
+                        DELETE FROM players
+                        WHERE playerID = :playerID AND participantID = :participantID
+                        """
+                        inputDeletePlayerOnly = {
+                            'playerID': playerID,
+                            'participantID': participantID
+                        }
+                        conn.execute(text(queryDeletePlayerOnly), inputDeletePlayerOnly)
+                        flash('Player Deleted Successfully!', 'success')                 
+                
+                return redirect(url_for("loadDeleteParticipant", projID=projID, tourID=tourID, participantID=participantID))
+            
+            except Exception as e:
+                flash('Oops, an error has occurred. Details: {}'.format(e), 'error')
+                print(f"Error details: {e}")
+
+            return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, participantID=participantID, playerID=playerID)
+        
+        else:                        
+            return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, participantID=participantID, playerID=playerID)
     
     #View Moderator List
     def moderator(projID, tourID):

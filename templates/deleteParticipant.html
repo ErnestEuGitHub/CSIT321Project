@@ -19,11 +19,12 @@
                 </div>
             {% endif %}
         {% endfor %}
-        <form action="" method="POST">
+
+        <form action="/deleteParticipant/{{projID}}/{{tourID}}/{{participantID}}" method="POST">
             <header class="d-flex justify-content-between">
                 <label class="fs-4 fw-bold my-4">Delete Participant / Player</label>
                 <div>
-                    <a href="/participant/{{projID}}/{{tourID}}"><button type="submit" class="btn btn-primary my-4"role="button" aria-disabled="true">Delete Participant</button></a>
+                    <a href="/participant/{{projID}}/{{tourID}}"><button type="submit" class="btn btn-danger my-4"role="button" aria-disabled="true">Delete Participant</button></a>
                     <a href="/participant/{{projID}}/{{tourID}}" class="btn btn-secondary my-4" role="button" aria-disabled="true">Back</a>
                 </div>
             </header>            
@@ -34,18 +35,38 @@
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Team Email</label>
                 <input type="text" id="disabledTextInput" class="form-control" name="participantEmail" value="{{ participantEmail }}" >
-            </div>                     
+            </div>           
             {% for playerList in playerList %}
                 <div class="mb-3">
                     <div class="d-flex justify-content-between">
                         <label class="form-label">Player {{ loop.index }}</label>
-                        <i class="bi bi-person-dash"></i>
+                        <button type="button" class="btn btn-primary " onclick="confirmDelete({{ playerList[1] }})" id="{{ playerList[1] }}">
+                            Delete Player<input name="playerID" value="{{ playerList[1] }}">
+                        </button>
                     </div>
                     <input type="text" class="form-control" name="playerName" value="{{ playerList[0] }}" required>
                     <input id="{{ playerList[1] }}" type="text" class="form-control" name="playerID" value="{{ playerList[1] }}" hidden>
                 </div>
             {% endfor %}
         </form>
+        <form action="/deletePlayer/{{projID}}/{{tourID}}/{{participantID}}/" method="POST" class="needs-validation" novalidate="" autocomplete="off" id="deletePlayer">
+            <input name="playerID" id="deletePlayerID" value="" hidden>
+        </form>
     </div>
+    <script>
+
+        function confirmDelete(playerID) {
+            document.getElementById("deletePlayerID").value = playerID;
+            // Show confirmation dialog
+            var isConfirmed = window.confirm("Are you sure you want to delete this player with ID: " + playerID + "?");
+
+            // If user clicks 'OK' (true), submit the form
+            if (isConfirmed) {
+                document.getElementById('deletePlayer').action += playerID;
+                document.getElementById("deletePlayer").submit();
+            }
+            // If user clicks 'Cancel' (false), do nothing
+        }
+    </script>
 
 {% endblock %}

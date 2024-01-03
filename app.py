@@ -343,6 +343,28 @@ def loadDeleteParticipant(projID, tourID, participantID):
                 page = Tournaments.participant(projID, tourID)
                 return page
             
+@app.route('/deletePlayer/<projID>/<tourID>/<participantID>/<playerID>', methods=["POST", "GET"])
+def loadDeletePlayer(projID, tourID, participantID, playerID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        print("loadDeletePlayer function is being accessed!")  # Add this print statement
+        with dbConnect.engine.connect() as conn:
+            query = """SELECT * FROM tournaments JOIN participants JOIN players 
+            ON tournaments.tourID = participants.tourID AND participants.participantID = players.participantID 
+            WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND 
+            participants.participantID = :participantID AND players.playerID = :playerID"""
+            inputs = {'userID': session["id"], 'tourID': tourID, 'participantID': participantID, 'playerID': playerID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.deletePlayer(projID, tourID, participantID, playerID)
+                return page
+            else:
+                page = Tournaments.participant(projID, tourID)
+                return page
+            
 @app.route('/moderator/<projID>/<tourID>', methods=["POST", "GET"])
 def loadModerator(projID, tourID):
     page = Tournaments.moderator(projID, tourID)
