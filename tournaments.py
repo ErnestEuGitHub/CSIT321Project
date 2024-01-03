@@ -647,10 +647,7 @@ class Tournaments:
             playerName = request.form.getlist("playerName")
             playerID = request.form.getlist("playerID")
             playerList = list(zip(playerName, playerID))
-
-            for playerName, playerID in playerList:
-                print("PlayerID:", playerID, "PlayerName:", playerName)
-                print(playerList)
+            newPlayerName = request.form.getlist("newPlayerName")
 
             with dbConnect.engine.connect() as conn:
                 # Update participant information in the database
@@ -679,7 +676,13 @@ class Tournaments:
                         'playerID': playerID,
                         'participantID': participantID,
                     }
-                    conn.execute(text(queryEditPlayers), inputEditPlayers)
+                    conn.execute(text(queryEditPlayers), inputEditPlayers)              
+                
+                # Create New Player
+                for i, newPlayerName in enumerate(newPlayerName, start=1):
+                    queryNewPlayer = "INSERT INTO players (playerName, participantID) VALUES (:playerName, :participantID)"
+                    inputNewPlayer = {'playerName': newPlayerName, 'participantID': participantID}
+                    createNewPlayer = conn.execute(text(queryNewPlayer), inputNewPlayer)
 
             flash('Participant Information Updated!', 'success')
             
