@@ -267,9 +267,12 @@
     
 }
 
+.generalSettingsDiv{
+    --bs-gutter-x: 0;
+}
+
 .navbarcontentpadding{
     padding-top: 50px;
-    /* padding-left: 210px; */
 }
 
 .navbar-toggler {
