@@ -534,8 +534,14 @@ class Tournaments:
                     status = rows[0][7]
 
                     #getting details and contact information
-                    query = "SELECT * FROM generalInfo WHERE tourID = :tourID"
-                    inputs = {'tourID': tourID}
+                    query = "SELECT generalInfoID from tournaments WHERE tourID = :tourID"
+                    inputs = {'tourID':tourID}
+                    getGeneralInfoID = conn.execute(text(query), inputs)
+                    rows = getGeneralInfoID.fetchall()
+                    generalInfoID = rows[0][0]
+
+                    query = "SELECT * FROM generalInfo WHERE generalInfoID = :generalInfoID"
+                    inputs = {'generalInfoID': generalInfoID}
                     result = conn.execute(text(query), inputs)
                     rows = result.fetchall()
 
