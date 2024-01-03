@@ -41,7 +41,8 @@
                     <div class="d-flex justify-content-between">
                         <label class="form-label">Player {{ loop.index }}</label>
                         <button type="button" class="btn btn-primary " onclick="confirmDelete({{ playerList[1] }})" id="{{ playerList[1] }}">
-                            Delete Player<input name="playerID" value="{{ playerList[1] }}">
+                            Delete Player
+                            <input name="playerID" value="{{ playerList[1] }}" hidden>
                         </button>
                     </div>
                     <input type="text" class="form-control" name="playerName" value="{{ playerList[0] }}" required>
