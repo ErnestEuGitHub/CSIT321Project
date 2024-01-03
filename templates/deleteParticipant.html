@@ -30,11 +30,11 @@
             </header>            
             <div class="mb-3">
                 <label for="exampleInputTeamName1" class="form-label">Team Name</label>
-                <input type="text" id="disabledTextInput" class="form-control" name="participantName" value="{{ participantName }}" >
+                <input type="text" id="disabledTextInput" class="form-control" name="participantName" value="{{ participantName }}" disabled>
             </div>
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Team Email</label>
-                <input type="text" id="disabledTextInput" class="form-control" name="participantEmail" value="{{ participantEmail }}" >
+                <input type="text" id="disabledTextInput" class="form-control" name="participantEmail" value="{{ participantEmail }}" disabled>
             </div>           
             {% for playerList in playerList %}
                 <div class="mb-3">
@@ -45,7 +45,7 @@
                             <input name="playerID" value="{{ playerList[1] }}" hidden>
                         </button>
                     </div>
-                    <input type="text" class="form-control" name="playerName" value="{{ playerList[0] }}" required>
+                    <input type="text" class="form-control" name="playerName" value="{{ playerList[0] }}" disabled>
                     <input id="{{ playerList[1] }}" type="text" class="form-control" name="playerID" value="{{ playerList[1] }}" hidden>
                 </div>
             {% endfor %}
