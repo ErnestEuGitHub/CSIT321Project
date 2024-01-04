@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-		<div class="row justify-content-center">
+		<div class="row justify-content-center generalSettingsDiv">
 			<div class="col navbarcontentpadding">
 				{% for message in get_flashed_messages(category_filter=["error"]) %}
 					{% if message %}
