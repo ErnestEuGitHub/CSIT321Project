@@ -865,33 +865,58 @@ class Tournaments:
             print(f"Error: {e}")
             flash("An error occurred while retrieving participant data.", "error")
             return render_template('moderator.html')  # Create an 'error.html' template for error handling 
-                
-    #Create Participant and Players
+            
+    #Create Moderators    
     def createModerator(projID, tourID):
-        #for navbar
+        # for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
 
         if request.method == "POST":
-            SetupTournament = request.form.get("SetupTournament")
-            SetupStructure = request.form.get("SetupStructure")
-            ManageRegistration = request.form.get("ManageRegistration")
-            ManageParticipant = request.form.get("ManageParticipant")
-            PlaceParticipant = request.form.get("PlaceParticipant")
-            ManageFinalStanding = request.form.get("ManageFinalStanding")
-            ReportResult = request.form.get("ReportResult")
-            print("Request Form 1:",SetupTournament)
-            print("Request Form 2:",SetupStructure)
+            moderatorEmail = request.form.get("moderatorEmail")
+            selectedPermissions = [
+                request.form.get("SetupTournament"),
+                request.form.get("SetupStructure"),
+                request.form.get("ManageRegistration"),
+                request.form.get("ManageParticipant"),
+                request.form.get("PlaceParticipant"),
+                request.form.get("ManageFinalStanding"),
+                request.form.get("ReportResult"),
+            ]
+            print(selectedPermissions)
 
-            with dbConnect.engine.connect() as conn:               
+            with dbConnect.engine.connect() as conn:
+                # Check if the user already exists
+                existingUser = conn.execute(
+                    text("SELECT userID FROM users WHERE email = :moderatorEmail"),
+                    {'moderatorEmail': moderatorEmail}
+                ).fetchone()
 
+                if existingUser:
+                    # User already exists, use their userID
+                    userID = existingUser[0]
+                else:
+                    # User doesn't exist, redirect to registration page
+                    return redirect(url_for("loadregister"))
 
-                flash('Participant Created!', 'success')
-            
+                # Insert moderator into the 'moderators' table
+                queryNewModerator = "INSERT INTO moderators (userID, tourID) VALUES (:userID, :tourID)"
+                inputNewModerator = {'userID': userID, 'tourID': tourID}
+                conn.execute(text(queryNewModerator), inputNewModerator)
+                    
+                # Retrieve the newly inserted moderator's ID
+                moderatorID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+
+                # Insert selected permissions into the 'moderatorPermissions' table
+                for idx, permission in enumerate(selectedPermissions, start=1):
+                    if permission:  # Check if the permission is selected
+                        query_insert_permission = f"INSERT INTO moderatorPermissions (moderatorID, permissionID) VALUES (:moderatorID, :permissionID)"
+                        input_insert_permission = {'moderatorID': moderatorID, 'permissionID': idx}
+                        conn.execute(text(query_insert_permission), input_insert_permission)
+
             return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
         else:
-            return render_template('createModerator.html',tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
-
+            return render_template('createModerator.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
 
     #Placement
     def get_updated_content():

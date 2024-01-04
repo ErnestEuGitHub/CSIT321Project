@@ -20,8 +20,14 @@
             {% endif %}
         {% endfor %}
 
-        <h2 class="my-3">New Moderator</h2>
+        <h2 class="my-3">New Moderator Permissions</h2>
         <form action="/createModerator/{{projID}}/{{tourID}}" method="POST">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Moderator Email</label>
+                <input type="email" class="form-control" id="moderatorEmail" name="moderatorEmail" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <label for="attributes" class="form-label">Attributes</label>
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="SetupTournament" name="SetupTournament">
                 <label class="form-check-label" for="SetupTournament">Setup Tournament</label>
