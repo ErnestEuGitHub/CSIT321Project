@@ -21,7 +21,7 @@
         {% endfor %}
 
         <h2 class="my-3">Update Moderator Permissions</h2>
-        <form action="/createModerator/{{projID}}/{{tourID}}" method="POST">
+        <form action="/editModerator/{{projID}}/{{tourID}}" method="POST">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Moderator Email</label>
                 <input type="email" class="form-control" id="moderatorEmail" name="moderatorEmail" aria-describedby="emailHelp" disabled>
