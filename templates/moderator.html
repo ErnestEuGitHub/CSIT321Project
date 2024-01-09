@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100 navbarcontentpadding">
+    <main>
+        <header class="d-flex justify-content-between">
+            <label class="fs-4 fw-bold my-4">Moderator</label>
+            <a href="/createModerator/{{projID}}/{{tourID}}" class="btn btn-primary my-4" role="button" aria-disabled="true">Add Moderator</a>
+        </header>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Permissions</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for moderator in moderators %}
+                    <tr>
+                        <td>{{ moderator.email }}</td>
+                        <td>{{ moderator.permissionName }}</td>
+                        <td>
+                            <a href="/editModerator/{{projID}}/{{tourID}}/{{moderator.moderatorID}}"><i class="bi bi-pen"></i></a>
+                        </td>
+                        <td>
+                            <i class="bi bi-person-dash"></i>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+   </main>
+</div>
+
+{% endblock %}
