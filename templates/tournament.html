@@ -31,7 +31,12 @@
         {% for t in tournamentlist %}
             <a href="/tournamentOverviewPage/{{projID}}/{{t['tourID']}}" class="boxlink">
                 <div class="box">
+                    {% if t['tourImageID'] %}
                     <img src="https://drive.google.com/uc?export=view&id={{t['tourImageID']}}" class="tourImage">
+                    {% else %}
+                        <!-- Image placeholder -->
+                        <img src="https://via.placeholder.com/320/F9F9F9?text=Please+Upload+Image" alt="">
+                    {% endif %}
                     <p>{{t['tourName']}}</p>
                 </div>
             </a>
