@@ -26,7 +26,7 @@
 						<div class="col-xxl-10 col-xl-8 col-lg-8 col-md-9 col-sm-10">
 							<div class="card-body p-5">
 								<h1 class="fs-4 card-title fw-bold mb-4">Create Tournament</h1>
-								<form action="/createTour" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+								<form action="/createTour" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">
 									
 									<div class="row mb-3 justify-content-sm-center">
 										<div class="mb-4">
@@ -80,6 +80,17 @@
 											<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" rows="5" required autofocus style="resize: none;">{{ generalInfo }}</textarea>
 										</div> -->
 									</div>
+									<div class="mb-4">
+										<label class="mb-2 text-muted" for="tourImage">Tournament Image</label>
+										<input id="tourImage" type="file" class="form-control" name="tourImage" accept="image/*" required>
+									</div>
+									
+									
+									<div class="mb-4">
+										<label class="mb-2 text-muted" for="bannerImage">Tournament Banner Image</label>
+										<input id="bannerImage" type="file" class="form-control" name="bannerImage" accept="image/*" required>
+									</div>
+									
 
 									<div class="d-flex align-items-center">
 										<button type="submit" class="btn btn-primary ms-auto">

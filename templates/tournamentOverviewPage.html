@@ -28,8 +28,12 @@
                       </ul>
                 </div>
                 <div class="row justify-content-center mb-4">
-                    <img src="../static\images\soccer-competition-sample.jpg" alt="soccer-competition-sample"
-                    height="350px">
+                    {% if tourBannerID %}
+                    <img src="https://drive.google.com/uc?export=view&id={{tourBannerID}}" alt="" height="350px">
+                    {% else %}
+                    <!-- Image placeholder -->
+                    <img src="https://via.placeholder.com/600x350/F9F9F9?text=Please+Upload+Banner+Image" alt="" height="350px">
+                    {% endif %}
                 </div>
                 <div class="row justify-content-center mb-4">
                     <ul class="nav nav-pills">
