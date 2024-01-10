@@ -150,6 +150,9 @@
         $(document).ready(function () {
             let selectedParticipantsHTMLArray = [];
             let grpSelectedParticipantsHTMLArray = [];
+            var iValue;
+            var participantIndex;
+            var groupIndex;
 
             function updateSelectedParticipants() {
                 selectedParticipantsHTMLArray = [];
@@ -218,15 +221,58 @@
             });
 
             $('.participant-rowTable[data-location="location1"]').on('click', function () {
-                var iValue = $(this).data('participant-index');
+                iValue = $(this).data('participant-index');
 
                 console.log("Clicked participant with index:", iValue);
 
                 $('#myNewModal').modal('show');
             });
 
-            
+            $('.participant-rowTable[data-location="location2"]').on('click', function () {
+                participantIndex = $(this).data('participant-index');
+                var getgroupIndex = $(this).closest('.card').index();
+                groupIndex = getgroupIndex += 1;
 
+
+                console.log("Clicked participant-rowTable in Group", groupIndex, "with participant index:", participantIndex);
+                // Additional actions if needed
+                
+                $('#myNewModal').modal('show');
+            });
+
+            $('#saveChangesBtnNewModal').on('click', function () {
+                $('#myNewModal').modal('hide');
+                // Assuming you want to update the selected participant with the last radio selection
+                const index = $('input[name="participantSelection"]:checked').val();
+                const participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
+                updateSingleParticipant();
+
+                console.log('Index is:', index)
+                console.log('ParticipantName is:', participantName)
+                // Perform other actions on saving changes in the second modal if needed
+            });
+
+            function updateSingleParticipant() {
+                currentParticipantsHTMLArray = [];
+                $('[class^="selected-participants"]').each(function () {
+                    const participantPElement = $(this).find('p');
+                    const participantText = participantPElement.text().trim();
+                    currentParticipantsHTMLArray.push(participantText);
+                });
+
+                console.log('Getting currentparticipants array:',currentParticipantsHTMLArray);
+                console.log('ivalue after update:', iValue);
+            }
+
+            // Event triggered after the second modal is completely hidden
+            $('#myNewModal').on('hidden.bs.modal', function () {
+                resetModal();
+            });
+
+            // Event triggered when the second modal is shown
+            $('#myNewModal').on('shown.bs.modal', function () {
+                $('body').css('overflow', 'hidden');
+            });
         });
 
         // $(document).ready(function () {
@@ -283,16 +329,6 @@
         //         const participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
         //         updateSelectedParticipants(index, participantName);
         //         // Perform other actions on saving changes in the second modal if needed
-        //     });
-
-        //     // Event triggered after the second modal is completely hidden
-        //     $('#myNewModal').on('hidden.bs.modal', function () {
-        //         resetModal();
-        //     });
-
-        //     // Event triggered when the second modal is shown
-        //     $('#myNewModal').on('shown.bs.modal', function () {
-        //         $('body').css('overflow', 'hidden');
         //     });
         // });
 
