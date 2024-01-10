@@ -4,6 +4,7 @@ from stages import *
 from user import *
 from tournaments import *
 from projects import *
+from match import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -407,7 +408,7 @@ def loadEditModerator(projID, tourID, moderatorID):
                 return render_template('notfound.html')
             
 @app.route('/match/<projID>/<tourID>', methods=["POST", "GET"])
-def loadmatch(projID, tourID):
+def match(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -419,6 +420,24 @@ def loadmatch(projID, tourID):
 
             if rows:
                 page = Tournaments.match(projID, tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/loadmatch/<projID>/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadmatch(projID, tourID, stageID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Match.loadMatch(projID, tourID, stageID)
                 return page
             
             else:
