@@ -979,59 +979,6 @@ class Tournaments:
                         conn.execute(text(query_insert_permission), input_insert_permission)
 
             return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
-        
-    #   #Edit Participant
-    #   def editParticipant(projID, tourID, participantID):
-    #     #for navbar
-    #     navtype = 'dashboard'
-    #     tournamentName = retrieveDashboardNavName(tourID)
-
-    #     if request.method == "POST":
-    #         participantName = request.form.get("participantName")
-    #         participantEmail = request.form.get("participantEmail")
-    #         playerName = request.form.getlist("playerName")
-    #         playerID = request.form.getlist("playerID")
-    #         playerList = list(zip(playerName, playerID))
-    #         newPlayerName = request.form.getlist("newPlayerName")
-
-    #         with dbConnect.engine.connect() as conn:
-    #             # Update participant information in the database
-    #             queryEditParticipants = """
-    #                 UPDATE participants
-    #                 SET participantName = :participantName, participantEmail = :participantEmail
-    #                 WHERE participantID = :participantID AND tourID = :tourID
-    #             """
-    #             inputEditParticipants = {
-    #                 'participantName': participantName,
-    #                 'participantEmail': participantEmail,
-    #                 'participantID': participantID,
-    #                 'tourID': tourID
-    #             }
-    #             conn.execute(text(queryEditParticipants), inputEditParticipants)
-                
-    #             for playerName, playerID in playerList: 
-    #                 # Update player names in the database
-    #                 queryEditPlayers = """
-    #                     UPDATE players
-    #                     SET playerName = :playerName
-    #                     WHERE playerID = :playerID AND participantID = :participantID
-    #                 """
-    #                 inputEditPlayers = {
-    #                     'playerName': playerName,
-    #                     'playerID': playerID,
-    #                     'participantID': participantID,
-    #                 }
-    #                 conn.execute(text(queryEditPlayers), inputEditPlayers)              
-                
-    #             # Create New Player
-    #             for i, newPlayerName in enumerate(newPlayerName, start=1):
-    #                 queryNewPlayer = "INSERT INTO players (playerName, participantID) VALUES (:playerName, :participantID)"
-    #                 inputNewPlayer = {'playerName': newPlayerName, 'participantID': participantID}
-    #                 createNewPlayer = conn.execute(text(queryNewPlayer), inputNewPlayer)
-
-    #         flash('Participant Information Updated!', 'success')
-            
-    #         return redirect(url_for("loadParticipant", projID=projID, tourID=tourID))
             
         else:            
             
