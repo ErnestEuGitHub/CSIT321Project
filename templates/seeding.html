@@ -36,7 +36,7 @@
                         <div class="me-5">
                             <p>{{ i + 1 }}</p>
                         </div>
-                        <div class="selected-participants{{i + 1}}"></div>
+                        <div class="selected-participants{{ i + 1 }}"></div>
                     </div>
                     {% endfor %}
                 </div>
@@ -233,13 +233,16 @@
                     const selectedParticipantsElement = $(`.selected-participants${index + 1}`);
                     selectedParticipantsElement.html(participantHTML);
 
-                    const existingHTML = grpSelectedParticipantsHTMLArray[index] || '';
-                    const newContent = existingHTML + participantHTML;
+                    const grpSelectedParticipantsElement = $(`.GrpSelected-participants${index + 1}`);
+                    const existingContent = grpSelectedParticipantsElement.html();
 
-                    grpSelectedParticipantsHTMLArray[index] = newContent;
+                    if (grpSelectedParticipantsHTMLArray[index] !== participantHTML) {
+                        grpSelectedParticipantsElement.html(participantHTML);
+                    } else {
+                        grpSelectedParticipantsElement.html(existingContent);
+                    }
 
-                    // Update each .GrpSelected-participants element
-                    $(`.GrpSelected-participants${index + 1}`).html(newContent);
+                    grpSelectedParticipantsHTMLArray[index] = participantHTML;
                 });
 
                 console.log(selectedParticipantsHTMLArray);
