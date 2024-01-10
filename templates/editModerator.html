@@ -21,43 +21,21 @@
         {% endfor %}
 
         <h2 class="my-3">Update Moderator Permissions</h2>
-        <form action="/editModerator/{{projID}}/{{tourID}}" method="POST">
+        <form action="" method="POST">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Moderator Email</label>
-                <input type="email" class="form-control" id="moderatorEmail" name="moderatorEmail" aria-describedby="emailHelp" disabled>
+                <input type="email" class="form-control" name="moderatorEmail" value="{{ moderatorEmail }}" aria-describedby="emailHelp" disabled>
                 <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
             </div>
             <label for="attributes" class="form-label">Attributes</label>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="SetupTournament" name="SetupTournament">
-                <label class="form-check-label" for="SetupTournament">Setup Tournament</label>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="SetupStructure" name="SetupStructure">
-                <label class="form-check-label" for="SetupStructure">Setup Structure</label>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="ManageRegistration" name="ManageRegistration">
-                <label class="form-check-label" for="ManageRegistration">Manage Registration</label>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="ManageParticipant" name="ManageParticipant">
-                <label class="form-check-label" for="ManageParticipant">Manage Participant</label>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="PlaceParticipant" name="PlaceParticipant">
-                <label class="form-check-label" for="PlaceParticipant">Place Participant</label>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="ManageFinalStanding" name="ManageFinalStanding">
-                <label class="form-check-label" for="ManageFinalStanding">Manage Final Standing</label>
-            </div>
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="ReportResult" name="ReportResult">
-                <label class="form-check-label" for="ReportResult">Report Result</label>
-            </div>
+            {% for permission in permissionList %}
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="{{ permission }}" name="{{ permission }}" checked>
+                    <label class="form-check-label" for="{{ permission }}">{{ permission }}</label>
+                </div>
+            {% endfor %}
             <div id="Submit">
-                <button type="submit" class="btn btn-primary">Add</button>
+                <button type="submit" class="btn btn-primary">Update</button>
                 <a href="/moderator/{{projID}}/{{tourID}}" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
             </div>
         </form>

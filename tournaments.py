@@ -695,7 +695,9 @@ class Tournaments:
                 WHERE participants.tourID = :tourID AND participants.participantID = :participantID"""
                 inputOne = {'tourID': tourID, 'participantID': participantID}
                 editParticipant = conn.execute(text(queryOne),inputOne)
-                participants = editParticipant.fetchall()          
+                participants = editParticipant.fetchall()     
+                
+                print(participants)     
 
                 # Check if the participant exists
                 if participants:
@@ -704,8 +706,8 @@ class Tournaments:
 
                     # Fetch all player names for the participant
                     playerList = [(row[2], row[3]) for row in participants if row[2] is not None and row[3] is not None]  
-                    # Assuming playerID is the third column
-                    # Assuming playerName is the forth column
+                    # Assuming playerName is the third column 
+                    # Assuming playerID is the forth column
 
                     # Now, you have participant information and a list of player names
                     # You can use participantID, participantName, participantEmail, and playerNames in your template or further processing
@@ -848,7 +850,7 @@ class Tournaments:
                 
                 # Query the 'moderator' table
                 queryModeratorList ="""
-                SELECT users.email, GROUP_CONCAT(permissionName) AS permissionName
+                SELECT users.email, GROUP_CONCAT(permissionName) AS permissionName, moderators.moderatorID
                 FROM users JOIN moderators ON moderators.userID = users.userID 
                 LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID 
                 LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
@@ -968,19 +970,33 @@ class Tournaments:
                         conn.execute(text(query_insert_permission), input_insert_permission)
 
             return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
-        else:
+        else:            
+            
             with dbConnect.engine.connect() as conn:
-                queryRetrieveModerator = """SELECT users.email, GROUP_CONCAT(permissions.permissionName) as permissionList
-                FROM users JOIN moderators JOIN moderatorPermissions JOIN permissions
-                ON users.userID = moderators.userID AND moderators.moderatorID = moderatorPermissions.moderatorID 
-                AND moderatorPermissions.permissionID = permissions.permissionID
+                queryRetrieveModerator = """SELECT users.email, permissions.permissionName
+                FROM tournaments JOIN users ON tournaments.userID = users.userID
+                JOIN moderators ON users.userID = moderators.userID
+                LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
+                LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
-                GROUP BY users.email"""
+                GROUP BY users.email, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
                 inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
-                moderator = editModerator.fetchall()
+                moderators = editModerator.fetchall()
+                
+                print("Moderators: ",moderators)  
+                
+                # Check if the moderators exists
+                if moderators:                    
+                    moderatorEmail = moderators[0][0]  # Assuming moderatorEmail is the first column
+                    permissionList = [row[1] for row in moderators if row[1] is not None] # Assuming permissionList is the second column
+                    print("Moderator Email: ", moderatorEmail)
+                    print("Permission List: ", permissionList)
+                else:
+                    # Handle the case when the participant does not exist
+                    flash('Moderator not found!', 'error')
 
-            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderator=moderator, moderatorID=moderatorID)
+            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList)
     
     #Placement
     def get_updated_content():

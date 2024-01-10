@@ -14,6 +14,7 @@
                     <th>Permissions</th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -22,10 +23,14 @@
                         <td>{{ moderator.email }}</td>
                         <td>{{ moderator.permissionName }}</td>
                         <td>
-                            <a href="/editModerator/{{projID}}/{{tourID}}/{{moderator.moderatorID}}"><i class="bi bi-pen"></i></a>
+                            <a href="/editModerator/{{projID}}/{{tourID}}/{{moderator.moderatorID}}">
+                                <i class="bi bi-pen"></i>
+                            </a>
                         </td>
                         <td>
-                            <i class="bi bi-person-dash"></i>
+                            <a href="">
+                                <i class="bi bi-person-dash"></i>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
