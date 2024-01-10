@@ -3,3 +3,4 @@ gunicorn
 sqlalchemy
 pymysql
 bcrypt
+google-api-python-client
