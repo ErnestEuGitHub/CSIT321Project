@@ -306,7 +306,26 @@ class Tournaments:
             return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         else:
             return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+    
+    #Match
+    def match(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        navexpand = 'Yes'
+        tournamentName = retrieveDashboardNavName(tourID)
+    
+        try:
+            with dbConnect.engine.connect() as conn:
+
+                query = ""
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+        except Exception as e:
+            flash('Oops, an error has occured.', 'error')
+            print(f"Error details: {e}")
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         
+    
+       
     #Settings
     def settingsGeneral(projID, tourID):
         #for navbar
