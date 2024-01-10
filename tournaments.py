@@ -894,6 +894,8 @@ class Tournaments:
                     text("SELECT userID FROM users WHERE email = :moderatorEmail"),
                     {'moderatorEmail': moderatorEmail}
                 ).fetchone()
+                
+                print("Existing User: ", existingUser)
 
                 if existingUser:
                     # User already exists, use their userID
@@ -930,15 +932,14 @@ class Tournaments:
         if request.method == "POST":
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
-                request.form.get("SetupTournament"),
-                request.form.get("SetupStructure"),
-                request.form.get("ManageRegistration"),
-                request.form.get("ManageParticipant"),
-                request.form.get("PlaceParticipant"),
-                request.form.get("ManageFinalStanding"),
-                request.form.get("ReportResult"),
+                request.form.get("Setup Tournament"),
+                request.form.get("Setup Structure"),
+                request.form.get("Manage Registration"),
+                request.form.get("Manage Participant"),
+                request.form.get("Place Participant"),
+                request.form.get("Manage Final Standing"),
+                request.form.get("Report Result"),
             ]
-            print(selectedPermissions)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
@@ -946,21 +947,29 @@ class Tournaments:
                     text("SELECT userID FROM users WHERE email = :moderatorEmail"),
                     {'moderatorEmail': moderatorEmail}
                 ).fetchone()
-
-                if existingUser:
-                    # User already exists, use their userID
-                    userID = existingUser[0]
+                                
+                # User already exists, use their userID
+                userID = existingUser[0]
+                
+                # Check if a moderator with the specified userID and tourID already exists
+                existingModerator = conn.execute(
+                    text("SELECT moderatorID FROM moderators WHERE userID = :userID AND tourID = :tourID"),
+                    {'userID': userID, 'tourID': tourID}
+                ).fetchone()
+                
+                if existingModerator:
+                    # Moderator already exists, use their moderatorID
+                    moderatorID = existingModerator[0]
                 else:
-                    # User doesn't exist, redirect to registration page
-                    return redirect(url_for("loadregister"))
+                    # Moderator does not exist, handle this situation accordingly (e.g., raise an error, log a message)
+                    flash('Moderator not found!', 'error')
+                    return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
 
-                # Insert moderator into the 'moderators' table
-                queryNewModerator = "INSERT INTO moderators (userID, tourID) VALUES (:userID, :tourID)"
-                inputNewModerator = {'userID': userID, 'tourID': tourID}
-                conn.execute(text(queryNewModerator), inputNewModerator)
-                    
-                # Retrieve the newly inserted moderator's ID
-                moderatorID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+                # Delete existing permissions for the moderator
+                conn.execute(
+                    text("DELETE FROM moderatorPermissions WHERE moderatorID = :moderatorID"),
+                    {'moderatorID': moderatorID}
+                )
 
                 # Insert selected permissions into the 'moderatorPermissions' table
                 for idx, permission in enumerate(selectedPermissions, start=1):
@@ -970,6 +979,60 @@ class Tournaments:
                         conn.execute(text(query_insert_permission), input_insert_permission)
 
             return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+        
+    #   #Edit Participant
+    #   def editParticipant(projID, tourID, participantID):
+    #     #for navbar
+    #     navtype = 'dashboard'
+    #     tournamentName = retrieveDashboardNavName(tourID)
+
+    #     if request.method == "POST":
+    #         participantName = request.form.get("participantName")
+    #         participantEmail = request.form.get("participantEmail")
+    #         playerName = request.form.getlist("playerName")
+    #         playerID = request.form.getlist("playerID")
+    #         playerList = list(zip(playerName, playerID))
+    #         newPlayerName = request.form.getlist("newPlayerName")
+
+    #         with dbConnect.engine.connect() as conn:
+    #             # Update participant information in the database
+    #             queryEditParticipants = """
+    #                 UPDATE participants
+    #                 SET participantName = :participantName, participantEmail = :participantEmail
+    #                 WHERE participantID = :participantID AND tourID = :tourID
+    #             """
+    #             inputEditParticipants = {
+    #                 'participantName': participantName,
+    #                 'participantEmail': participantEmail,
+    #                 'participantID': participantID,
+    #                 'tourID': tourID
+    #             }
+    #             conn.execute(text(queryEditParticipants), inputEditParticipants)
+                
+    #             for playerName, playerID in playerList: 
+    #                 # Update player names in the database
+    #                 queryEditPlayers = """
+    #                     UPDATE players
+    #                     SET playerName = :playerName
+    #                     WHERE playerID = :playerID AND participantID = :participantID
+    #                 """
+    #                 inputEditPlayers = {
+    #                     'playerName': playerName,
+    #                     'playerID': playerID,
+    #                     'participantID': participantID,
+    #                 }
+    #                 conn.execute(text(queryEditPlayers), inputEditPlayers)              
+                
+    #             # Create New Player
+    #             for i, newPlayerName in enumerate(newPlayerName, start=1):
+    #                 queryNewPlayer = "INSERT INTO players (playerName, participantID) VALUES (:playerName, :participantID)"
+    #                 inputNewPlayer = {'playerName': newPlayerName, 'participantID': participantID}
+    #                 createNewPlayer = conn.execute(text(queryNewPlayer), inputNewPlayer)
+
+    #         flash('Participant Information Updated!', 'success')
+            
+    #         return redirect(url_for("loadParticipant", projID=projID, tourID=tourID))
+            
         else:            
             
             with dbConnect.engine.connect() as conn:
