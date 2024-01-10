@@ -31,7 +31,7 @@
                     <hr>
                     <!-- Dynamic content -->
                     {% for i in range(numberOfParticipants) %}
-                    <div class="participant-row d-flex align-items-center" id="modalTrigger" data-bs-toggle="modal"
+                    <div class="participant-rowTable d-flex align-items-center" id="modalTrigger" data-location="location1" data-participant-index="{{ i }}" data-bs-toggle="modal"
                         data-bs-target="#myNewModal">
                         <div class="me-5">
                             <p>{{ i + 1 }}</p>
@@ -62,8 +62,8 @@
             <div class="card-content">
                 <div class="container">
                     {% for j in range(numberOfParticipants // numberOfGroups) %}
-                    <div class="participant-row d-flex align-items-center" id="modalTrigger" data-bs-toggle="modal"
-                        data-bs-target="#myNewModal">
+                    <div class="participant-rowTable d-flex align-items-center" id="modalTrigger" data-location="location2" data-bs-toggle="modal"
+                        data-bs-target="#myNewModal" data-participant-index="{{ j + 1 }}">
                         <div class="me-5">
                             <p>{{ j + 1 }}</p>
                         </div>
@@ -216,74 +216,85 @@
             $('#myModal').on('shown.bs.modal', function () {
                 $('body').css('overflow', 'hidden');
             });
+
+            $('.participant-rowTable[data-location="location1"]').on('click', function () {
+                var iValue = $(this).data('participant-index');
+
+                console.log("Clicked participant with index:", iValue);
+
+                $('#myNewModal').modal('show');
+            });
+
+            
+
         });
 
-        $(document).ready(function () {
-            let selectedParticipantsHTMLArray = [];
-            let grpSelectedParticipantsHTMLArray = [];
+        // $(document).ready(function () {
+        //     let selectedParticipantsHTMLArray = [];
+        //     let grpSelectedParticipantsHTMLArray = [];
 
-            function updateSelectedParticipants() {
-                selectedParticipantsHTMLArray = [];
-                $('.participant-row input:checked').each(function (index) {
-                    const participantName = $(this).closest('.participant-row').find('.participant-label').text().trim();
-                    const participantHTML = `<p>${participantName}</p>`;
+        //     function updateSelectedParticipants() {
+        //         selectedParticipantsHTMLArray = [];
+        //         $('.participant-row input:checked').each(function (index) {
+        //             const participantName = $(this).closest('.participant-row').find('.participant-label').text().trim();
+        //             const participantHTML = `<p>${participantName}</p>`;
 
-                    selectedParticipantsHTMLArray.push(participantHTML);
+        //             selectedParticipantsHTMLArray.push(participantHTML);
 
-                    const selectedParticipantsElement = $(`.selected-participants${index + 1}`);
-                    selectedParticipantsElement.html(participantHTML);
+        //             const selectedParticipantsElement = $(`.selected-participants${index + 1}`);
+        //             selectedParticipantsElement.html(participantHTML);
 
-                    const grpSelectedParticipantsElement = $(`.GrpSelected-participants${index + 1}`);
-                    const existingContent = grpSelectedParticipantsElement.html();
+        //             const grpSelectedParticipantsElement = $(`.GrpSelected-participants${index + 1}`);
+        //             const existingContent = grpSelectedParticipantsElement.html();
 
-                    if (grpSelectedParticipantsHTMLArray[index] !== participantHTML) {
-                        grpSelectedParticipantsElement.html(participantHTML);
-                    } else {
-                        grpSelectedParticipantsElement.html(existingContent);
-                    }
+        //             if (grpSelectedParticipantsHTMLArray[index] !== participantHTML) {
+        //                 grpSelectedParticipantsElement.html(participantHTML);
+        //             } else {
+        //                 grpSelectedParticipantsElement.html(existingContent);
+        //             }
 
-                    grpSelectedParticipantsHTMLArray[index] = participantHTML;
-                });
+        //             grpSelectedParticipantsHTMLArray[index] = participantHTML;
+        //         });
 
-                console.log(selectedParticipantsHTMLArray);
-                console.log(grpSelectedParticipantsHTMLArray);
-            }
+        //         console.log(selectedParticipantsHTMLArray);
+        //         console.log(grpSelectedParticipantsHTMLArray);
+        //     }
 
-            function resetModal() {
-                $('.form-check-input').prop('checked', false);
-                $('.modal-backdrop').remove();
-                $('body').css('overflow', 'auto');
-            }
+        //     function resetModal() {
+        //         $('.form-check-input').prop('checked', false);
+        //         $('.modal-backdrop').remove();
+        //         $('body').css('overflow', 'auto');
+        //     }
 
-            // Handling the row click
-            $('.participant-row').on('click', function (event) {
-                if (!$(event.target).closest('.form-check-input').length) {
-                    const checkbox = $(this).find('.form-check-input');
-                    checkbox.prop('checked', !checkbox.prop('checked'));
-                    // updateSelectedParticipants();
-                }
-            });
+        //     // Handling the row click
+        //     $('.participant-row').on('click', function (event) {
+        //         if (!$(event.target).closest('.form-check-input').length) {
+        //             const checkbox = $(this).find('.form-check-input');
+        //             checkbox.prop('checked', !checkbox.prop('checked'));
+        //             // updateSelectedParticipants();
+        //         }
+        //     });
 
-            // Save Changes button functionality for the second modal
-            $('#saveChangesBtnNewModal').on('click', function () {
-                $('#myNewModal').modal('hide');
-                // Assuming you want to update the selected participant with the last radio selection
-                const index = $('input[name="participantSelection"]:checked').val();
-                const participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
-                updateSelectedParticipants(index, participantName);
-                // Perform other actions on saving changes in the second modal if needed
-            });
+        //     // Save Changes button functionality for the second modal
+        //     $('#saveChangesBtnNewModal').on('click', function () {
+        //         $('#myNewModal').modal('hide');
+        //         // Assuming you want to update the selected participant with the last radio selection
+        //         const index = $('input[name="participantSelection"]:checked').val();
+        //         const participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
+        //         updateSelectedParticipants(index, participantName);
+        //         // Perform other actions on saving changes in the second modal if needed
+        //     });
 
-            // Event triggered after the second modal is completely hidden
-            $('#myNewModal').on('hidden.bs.modal', function () {
-                resetModal();
-            });
+        //     // Event triggered after the second modal is completely hidden
+        //     $('#myNewModal').on('hidden.bs.modal', function () {
+        //         resetModal();
+        //     });
 
-            // Event triggered when the second modal is shown
-            $('#myNewModal').on('shown.bs.modal', function () {
-                $('body').css('overflow', 'hidden');
-            });
-        });
+        //     // Event triggered when the second modal is shown
+        //     $('#myNewModal').on('shown.bs.modal', function () {
+        //         $('body').css('overflow', 'hidden');
+        //     });
+        // });
 
     </script>
     {% endblock %}

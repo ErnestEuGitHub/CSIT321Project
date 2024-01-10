@@ -43,6 +43,14 @@
     cursor: pointer;
 }
 
+.participant-rowTable {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
 .participant-row:hover {
     background-color: #f0f0f0;
     /* Change this to the desired hover color */
