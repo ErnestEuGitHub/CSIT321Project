@@ -153,6 +153,8 @@
             var iValue;
             var participantIndex;
             var groupIndex;
+            var participantName;
+            var location;
 
             function updateSelectedParticipants() {
                 selectedParticipantsHTMLArray = [];
@@ -222,6 +224,8 @@
 
             $('.participant-rowTable[data-location="location1"]').on('click', function () {
                 iValue = $(this).data('participant-index');
+                // iValue += 1;
+                location = 1;
 
                 console.log("Clicked participant with index:", iValue);
 
@@ -230,9 +234,9 @@
 
             $('.participant-rowTable[data-location="location2"]').on('click', function () {
                 participantIndex = $(this).data('participant-index');
-                var getgroupIndex = $(this).closest('.card').index();
-                groupIndex = getgroupIndex += 1;
-
+                groupIndex = $(this).closest('.card').index();
+                // groupIndex = getgroupIndex += 1;
+                location = 2;
 
                 console.log("Clicked participant-rowTable in Group", groupIndex, "with participant index:", participantIndex);
                 // Additional actions if needed
@@ -244,11 +248,11 @@
                 $('#myNewModal').modal('hide');
                 // Assuming you want to update the selected participant with the last radio selection
                 const index = $('input[name="participantSelection"]:checked').val();
-                const participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
+                participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
                 updateSingleParticipant();
 
-                console.log('Index is:', index)
-                console.log('ParticipantName is:', participantName)
+                // console.log('Index is:', index)
+                // console.log('ParticipantName is:', participantName)
                 // Perform other actions on saving changes in the second modal if needed
             });
 
@@ -262,6 +266,26 @@
 
                 console.log('Getting currentparticipants array:',currentParticipantsHTMLArray);
                 console.log('ivalue after update:', iValue);
+
+                if (location === 2){
+                    iValue = groupIndex * 4 + participantIndex - 1
+
+                    console.log('Location 2 detected, iValue is now:', iValue)
+                }
+
+                currentParticipantsHTMLArray[iValue] = participantName
+
+                $(currentParticipantsHTMLArray).each(function(index){
+                    const selectedParticipantsElement = $(`.selected-participants${index + 1}`);
+                    selectedParticipantsElement.html(currentParticipantsHTMLArray[index]);
+                });
+
+                $('.GrpSelected-participants').each(function (index) {
+                    $(this).html(currentParticipantsHTMLArray[index] || '');
+                });
+
+                console.log('Final Array:', currentParticipantsHTMLArray);
+
             }
 
             // Event triggered after the second modal is completely hidden
