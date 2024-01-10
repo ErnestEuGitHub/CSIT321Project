@@ -27,13 +27,14 @@
                 <input type="email" class="form-control" name="moderatorEmail" value="{{ moderatorEmail }}" aria-describedby="emailHelp" disabled>
                 <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
             </div>
+            <label name="permissionName" value="{{ permissionList }}">
             <label for="attributes" class="form-label">Attributes</label>
-            {% for permission in permissionList %}
+            {% for permission in ["Setup Tournament", "Setup Structure", "Manage Registration", "Manage Participant", "Place Participant", "Manage Final Standing", "Report Result"] %}
                 <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="{{ permission }}" name="{{ permission }}" checked>
+                    <input type="checkbox" class="form-check-input" id="{{ permission }}" name="{{ permission }}" {% if permission in permissionList %}checked{% endif %}>
                     <label class="form-check-label" for="{{ permission }}">{{ permission }}</label>
                 </div>
-            {% endfor %}
+            {% endfor %}        
             <div id="Submit">
                 <button type="submit" class="btn btn-primary">Update</button>
                 <a href="/moderator/{{projID}}/{{tourID}}" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
