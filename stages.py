@@ -81,7 +81,7 @@ class Stage:
                 
                     flash('Stage Configured!', 'success')
                     # return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-                    return redirect(url_for("loadstructure", tourID=tourID))
+                    return redirect(url_for("loadstructure", projID = projID, tourID=tourID))
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
@@ -119,7 +119,7 @@ class Stage:
 
                         tfMatch = elim[0]["tfMatch"]
 
-                        return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID=stageID,
+                        return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID = projID, tourID=tourID, stageID=stageID,
                                        stageName = stageName, stageSequence = stageSequence, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
                                        numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, maxGames = maxGames, tfMatch = tfMatch)
 

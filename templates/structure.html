@@ -13,11 +13,11 @@
         </div>
     </div>
 <script>
-    function deleteStage(tourID, stageID) {
+    function deleteStage(projID, tourID, stageID) {
         console.log(tourID);
         console.log(stageID);
 
-        fetch('/deleteStage/'+tourID+'/'+stageID, {
+        fetch('/deleteStage/'+projID+'/'+tourID+'/'+stageID, {
             method: 'POST',
         })
         .then(response => {})

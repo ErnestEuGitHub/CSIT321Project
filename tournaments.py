@@ -168,7 +168,6 @@ class Tournaments:
         return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
     
     #Structure
-
     def structure(projID, tourID):
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
@@ -209,7 +208,7 @@ class Tournaments:
                                                     Edit
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="/configureStage/{tourID}/{stage["stageID"]}">Configure</a></li>
+                                                    <li><a class="dropdown-item" href="/configureStage/{projID}/{tourID}/{stage["stageID"]}">Configure</a></li>
                                                     <li><a class="dropdown-item" href="#" onclick="deleteStage({tourID}, {stage["stageID"]})">Delete</a></li>
                                                 </ul>
                                             </div>
@@ -311,21 +310,57 @@ class Tournaments:
     def match(projID, tourID):
         #for navbar
         navtype = 'dashboard'
-        navexpand = 'Yes'
         tournamentName = retrieveDashboardNavName(tourID)
     
         try:
             with dbConnect.engine.connect() as conn:
 
-                query = ""
-            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+                matchquery = "SELECT stageName, stageSequence, stageFormatID, stageStatusID, stageID FROM stages WHERE tourID = :tourID AND stageStatusID <> 4"
+                inputs = {'tourID': tourID}
+                result = conn.execute(text(matchquery), inputs)
+                rows = result.fetchall()
+                print(rows)
+                matchStages = [row._asdict() for row in rows]
+                print(matchStages)
+
+                matchstageList = ''
+                
+                for matchstage in matchStages:
+
+                    if int(matchstage["stageFormatID"]) == 1:
+                        matchstage["stageFormatID"] = "Single Elimination"
+                    elif int(matchstage["stageFormatID"]) == 2:
+                        matchstage["stageFormatID"] = "Double Elimination"
+                    elif int(matchstage["stageFormatID"]) == 3:
+                        matchstage["stageFormatID"] = "Single Round Robin"
+                    elif int(matchstage["stageFormatID"]) == 4:
+                        matchstage["stageFormatID"] = "Double Round Robin"
+                    else:
+                        print("Invalid stage format!!!")
+
+                    matchstage_html = f'''
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
+                                                <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
+                                                <a href="/loadmatch/{projID}/{tourID}/{matchstage["stageID"]}">
+                                                    <button class="btn btn-primary" type="button" aria-expanded="true">
+                                                        View
+                                                    </button>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                '''
+                    
+                    matchstageList += matchstage_html
+
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, matchstageList = matchstageList)
         except Exception as e:
             flash('Oops, an error has occured.', 'error')
             print(f"Error details: {e}")
             return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         
-    
-       
     #Settings
     def settingsGeneral(projID, tourID):
         #for navbar

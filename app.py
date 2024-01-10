@@ -405,6 +405,24 @@ def loadEditModerator(projID, tourID, moderatorID):
             
             else:
                 return render_template('notfound.html')
+            
+@app.route('/match/<projID>/<tourID>', methods=["POST", "GET"])
+def loadmatch(projID, tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.match(projID, tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
 
 @app.errorhandler(404)
 def loadnotfound(error):

@@ -5,6 +5,9 @@ from datetime import datetime
 from general import *
 
 class Stage:
+    def loadMatch():
+        return
+    
     def configureMatch():
         return
     
