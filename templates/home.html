@@ -24,13 +24,7 @@
         {% for p in projects %}
             <a href="/projects/{{p['projID']}}" class="boxlink">
                 <div class="box">
-                    {% if p['projImageID'] %}
-                        <img src="https://drive.google.com/uc?export=view&id={{p['projImageID']}}" class="projectImage">
-                    {% else %}
-                        <!-- Image placeholder -->
-                        <img src="https://via.placeholder.com/320/F9F9F9?text=Please+Upload+Image" alt="">
-
-                    {% endif %}
+                    <img src="https://drive.google.com/uc?export=view&id={{p['projImageID']}}" class="projectImage">
                     <p>{{p['projName']}}</p>
                 </div>
             </a>
