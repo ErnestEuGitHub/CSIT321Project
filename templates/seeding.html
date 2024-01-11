@@ -127,11 +127,11 @@
                         <hr>
                         <div id="participantList" style="text-align: left;">
                             {% for participant in participantName %}
-                            <div class="form-check participant-row participantModal{{ loop.index }}">
+                            <div class="form-check participant-row participantNewModal{{ loop.index }}">
                                 <label class="form-check-label participant-label" style="cursor: pointer;">
                                     <input class="form-check-input" type="radio" name="participantSelection"
                                         value="{{ participant['participantId'] }}">
-                                    {{ participant['participantName'] }}
+                                    {{participant['participantName']}}
                                 </label>
                             </div>
                             {% endfor %}
@@ -155,6 +155,7 @@
             var groupIndex;
             var participantName;
             var location;
+            var OmmitOption;
 
             function updateSelectedParticipants() {
                 selectedParticipantsHTMLArray = [];
@@ -225,6 +226,23 @@
             $('.participant-rowTable[data-location="location1"]').on('click', function () {
                 iValue = $(this).data('participant-index');
                 // iValue += 1;
+                var addiValue = iValue + 1
+                OmmitOption = $(this).find('.selected-participants' + addiValue).text().trim().toLowerCase();
+                
+                // console.log('ommitoption is :', OmmitOption,'.');
+
+                $('[class*="participantNewModal"]').each(function () {
+                    var labelText = $(this).text().trim().toLowerCase();
+                    
+                    // console.log('labelText is:', labelText,'.');
+
+                    if (labelText === OmmitOption) {
+                        console.log('Match found. Hiding the corresponding participant row.');
+                        // Hide the corresponding participant row
+                        $(this).closest('.participant-row').css('display', 'none');
+                    }
+                });
+
                 location = 1;
 
                 console.log("Clicked participant with index:", iValue);
@@ -236,6 +254,17 @@
                 participantIndex = $(this).data('participant-index');
                 groupIndex = $(this).closest('.card').index();
                 // groupIndex = getgroupIndex += 1;
+                
+                currentParticipantsHTMLArray = [];
+                $('[class^="selected-participants"]').each(function () {
+                    const participantPElement = $(this).find('p');
+                    const participantText = participantPElement.text().trim();
+                    currentParticipantsHTMLArray.push(participantText);
+                });
+
+                var eq = groupIndex * 4 + participantIndex - 1
+                OmmitOption = currentParticipantsHTMLArray[eq]
+                
                 location = 2;
 
                 console.log("Clicked participant-rowTable in Group", groupIndex, "with participant index:", participantIndex);
