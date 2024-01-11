@@ -312,7 +312,10 @@ def loadEditParticipant(projID, tourID, participantID):
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments JOIN participants ON tournaments.tourID = participants.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND participants.participantID = :participantID"
+            query = """SELECT * from tournaments JOIN participants 
+            ON tournaments.tourID = participants.tourID 
+            WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID 
+            AND participants.participantID = :participantID"""
             inputs = {'userID': session["id"], 'tourID': tourID, 'participantID': participantID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
@@ -384,6 +387,30 @@ def loadCreateModerator(projID, tourID):
                 return page
             
             else:
+                return render_template('notfound.html')
+            
+@app.route('/editModerator/<projID>/<tourID>/<moderatorID>', methods=["POST", "GET"])
+def loadEditModerator(projID, tourID, moderatorID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:            
+            query = """SELECT *
+            FROM tournaments JOIN users ON tournaments.userID = users.userID
+            JOIN moderators ON users.userID = moderators.userID
+            WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID
+            AND moderators.moderatorID = :moderatorID
+            GROUP BY users.email, moderators.moderatorID, moderators.tourID, moderators.userID"""
+            inputs = {'userID': session["id"], 'tourID': tourID, 'moderatorID': moderatorID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+            
+            if rows:
+                page = Tournaments.editModerator(projID, tourID, moderatorID)
+                return page
+            
+            else:
+                print("Haha you noob")
                 return render_template('notfound.html')
 
 @app.errorhandler(404)
