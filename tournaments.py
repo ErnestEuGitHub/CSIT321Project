@@ -926,9 +926,8 @@ class Tournaments:
                 # Query the 'moderator' table
                 queryModeratorList ="""
                 SELECT users.email, GROUP_CONCAT(permissionName) AS permissionName
-                FROM users JOIN moderators ON moderators.userID = users.userID 
-                LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID 
-                LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
+                FROM users JOIN moderators JOIN moderatorPermissions JOIN permissions
+                ON moderators.userID = users.userID AND moderators.moderatorID = moderatorPermissions.moderatorID AND moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID
                 GROUP BY moderators.moderatorID"""
                 inputModeratorList = {'tourID': tourID}
@@ -996,69 +995,6 @@ class Tournaments:
         else:
             return render_template('createModerator.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
 
-    #Edit Moderators    
-    def editModerator(projID, tourID, moderatorID):
-        # for navbar
-        navtype = 'dashboard'
-        tournamentName = retrieveDashboardNavName(tourID)
-
-        if request.method == "POST":
-            moderatorEmail = request.form.get("moderatorEmail")
-            selectedPermissions = [
-                request.form.get("SetupTournament"),
-                request.form.get("SetupStructure"),
-                request.form.get("ManageRegistration"),
-                request.form.get("ManageParticipant"),
-                request.form.get("PlaceParticipant"),
-                request.form.get("ManageFinalStanding"),
-                request.form.get("ReportResult"),
-            ]
-            print(selectedPermissions)
-
-            with dbConnect.engine.connect() as conn:
-                # Check if the user already exists
-                existingUser = conn.execute(
-                    text("SELECT userID FROM users WHERE email = :moderatorEmail"),
-                    {'moderatorEmail': moderatorEmail}
-                ).fetchone()
-
-                if existingUser:
-                    # User already exists, use their userID
-                    userID = existingUser[0]
-                else:
-                    # User doesn't exist, redirect to registration page
-                    return redirect(url_for("loadregister"))
-
-                # Insert moderator into the 'moderators' table
-                queryNewModerator = "INSERT INTO moderators (userID, tourID) VALUES (:userID, :tourID)"
-                inputNewModerator = {'userID': userID, 'tourID': tourID}
-                conn.execute(text(queryNewModerator), inputNewModerator)
-                    
-                # Retrieve the newly inserted moderator's ID
-                moderatorID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
-
-                # Insert selected permissions into the 'moderatorPermissions' table
-                for idx, permission in enumerate(selectedPermissions, start=1):
-                    if permission:  # Check if the permission is selected
-                        query_insert_permission = f"INSERT INTO moderatorPermissions (moderatorID, permissionID) VALUES (:moderatorID, :permissionID)"
-                        input_insert_permission = {'moderatorID': moderatorID, 'permissionID': idx}
-                        conn.execute(text(query_insert_permission), input_insert_permission)
-
-            return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
-        else:
-            with dbConnect.engine.connect() as conn:
-                queryRetrieveModerator = """SELECT users.email, GROUP_CONCAT(permissions.permissionName) as permissionList
-                FROM users JOIN moderators JOIN moderatorPermissions JOIN permissions
-                ON users.userID = moderators.userID AND moderators.moderatorID = moderatorPermissions.moderatorID 
-                AND moderatorPermissions.permissionID = permissions.permissionID
-                WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
-                GROUP BY users.email"""
-                inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
-                editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
-                moderator = editModerator.fetchall()
-
-            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderator=moderator, moderatorID=moderatorID)
-    
     #Placement
     def get_updated_content():
         #for navbar
