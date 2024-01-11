@@ -1,8 +1,77 @@
-from flask import render_template, session, request, flash, session, jsonify, url_for, redirect
+from flask import Flask, render_template, session, request, flash, jsonify, url_for, redirect
 from database import dbConnect
 from sqlalchemy import text
 from datetime import datetime
 from general import *
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+from googleapiclient.http import MediaIoBaseUpload
+from io import BytesIO
+
+#Google Drive API credentials
+SCOPES = ['https://www.googleapis.com/auth/drive']
+SERVICE_ACCOUNT_FILE = 'service_account.json'
+PARENT_FOLDER_ID = "1Gjt43kVhn6yAmRT88w11KQSbO2IQvTNZ"
+PARENT_FOLDER_ID_2 = "1UOe9hiR1xh__jy-ZbWjs4NidcBjtEfp7" ### This is part of the parent folder 2 ###
+
+def authenticate():
+    # Authentication
+    creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    return creds
+
+def get_drive_service():
+    # Create and return a Google Drive service instance using the authenticated credentials
+    creds = authenticate()
+    return build('drive', 'v3', credentials=creds)
+
+### This part slowly code in the meta data 2 and parent folder 2
+
+def upload_to_google_drive(image, image_2, tour_name):
+    try:
+        drive_service = get_drive_service()
+
+        google_drive_folder_id = PARENT_FOLDER_ID
+        google_drive_folder_id_2 = PARENT_FOLDER_ID_2
+        
+        ### Upload the first file
+        if image:
+            # Prepare metadata
+            file_metadata = {'name': f'{tour_name}', 'parents': [google_drive_folder_id]}
+            file_bytes = image.read()
+            file_like_object = BytesIO(file_bytes)
+            media = MediaIoBaseUpload(file_like_object, mimetype='application/octet-stream', resumable=True)
+            file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            # Get the file ID
+            file_id = file.get('id')
+            print(f"File 1 ID: {file_id}")
+
+        else:
+            file_id = None
+            print("No file1 provided. Skipping upload.")
+
+        # Upload the second file
+        
+        if image_2:
+            # Prepare metadata_2
+            file_metadata_2 = {'name': f'{tour_name}', 'parents': [google_drive_folder_id_2]}
+            file_bytes_2 = image_2.read()
+            file_like_object_2 = BytesIO(file_bytes_2)
+            media_2 = MediaIoBaseUpload(file_like_object_2, mimetype='application/octet-stream', resumable=True)
+            file_2 = drive_service.files().create(body=file_metadata_2, media_body=media_2, fields='id').execute()
+            # Get the file_2 ID
+            file_id_2 = file_2.get('id')
+            print(f"File 2 ID: {file_id_2}")
+        else:
+            file_id_2 = None
+            print("No file2 provided. Skipping upload.")
+        
+        return file_id, file_id_2
+    
+    except Exception as e:
+        print(f"Error uploading to Google Drive: {e}")
+        return None
+
+app = Flask(__name__)
 
 class Tournaments:
     #Organiser Tournament Page (Page that shows all tournaments in boxes within a project)
@@ -18,7 +87,7 @@ class Tournaments:
     #Tournament Overview Page
     def TourOverviewDetails(projID, tourID):
         with dbConnect.engine.connect() as conn:
-            query = "SELECT tourName, startDate, endDate, gender, sports.sportName FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID WHERE tourID = :tourID"
+            query = "SELECT tourName, startDate, endDate, gender, sports.sportName, tourBannerID FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
             result = conn.execute(text(query), inputs)
             rows = result.fetchall()
@@ -28,6 +97,7 @@ class Tournaments:
             endDate = rows[0][2]
             gender = rows[0][3]
             sportName = rows[0][4]
+            tourBannerID = rows[0][5]
             
             #for navbar
             navtype = 'tournament'
@@ -35,8 +105,9 @@ class Tournaments:
             # projID = session["currentProj"]
             projectName = retrieveProjectNavName(projID)
     
-        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID)
+        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID, tourBannerID=tourBannerID)
     
+    @staticmethod
     #Create Tournament
     def createTour(projID):
         #for navbar
@@ -51,6 +122,8 @@ class Tournaments:
             gender = request.form.get("gender")
             sport = request.form.get("sport")
             format = request.form.get("format")
+            tourImage = request.files.get("tourImage")
+            bannerImage = request.files.get("bannerImage")
             userID = session["id"]
             status = 4
 
@@ -107,12 +180,14 @@ class Tournaments:
                         rows = getsfID.fetchall()
                         formatID = rows[0][2]
 
+
                         query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
                         createNewGeneralInfo = conn.execute(text(query))
                         getID = createNewGeneralInfo.lastrowid
-            
-                        query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID)"
-                        inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':userID, 'generalInfoID':getID}
+
+                        query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
+                        file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
+                        inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
                         createTournament = conn.execute(text(query), inputs)
 
                         #for navbar
@@ -120,11 +195,13 @@ class Tournaments:
                         projectName = retrieveProjectNavName(projID)
 
                     flash('Tournament Created!', 'success')
+
                     return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName, projID=projID)
-                
+      
                 except Exception as e:
                     flash('Oops, an error has occured.', 'error')
                     print(f"Error details: {e}")
+
                     #for navbar
                     tournamentlist = updateNavTournaments(projID)
                     projectName = retrieveProjectNavName(projID)
@@ -695,9 +772,7 @@ class Tournaments:
                 WHERE participants.tourID = :tourID AND participants.participantID = :participantID"""
                 inputOne = {'tourID': tourID, 'participantID': participantID}
                 editParticipant = conn.execute(text(queryOne),inputOne)
-                participants = editParticipant.fetchall()     
-                
-                print(participants)     
+                participants = editParticipant.fetchall()          
 
                 # Check if the participant exists
                 if participants:
@@ -706,8 +781,8 @@ class Tournaments:
 
                     # Fetch all player names for the participant
                     playerList = [(row[2], row[3]) for row in participants if row[2] is not None and row[3] is not None]  
-                    # Assuming playerName is the third column 
-                    # Assuming playerID is the forth column
+                    # Assuming playerID is the third column
+                    # Assuming playerName is the forth column
 
                     # Now, you have participant information and a list of player names
                     # You can use participantID, participantName, participantEmail, and playerNames in your template or further processing
@@ -850,16 +925,9 @@ class Tournaments:
                 
                 # Query the 'moderator' table
                 queryModeratorList ="""
-<<<<<<< HEAD
                 SELECT users.email, GROUP_CONCAT(permissionName) AS permissionName
                 FROM users JOIN moderators JOIN moderatorPermissions JOIN permissions
                 ON moderators.userID = users.userID AND moderators.moderatorID = moderatorPermissions.moderatorID AND moderatorPermissions.permissionID = permissions.permissionID
-=======
-                SELECT users.email, GROUP_CONCAT(permissionName) AS permissionName, moderators.moderatorID
-                FROM users JOIN moderators ON moderators.userID = users.userID 
-                LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID 
-                LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
->>>>>>> moderator
                 WHERE moderators.tourID = :tourID
                 GROUP BY moderators.moderatorID"""
                 inputModeratorList = {'tourID': tourID}
@@ -900,8 +968,6 @@ class Tournaments:
                     text("SELECT userID FROM users WHERE email = :moderatorEmail"),
                     {'moderatorEmail': moderatorEmail}
                 ).fetchone()
-                
-                print("Existing User: ", existingUser)
 
                 if existingUser:
                     # User already exists, use their userID
@@ -929,91 +995,6 @@ class Tournaments:
         else:
             return render_template('createModerator.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
 
-    #Edit Moderators    
-    def editModerator(projID, tourID, moderatorID):
-        # for navbar
-        navtype = 'dashboard'
-        tournamentName = retrieveDashboardNavName(tourID)
-
-        if request.method == "POST":
-            moderatorEmail = request.form.get("moderatorEmail")
-            selectedPermissions = [
-                request.form.get("Setup Tournament"),
-                request.form.get("Setup Structure"),
-                request.form.get("Manage Registration"),
-                request.form.get("Manage Participant"),
-                request.form.get("Place Participant"),
-                request.form.get("Manage Final Standing"),
-                request.form.get("Report Result"),
-            ]
-
-            with dbConnect.engine.connect() as conn:
-                # Check if the user already exists
-                existingUser = conn.execute(
-                    text("SELECT userID FROM users WHERE email = :moderatorEmail"),
-                    {'moderatorEmail': moderatorEmail}
-                ).fetchone()
-                                
-                # User already exists, use their userID
-                userID = existingUser[0]
-                
-                # Check if a moderator with the specified userID and tourID already exists
-                existingModerator = conn.execute(
-                    text("SELECT moderatorID FROM moderators WHERE userID = :userID AND tourID = :tourID"),
-                    {'userID': userID, 'tourID': tourID}
-                ).fetchone()
-                
-                if existingModerator:
-                    # Moderator already exists, use their moderatorID
-                    moderatorID = existingModerator[0]
-                else:
-                    # Moderator does not exist, handle this situation accordingly (e.g., raise an error, log a message)
-                    flash('Moderator not found!', 'error')
-                    return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
-
-                # Delete existing permissions for the moderator
-                conn.execute(
-                    text("DELETE FROM moderatorPermissions WHERE moderatorID = :moderatorID"),
-                    {'moderatorID': moderatorID}
-                )
-
-                # Insert selected permissions into the 'moderatorPermissions' table
-                for idx, permission in enumerate(selectedPermissions, start=1):
-                    if permission:  # Check if the permission is selected
-                        query_insert_permission = f"INSERT INTO moderatorPermissions (moderatorID, permissionID) VALUES (:moderatorID, :permissionID)"
-                        input_insert_permission = {'moderatorID': moderatorID, 'permissionID': idx}
-                        conn.execute(text(query_insert_permission), input_insert_permission)
-
-            return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
-            
-        else:            
-            
-            with dbConnect.engine.connect() as conn:
-                queryRetrieveModerator = """SELECT users.email, permissions.permissionName
-                FROM tournaments JOIN users ON tournaments.userID = users.userID
-                JOIN moderators ON users.userID = moderators.userID
-                LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
-                LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
-                WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
-                GROUP BY users.email, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
-                inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
-                editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
-                moderators = editModerator.fetchall()
-                
-                print("Moderators: ",moderators)  
-                
-                # Check if the moderators exists
-                if moderators:                    
-                    moderatorEmail = moderators[0][0]  # Assuming moderatorEmail is the first column
-                    permissionList = [row[1] for row in moderators if row[1] is not None] # Assuming permissionList is the second column
-                    print("Moderator Email: ", moderatorEmail)
-                    print("Permission List: ", permissionList)
-                else:
-                    # Handle the case when the participant does not exist
-                    flash('Moderator not found!', 'error')
-
-            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList)
-    
     #Placement
     def get_updated_content():
         #for navbar
@@ -1025,3 +1006,34 @@ class Tournaments:
         with open('templates\seeding.html', 'r') as file:   
             updated_content = file.read()
         return updated_content
+    
+def upload():
+    if 'tourImage' not in request.files:
+        flash('No file part', 'error')
+        return redirect(url_for('createTour'))
+
+    tourImage = request.files['tourImage']
+
+    if tourImage.filename == '':
+        flash('No selected file', 'error')
+        return redirect(url_for('createTour'))
+    
+    
+    
+
+    #------------ Banner part -------------------#
+
+    if 'bannerImage' not in request.files:
+        flash('No file part', 'error')
+        return redirect(url_for('createTour'))
+    
+    bannerImage = request.files['bannerImage']
+
+    if bannerImage.filename == '':
+        flash('No selected file', 'error')
+        return redirect(url_for('createTour'))
+
+    upload_to_google_drive(tourImage, bannerImage) 
+
+    flash('File uploaded successfully', 'success')
+    return redirect(url_for('createTour'))
