@@ -156,6 +156,7 @@
             var participantName;
             var location;
             var OmmitOption;
+            var currentParticipantsHTMLArray = [];
 
             function updateSelectedParticipants() {
                 selectedParticipantsHTMLArray = [];
@@ -184,6 +185,7 @@
                 $('.form-check-input').prop('checked', false);
                 $('.modal-backdrop').remove();
                 $('body').css('overflow', 'auto');
+                $('.participant-row').show();
             }
 
             // When #selectAll checkbox changes
@@ -224,22 +226,32 @@
             });
 
             $('.participant-rowTable[data-location="location1"]').on('click', function () {
+                
+                // currentParticipantsHTMLArray = [];
+                // $('[class*="selected-participants"]').each(function () {
+                //     const participantPElement = $(this).find('p');
+                //     const participantText = participantPElement.text().trim();
+                //     currentParticipantsHTMLArray.push(participantText);
+                // });
+
+                console.log('Before pressing save, currentparticipants array:',currentParticipantsHTMLArray);
+                
                 iValue = $(this).data('participant-index');
                 // iValue += 1;
                 var addiValue = iValue + 1
-                OmmitOption = $(this).find('.selected-participants' + addiValue).text().trim().toLowerCase();
+                OmmitOption = $(this).find('.selected-participants' + addiValue).text().trim();
                 
                 // console.log('ommitoption is :', OmmitOption,'.');
 
                 $('[class*="participantNewModal"]').each(function () {
-                    var labelText = $(this).text().trim().toLowerCase();
+                    var labelText = $(this).text().trim();
                     
                     // console.log('labelText is:', labelText,'.');
 
                     if (labelText === OmmitOption) {
-                        console.log('Match found. Hiding the corresponding participant row.');
+                        
                         // Hide the corresponding participant row
-                        $(this).closest('.participant-row').css('display', 'none');
+                        $(this).closest('.participant-row').hide();
                     }
                 });
 
@@ -255,8 +267,7 @@
                 groupIndex = $(this).closest('.card').index();
                 // groupIndex = getgroupIndex += 1;
                 
-                currentParticipantsHTMLArray = [];
-                $('[class^="selected-participants"]').each(function () {
+                $('[class*="selected-participants"]').each(function () {
                     const participantPElement = $(this).find('p');
                     const participantText = participantPElement.text().trim();
                     currentParticipantsHTMLArray.push(participantText);
@@ -264,6 +275,18 @@
 
                 var eq = groupIndex * 4 + participantIndex - 1
                 OmmitOption = currentParticipantsHTMLArray[eq]
+
+                $('[class*="participantNewModal"]').each(function () {
+                    var labelText = $(this).text().trim();
+                    
+                    // console.log('labelText is:', labelText,'.');
+
+                    if (labelText === OmmitOption) {
+                        
+                        // Hide the corresponding participant row
+                        $(this).closest('.participant-row').hide();
+                    }
+                });
                 
                 location = 2;
 
@@ -280,20 +303,17 @@
                 participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
                 updateSingleParticipant();
 
-                // console.log('Index is:', index)
-                // console.log('ParticipantName is:', participantName)
-                // Perform other actions on saving changes in the second modal if needed
             });
 
             function updateSingleParticipant() {
                 currentParticipantsHTMLArray = [];
-                $('[class^="selected-participants"]').each(function () {
+                $('[class*="selected-participants"]').each(function () {
                     const participantPElement = $(this).find('p');
                     const participantText = participantPElement.text().trim();
                     currentParticipantsHTMLArray.push(participantText);
                 });
 
-                console.log('Getting currentparticipants array:',currentParticipantsHTMLArray);
+                console.log('After pressing save, currentparticipants array:',currentParticipantsHTMLArray);
                 console.log('ivalue after update:', iValue);
 
                 if (location === 2){
@@ -302,18 +322,25 @@
                     console.log('Location 2 detected, iValue is now:', iValue)
                 }
 
-                currentParticipantsHTMLArray[iValue] = participantName
+                var filteredParticipants = currentParticipantsHTMLArray.map(function (item) {
+                    return item === participantName ? '' : item;
+                })
 
-                $(currentParticipantsHTMLArray).each(function(index){
+                filteredParticipants[iValue] = participantName
+
+                $(filteredParticipants).each(function(index){
                     const selectedParticipantsElement = $(`.selected-participants${index + 1}`);
-                    selectedParticipantsElement.html(currentParticipantsHTMLArray[index]);
+                    const newPElement = $('<p>').text(filteredParticipants[index]);
+                    // console.log('newPElement:', newPElement)
+                    selectedParticipantsElement.empty().append(newPElement);
                 });
 
                 $('.GrpSelected-participants').each(function (index) {
-                    $(this).html(currentParticipantsHTMLArray[index] || '');
+                    const newPElement = $('<p>').text(filteredParticipants[index]);
+                    $(this).html(filteredParticipants[index] ? newPElement : '');
                 });
 
-                console.log('Final Array:', currentParticipantsHTMLArray);
+                console.log('Final Array:', filteredParticipants);
 
             }
 
