@@ -44,7 +44,7 @@
             <div class="card-footer">
                 <div class="grid-flex align-end">
                     <div class="size-content">
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" id="submitRRButton">
                             Save
                         </button>
                     </div>
@@ -353,7 +353,51 @@
             $('#myNewModal').on('shown.bs.modal', function () {
                 $('body').css('overflow', 'hidden');
             });
+
+            //Submit Placements for Round Robin
+            $('#submitRRButton').on('click', function () {
+                let placements = [];
+
+                $('[class*="selected-participants"]').each(function () {
+                    const participantIndex = $(this).data('participant-index');
+                    const participantContent = $(this).html().trim(); // Get the HTML content
+
+                     // Strip HTML tags
+                    const strippedContent = $('<div>').html(participantContent).text();
+
+                    // Add data to the array
+                    placements.push({
+                        index: participantIndex,
+                        content: strippedContent
+                    });
+                });
+
+                // console.log('After Clicking Save Placement: ', placements);
+
+                const currentURL = window.location.href;
+                var formIdentifier = 'rr';
+                // console.log(currentURL)
+
+                $.ajax({
+                    type: 'POST',
+                    url: currentURL, // Replace with the actual endpoint
+                    contentType: 'application/json',
+                    data: JSON.stringify({ formIdentifier: formIdentifier, placements: placements}),
+                    // success: function (response) {
+                    //     // Handle the server's response if needed
+                    //     console.log(response);
+                    // },
+                    // error: function (error) {
+                    //     console.error(error);
+                    // }
+                });
+
+            });
+
         });
+
+
+
 
         // $(document).ready(function () {
         //     let selectedParticipantsHTMLArray = [];

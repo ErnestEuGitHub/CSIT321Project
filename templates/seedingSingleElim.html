@@ -31,8 +31,7 @@
                     <hr>
                     <!-- Dynamic content -->
                     {% for i in range(numberOfParticipants) %}
-                    <div class="participant-row d-flex align-items-center" data-bs-toggle="modal"
-                        data-bs-target="#myModal">
+                    <div class="participant-rowTable d-flex align-items-center" data-location="location1" data-participant-index="{{ i }}" data-bs-toggle="modal" data-bs-target="#myNewModal">
                         <div class="me-5">
                             <p>{{ i + 1 }}</p>
                         </div>
@@ -143,21 +142,62 @@
         </div>
     </div>
 
+    <div class="modal fade" id="myNewModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="myModalLabel">Add Participant to the stage</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <label class="form-check-label">
+                            Name
+                        </label>
+                        <hr>
+                        <div id="participantList" style="text-align: left;">
+                            {% for participant in participantName %}
+                            <div class="form-check participant-row participantNewModal{{ loop.index }}">
+                                <label class="form-check-label participant-label" style="cursor: pointer;">
+                                    <input class="form-check-input" type="radio" name="participantSelection"
+                                        value="{{ participant['participantId'] }}">
+                                    {{participant['participantName']}}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveChangesBtnNewModal">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        $(document).ready(function () {
-            $('#selectAll').on('change', function () {
-                $('.participant-row input[type="checkbox"]').prop('checked', $(this).prop('checked'));
-            });
+        // $(document).ready(function () {
+        //     $('#selectAll').on('change', function () {
+        //         $('.participant-row input[type="checkbox"]').prop('checked', $(this).prop('checked'));
+        //     });
 
-            $('.participant-row input[type="checkbox"]').on('change', function () {
-                const allChecked = $('.participant-row input[type="checkbox"]:checked').length === $('.participant-row input[type="checkbox"]').length;
-                $('#selectAll').prop('checked', allChecked);
-            });
-        });
+        //     $('.participant-row input[type="checkbox"]').on('change', function () {
+        //         const allChecked = $('.participant-row input[type="checkbox"]:checked').length === $('.participant-row input[type="checkbox"]').length;
+        //         $('#selectAll').prop('checked', allChecked);
+        //     });
+        // });
 
         $(document).ready(function () {
-            let selectedParticipantsHTML = ''; // To store selected names temporarily
+            // let selectedParticipantsHTML = ''; // To store selected names temporarily
             let selectedParticipantsHTMLArray = [];
+            var iValue;
+            var participantIndex;
+            var groupIndex;
+            var participantName;
+            var location;
+            var OmmitOption;
+            var currentParticipantsHTMLArray = [];
 
             function updateSelectedParticipants() {
                 selectedParticipantsHTMLArray = [];
@@ -168,6 +208,9 @@
                     selectedParticipantsHTMLArray.push(`<p>${participantName}</p>`);
 
                     const selectedParticipantsElement = $(`.selected-participants${index + 1}`);
+                    
+                    console.log('Inserting This Element:',selectedParticipantsHTML);
+
                     selectedParticipantsElement.html(selectedParticipantsHTML);
                 });
 
@@ -179,16 +222,29 @@
                     });
             }
 
+            // function resetModal() {
+            //     $('.form-check-input').prop('checked', false);
+            //     // updateSelectedParticipants();
+            //     $('.modal-backdrop').remove();
+            //     $('body').css('overflow', 'auto');
+            // }
+
             function resetModal() {
                 $('.form-check-input').prop('checked', false);
-                // updateSelectedParticipants();
                 $('.modal-backdrop').remove();
                 $('body').css('overflow', 'auto');
+                $('.participant-row').show();
             }
 
-            // Listen for checkbox changes
-            $('.form-check-input').on('change', function () {
-                updateSelectedParticipants();
+             // When #selectAll checkbox changes
+             $('#selectAll').on('change', function () {
+                $('.participant-row input[type="checkbox"]').prop('checked', $(this).prop('checked'));
+            });
+
+            // When any of the participant checkboxes change
+            $('.participant-row input[type="checkbox"]').on('change', function () {
+                var allChecked = $('.participant-row input[type="checkbox"]:checked').length === $('.participant-row input[type="checkbox"]').length;
+                $('#selectAll').prop('checked', allChecked);
             });
 
             // Handling the row click
@@ -214,6 +270,94 @@
 
             // Event triggered when the modal is shown
             $('#myModal').on('shown.bs.modal', function () {
+                $('body').css('overflow', 'hidden');
+            });
+
+            $('.participant-rowTable[data-location="location1"]').on('click', function () {
+                
+                console.log('Before pressing save, currentparticipants array:',currentParticipantsHTMLArray);
+                
+                iValue = $(this).data('participant-index');
+                // iValue += 1;
+                var addiValue = iValue + 1
+                OmmitOption = $(this).find('.selected-participants' + addiValue).text().trim();
+                
+                // console.log('ommitoption is :', OmmitOption,'.');
+
+                $('[class*="participantNewModal"]').each(function () {
+                    var labelText = $(this).text().trim();
+                    
+                    // console.log('labelText is:', labelText,'.');
+
+                    if (labelText === OmmitOption) {
+                        
+                        // Hide the corresponding participant row
+                        $(this).closest('.participant-row').hide();
+                    }
+                });
+
+                location = 1;
+
+                console.log("Clicked participant with index:", iValue);
+
+                $('#myNewModal').modal('show');
+            });
+
+            $('#saveChangesBtnNewModal').on('click', function () {
+                $('#myNewModal').modal('hide');
+                // Assuming you want to update the selected participant with the last radio selection
+                const index = $('input[name="participantSelection"]:checked').val();
+                participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
+                updateSingleParticipant();
+
+            });
+
+            function updateSingleParticipant() {
+                currentParticipantsHTMLArray = [];
+                $('[class*="selected-participants"]').each(function () {
+                    const participantPElement = $(this).find('p');
+                    const participantText = participantPElement.text().trim();
+                    currentParticipantsHTMLArray.push(participantText);
+                });
+
+                console.log('After pressing save, currentparticipants array:',currentParticipantsHTMLArray);
+                console.log('ivalue after update:', iValue);
+
+                if (location === 2){
+                    iValue = groupIndex * 4 + participantIndex - 1
+
+                    console.log('Location 2 detected, iValue is now:', iValue)
+                }
+
+                var filteredParticipants = currentParticipantsHTMLArray.map(function (item) {
+                    return item === participantName ? '' : item;
+                })
+
+                filteredParticipants[iValue] = participantName
+
+                $(filteredParticipants).each(function(index){
+                    const selectedParticipantsElement = $(`.selected-participants${index + 1}`);
+                    const newPElement = $('<p>').text(filteredParticipants[index]);
+                    // console.log('newPElement:', newPElement)
+                    selectedParticipantsElement.empty().append(newPElement);
+                });
+
+                $('.GrpSelected-participants').each(function (index) {
+                    const newPElement = $('<p>').text(filteredParticipants[index]);
+                    $(this).html(filteredParticipants[index] ? newPElement : '');
+                });
+
+                console.log('Final Array:', filteredParticipants);
+
+            }
+
+            // Event triggered after the second modal is completely hidden
+            $('#myNewModal').on('hidden.bs.modal', function () {
+                resetModal();
+            });
+
+            // Event triggered when the second modal is shown
+            $('#myNewModal').on('shown.bs.modal', function () {
                 $('body').css('overflow', 'hidden');
             });
         });
