@@ -1008,6 +1008,93 @@ class Tournaments:
 
             return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList)
     
+    #Delete Moderators    
+    def deleteModerator(projID, tourID, moderatorID):
+        # for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "POST":
+            moderatorEmail = request.form.get("moderatorEmail")
+            selectedPermissions = [
+                request.form.get("Setup Tournament"),
+                request.form.get("Setup Structure"),
+                request.form.get("Manage Registration"),
+                request.form.get("Manage Participant"),
+                request.form.get("Place Participant"),
+                request.form.get("Manage Final Standing"),
+                request.form.get("Report Result"),
+            ]
+
+            with dbConnect.engine.connect() as conn:
+                # Check if the user already exists
+                existingUser = conn.execute(
+                    text("SELECT userID FROM users WHERE email = :moderatorEmail"),
+                    {'moderatorEmail': moderatorEmail}
+                ).fetchone()
+                                
+                # User already exists, use their userID
+                userID = existingUser[0]
+                
+                # Check if a moderator with the specified userID and tourID already exists
+                existingModerator = conn.execute(
+                    text("SELECT moderatorID FROM moderators WHERE userID = :userID AND tourID = :tourID"),
+                    {'userID': userID, 'tourID': tourID}
+                ).fetchone()
+                
+                if existingModerator:
+                    # Moderator already exists, use their moderatorID
+                    moderatorID = existingModerator[0]
+                else:
+                    # Moderator does not exist, handle this situation accordingly (e.g., raise an error, log a message)
+                    flash('Moderator not found!', 'error')
+                    return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+
+                # Delete existing permissions for the moderator
+                conn.execute(
+                    text("DELETE FROM moderatorPermissions WHERE moderatorID = :moderatorID"),
+                    {'moderatorID': moderatorID}
+                )
+
+                # Delete the moderator
+                conn.execute(
+                    text("DELETE FROM moderators WHERE moderatorID = :moderatorID"),
+                    {'moderatorID': moderatorID}
+                )
+
+                flash('Moderator deleted successfully!', 'success')
+                return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+
+            return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+            
+        else:            
+            
+            with dbConnect.engine.connect() as conn:
+                queryRetrieveModerator = """SELECT users.email, permissions.permissionName
+                FROM tournaments JOIN users ON tournaments.userID = users.userID
+                JOIN moderators ON users.userID = moderators.userID
+                LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
+                LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
+                WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
+                GROUP BY users.email, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
+                inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
+                editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
+                moderators = editModerator.fetchall()
+                
+                print("Moderators: ",moderators)  
+                
+                # Check if the moderators exists
+                if moderators:                    
+                    moderatorEmail = moderators[0][0]  # Assuming moderatorEmail is the first column
+                    permissionList = [row[1] for row in moderators if row[1] is not None] # Assuming permissionList is the second column
+                    print("Moderator Email: ", moderatorEmail)
+                    print("Permission List: ", permissionList)
+                else:
+                    # Handle the case when the participant does not exist
+                    flash('Moderator not found!', 'error')
+
+            return render_template('deleteModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList)
+    
     #Placement
     def get_updated_content():
         #for navbar
