@@ -160,6 +160,15 @@
 
             function updateSelectedParticipants() {
                 selectedParticipantsHTMLArray = [];
+                grpSelectedParticipantsHTMLArray = [];
+                $('[class*="selected-participants"]').each(function () {
+                    $(this).empty();
+                });
+
+                $('[class*="GrpSelected-participants"]').each(function () {
+                    $(this).empty();
+                });
+
                 $('.participant-row input:checked').each(function (index) {
                     const participantName = $(this).closest('.participant-row').find('.participant-label').text().trim();
                     const participantHTML = `<p>${participantName}</p>`;
@@ -172,8 +181,8 @@
                     grpSelectedParticipantsHTMLArray[index] = participantHTML;
                 });
 
-                console.log(selectedParticipantsHTMLArray);
-                console.log(grpSelectedParticipantsHTMLArray);
+                console.log('Selected Participants Array: ', selectedParticipantsHTMLArray);
+                console.log('Grp Selected Participants Array: ', grpSelectedParticipantsHTMLArray);
 
                 // Update each .GrpSelected-participants element
                 $('.GrpSelected-participants').each(function (index) {
