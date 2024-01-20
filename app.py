@@ -429,7 +429,7 @@ def loadDeleteModerator(projID, tourID, moderatorID):
             rows = checktour.fetchall()
             
             if rows:
-                page = Tournaments.editModerator(projID, tourID, moderatorID)
+                page = Tournaments.deleteModerator(projID, tourID, moderatorID)
                 return page
             
             else:

@@ -947,6 +947,8 @@ class Tournaments:
                     text("SELECT moderatorID FROM moderators WHERE moderatorEmail = :moderatorEmail"),
                     {'moderatorEmail': moderatorEmail}
                 ).fetchone()
+
+                print("Moderator ID", existingModerator)
                 
                 if existingModerator:
                     # Moderator already exists, use their moderatorID
@@ -1018,19 +1020,12 @@ class Tournaments:
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
-                existingUser = conn.execute(
-                    text("SELECT userID FROM users WHERE email = :moderatorEmail"),
+                existingModerator = conn.execute(
+                    text("SELECT moderatorID FROM moderators WHERE moderatorEmail = :moderatorEmail"),
                     {'moderatorEmail': moderatorEmail}
                 ).fetchone()
-                                
-                # User already exists, use their userID
-                userID = existingUser[0]
-                
-                # Check if a moderator with the specified userID and tourID already exists
-                existingModerator = conn.execute(
-                    text("SELECT moderatorID FROM moderators WHERE userID = :userID AND tourID = :tourID"),
-                    {'userID': userID, 'tourID': tourID}
-                ).fetchone()
+
+                print("Moderator ID", existingModerator)
                 
                 if existingModerator:
                     # Moderator already exists, use their moderatorID
