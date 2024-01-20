@@ -905,8 +905,8 @@ class Tournaments:
                     return render_template('notfound.html')
 
                 # Insert moderator into the 'moderators' table
-                queryNewModerator = "INSERT INTO moderators (userID, tourID) VALUES (:userID, :tourID)"
-                inputNewModerator = {'userID': userID, 'tourID': tourID}
+                queryNewModerator = "INSERT INTO moderators (userID, tourID, moderatorEmail) VALUES (:userID, :tourID, :moderatorEmail)"
+                inputNewModerator = {'userID': userID, 'tourID': tourID, 'moderatorEmail': moderatorEmail}
                 conn.execute(text(queryNewModerator), inputNewModerator)
                     
                 # Retrieve the newly inserted moderator's ID
