@@ -31,6 +31,8 @@ def logout():
 
 @app.route('/register', methods=["POST", "GET"])
 def loadregister():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
     page = User.register()
     return page
 
@@ -396,11 +398,10 @@ def loadEditModerator(projID, tourID, moderatorID):
     else:
         with dbConnect.engine.connect() as conn:            
             query = """SELECT *
-            FROM tournaments JOIN users ON tournaments.userID = users.userID
-            JOIN moderators ON users.userID = moderators.userID
+            FROM tournaments JOIN moderators ON tournaments.tourID = moderators.tourID
             WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID
             AND moderators.moderatorID = :moderatorID
-            GROUP BY users.email, moderators.moderatorID, moderators.tourID, moderators.userID"""
+            GROUP BY moderators.moderatorID, moderators.tourID, moderators.userID"""
             inputs = {'userID': session["id"], 'tourID': tourID, 'moderatorID': moderatorID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
@@ -419,17 +420,16 @@ def loadDeleteModerator(projID, tourID, moderatorID):
     else:
         with dbConnect.engine.connect() as conn:            
             query = """SELECT *
-            FROM tournaments JOIN users ON tournaments.userID = users.userID
-            JOIN moderators ON users.userID = moderators.userID
+            FROM tournaments JOIN moderators ON tournaments.tourID = moderators.tourID
             WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID
             AND moderators.moderatorID = :moderatorID
-            GROUP BY users.email, moderators.moderatorID, moderators.tourID, moderators.userID"""
+            GROUP BY moderators.moderatorEmail, moderators.moderatorID, moderators.tourID, moderators.userID"""
             inputs = {'userID': session["id"], 'tourID': tourID, 'moderatorID': moderatorID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
             
             if rows:
-                page = Tournaments.deleteModerator(projID, tourID, moderatorID)
+                page = Tournaments.editModerator(projID, tourID, moderatorID)
                 return page
             
             else:

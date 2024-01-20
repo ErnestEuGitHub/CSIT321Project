@@ -20,7 +20,7 @@
             <tbody>
                 {% for moderator in moderators %}
                     <tr>
-                        <td>{{ moderator.email }}</td>
+                        <td>{{ moderator.moderatorEmail }}</td>
                         <td>{{ moderator.permissionName }}</td>
                         <td>
                             <a href="/editModerator/{{projID}}/{{tourID}}/{{moderator.moderatorID}}">

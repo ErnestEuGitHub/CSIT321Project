@@ -850,8 +850,8 @@ class Tournaments:
                 
                 # Query the 'moderator' table
                 queryModeratorList ="""
-                SELECT users.email, GROUP_CONCAT(permissionName) AS permissionName, moderators.moderatorID
-                FROM users JOIN moderators ON moderators.userID = users.userID 
+                SELECT moderators.moderatorEmail, GROUP_CONCAT(permissionName) AS permissionName, moderators.moderatorID
+                FROM moderators
                 LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID 
                 LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID
@@ -902,7 +902,7 @@ class Tournaments:
                     userID = existingUser[0]
                 else:
                     # User doesn't exist, redirect to registration page
-                    return redirect(url_for("loadregister"))
+                    return render_template('notfound.html')
 
                 # Insert moderator into the 'moderators' table
                 queryNewModerator = "INSERT INTO moderators (userID, tourID) VALUES (:userID, :tourID)"
@@ -938,23 +938,14 @@ class Tournaments:
                 request.form.get("Manage Participant"),
                 request.form.get("Place Participant"),
                 request.form.get("Manage Final Standing"),
-                request.form.get("Report Result"),
+                request.form.get("Report Result")
             ]
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
-                existingUser = conn.execute(
-                    text("SELECT userID FROM users WHERE email = :moderatorEmail"),
-                    {'moderatorEmail': moderatorEmail}
-                ).fetchone()
-                                
-                # User already exists, use their userID
-                userID = existingUser[0]
-                
-                # Check if a moderator with the specified userID and tourID already exists
                 existingModerator = conn.execute(
-                    text("SELECT moderatorID FROM moderators WHERE userID = :userID AND tourID = :tourID"),
-                    {'userID': userID, 'tourID': tourID}
+                    text("SELECT moderatorID FROM moderators WHERE moderatorEmail = :moderatorEmail"),
+                    {'moderatorEmail': moderatorEmail}
                 ).fetchone()
                 
                 if existingModerator:
@@ -983,13 +974,12 @@ class Tournaments:
         else:            
             
             with dbConnect.engine.connect() as conn:
-                queryRetrieveModerator = """SELECT users.email, permissions.permissionName
-                FROM tournaments JOIN users ON tournaments.userID = users.userID
-                JOIN moderators ON users.userID = moderators.userID
+                queryRetrieveModerator = """SELECT moderators.moderatorEmail, permissions.permissionName
+                FROM tournaments JOIN moderators ON tournaments.tourID = moderators.tourID
                 LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
                 LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
-                GROUP BY users.email, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
+                GROUP BY moderators.moderatorEmail, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
                 inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 moderators = editModerator.fetchall()
@@ -1070,13 +1060,12 @@ class Tournaments:
         else:            
             
             with dbConnect.engine.connect() as conn:
-                queryRetrieveModerator = """SELECT users.email, permissions.permissionName
-                FROM tournaments JOIN users ON tournaments.userID = users.userID
-                JOIN moderators ON users.userID = moderators.userID
+                queryRetrieveModerator = """SELECT moderators.moderatorEmail, permissions.permissionName
+                FROM tournaments JOIN moderators ON tournaments.tourID = moderators.tourID
                 LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
                 LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
-                GROUP BY users.email, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
+                GROUP BY moderators.moderatorEmail, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
                 inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 moderators = editModerator.fetchall()
