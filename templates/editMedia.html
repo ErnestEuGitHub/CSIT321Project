@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100 navbarcontentpadding">
+    {% for message in get_flashed_messages(category_filter=["error"]) %}
+    {% if message %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for message in get_flashed_messages(category_filter=["success"]) %}
+    {% if message %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <h2 class="my-3">Edit Media</h2>
+    <form action="" method="POST">
+        <div class="mb-3">
+            <label for="exampleTitle" class="form-label">Title</label>
+            <input type="text" class="form-control" name="newsTitle" value="{{ newsTitle }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="exampleDesc" class="form-label">Description</label>
+            <input type="text" class="form-control" name="newsDesc" value="{{ newsDesc }}" required>
+        </div>
+        <div class="mb-3" id="addMedia">
+            <button type="button" class="btn btn-primary" id="addMediaBtn">Media Upload</button>
+        </div>
+        <button type="submit" class="btn btn-primary">Confirm</button>
+        <a href="/media/{{projID}}/{{tourID}}" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+    </form>
+</div>
+{% endblock %}

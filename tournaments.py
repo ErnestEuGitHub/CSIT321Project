@@ -994,19 +994,112 @@ class Tournaments:
             return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
         else:
             return render_template('createModerator.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
-
-    #Placement
-    def get_updated_content():
+    
+    def media(projID, tourID):
         #for navbar
-        tourID = session["placementTour"]
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
 
-        # Logic to read and return updated content from seeding.html
-        with open('templates\seeding.html', 'r') as file:   
-            updated_content = file.read()
-        return updated_content
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT newsID, newsTitle FROM news WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            result = conn.execute(text(query), inputs)
+            rows = result.fetchall()
+
+            newsBlock = [row._asdict() for row in rows]
     
+        return render_template('media.html', newsBlock=newsBlock, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+    
+    def createMedia(projID, tourID, userID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "POST":
+            newsTitle = request.form.get("newsTitle")
+            newsDesc = request.form.get("newsDesc")
+            userID = session["id"]
+
+            with dbConnect.engine.connect() as conn:
+                queryNews = "INSERT INTO news (newsTitle, newsDesc, tourID, userID) VALUES (:newsTitle, :newsDesc, :tourID, :userID)"
+                inputNews = {'newsTitle':newsTitle, 'newsDesc':newsDesc, 'tourID':tourID, 'userID':userID}
+                createNewMedia = conn.execute(text(queryNews), inputNews)
+
+                newsID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+
+                flash('Media Created!', 'success')
+
+            return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
+        else:
+            return render_template('createMedia.html', tournamentName=tournamentName, navtype=navtype, projID=projID, tourID=tourID, userID=userID)
+    
+    def editMedia(projID, tourID, newsID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "POST":
+            newsTitle = request.form.get("newsTitle")
+            newsDesc = request.form.get("newsDesc")
+
+            with dbConnect.engine.connect() as conn:
+                queryUpdate = "UPDATE news SET newsTitle = :newsTitle, newsDesc = :newsDesc WHERE newsID = :newsID"
+                inputUpdate = {'newsTitle': newsTitle, 'newsDesc': newsDesc, 'newsID': newsID}
+                conn.execute(text(queryUpdate), inputUpdate)
+
+            flash('Media Updated!', 'success')
+
+            return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
+        else:
+            with dbConnect.engine.connect() as conn:
+                queryOne = "SELECT newsTitle, newsDesc FROM news WHERE news.tourID = :tourID AND news.newsID = :newsID"
+                inputOne = {'tourID': tourID, 'newsID': newsID}
+                editNews = conn.execute(text(queryOne), inputOne)
+                news = editNews.fetchall()
+
+                if news:
+                    newsTitle = news[0][0]
+                    newsDesc = news[0][1]
+
+                else:
+                    flash('Media not found!', 'error')
+
+            return render_template('editMedia.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, newsID=newsID, newsTitle=newsTitle, newsDesc=newsDesc)
+        
+    def deleteMedia(projID, tourID, newsID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "POST":
+            newsTitle = request.form.get('newsTitle')
+            newsDesc = request.form.get('newsDesc')
+            
+            with dbConnect.engine.connect() as conn:
+                queryDelete = "DELETE FROM news WHERE newsID = :newsID AND tourID = :tourID"
+                inputDelete = {'newsID': newsID, 'tourID': tourID}
+                conn.execute(text(queryDelete), inputDelete)
+
+            flash('News has been deleted successfully','success')
+
+            return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
+
+        else:
+            with dbConnect.engine.connect() as conn:
+                queryOne = "SELECT newsTitle, newsDesc FROM news WHERE news.tourID = :tourID AND news.newsID = :newsID"
+                inputOne = {'tourID': tourID, 'newsID': newsID}
+                editNews = conn.execute(text(queryOne),inputOne)
+                news = editNews.fetchall()
+
+                if news:
+                    newsTitle = news[0][0]
+                    newsDesc = news[0][1]
+
+                else:
+                    flash('Media not found!', 'error')
+
+        return render_template('deleteMedia.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, newsID=newsID, newsTitle=newsTitle, newsDesc=newsDesc)
+
 def upload():
     if 'tourImage' not in request.files:
         flash('No file part', 'error')

@@ -168,11 +168,65 @@ def placement(projID, tourID):
 
     return render_template('placement.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
-@app.route('/update_content', methods=['POST'])
-def update_content():
-    updated_content = Tournaments.get_updated_content()
-    return jsonify({'content': updated_content})
+@app.route('/media/<projID>/<tourID>' ,methods=["POST", "GET"])
+def loadMedia(projID, tourID):
+    if "id" not in session:
+        return redirect(url_for('loadlogin'))
+    
+    page = Tournaments.media(projID, tourID)
+    return page
 
+@app.route('/createMedia/<projID>/<tourID>', methods=["POST", "GET"])
+def loadCreateMedia(projID, tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from news WHERE news.userID = :userID AND news.tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checknews = conn.execute(text(query), inputs)
+            rows = checknews.fetchall()
+
+            if rows:
+                page = Tournaments.createMedia(projID, tourID, session["id"])
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/editMedia/<projID>/<tourID>/<newsID>', methods=["POST", "GET"])
+def loadEditMedia(projID, tourID, newsID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments JOIN news ON tournaments.tourID = news.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND news.newsID = :newsID"
+            inputs = {'userID': session["id"], 'tourID': tourID, 'newsID': newsID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.editMedia(projID, tourID, newsID)
+                return page
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/deleteMedia/<projID>/<tourID>/<newsID>', methods=["POST", "GET"])
+def loadDeleteMedia(projID, tourID, newsID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments JOIN news ON tournaments.tourID = news.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND news.newsID = :newsID"
+            inputs = {'userID': session["id"], 'tourID': tourID, 'newsID': newsID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.deleteMedia(projID, tourID, newsID)
+                return page
+            else:
+                return render_template('notfound.html')
 
 @app.route('/settings/general/<projID>/<tourID>', methods=["POST", "GET"])
 def loadsettings(projID, tourID):
