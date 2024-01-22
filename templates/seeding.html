@@ -10,6 +10,25 @@
     crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<div class="row justify-content-center navbarcontentpadding">
+    {% for message in get_flashed_messages(category_filter=["error"]) %}
+        {% if message %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    {% for message in get_flashed_messages(category_filter=["success"]) %}
+        {% if message %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
 <div class="content">
     <div class="panel panel-default">
         <div class="card mb-3 mb-sm-0">
@@ -29,14 +48,14 @@
                         </div>
                     </div>
                     <hr>
-                    <!-- Dynamic content -->
+                    
                     {% for i in range(numberOfParticipants) %}
                     <div class="participant-rowTable d-flex align-items-center" id="modalTrigger" data-location="location1" data-participant-index="{{ i }}" data-bs-toggle="modal"
                         data-bs-target="#myNewModal">
                         <div class="me-5">
                             <p>{{ i + 1 }}</p>
                         </div>
-                        <div class="selected-participants{{ i + 1 }}"></div>
+                        <div class="selected-participants{{ i + 1 }}"><p>{{seedingTeam[i]}}</p></div>
                     </div>
                     {% endfor %}
                 </div>
@@ -157,6 +176,20 @@
             var location;
             var OmmitOption;
             var currentParticipantsHTMLArray = [];
+
+            $('[class*="selected-participants"]').each(function (index) {
+                const participantPElement = $(this).find('p');
+                const participantText = participantPElement.text().trim();
+                const participantHTML = `<p>${participantText}</p>`;
+                // currentParticipantsHTMLArray.push(participantText);
+
+                grpSelectedParticipantsHTMLArray[index] = participantHTML;
+
+            });
+
+            $('.GrpSelected-participants').each(function (index) {
+                $(this).html(grpSelectedParticipantsHTMLArray[index] || '');
+            });
 
             function updateSelectedParticipants() {
                 selectedParticipantsHTMLArray = [];
@@ -392,13 +425,25 @@
                     url: currentURL, // Replace with the actual endpoint
                     contentType: 'application/json',
                     data: JSON.stringify({ formIdentifier: formIdentifier, placements: placements}),
-                    // success: function (response) {
-                    //     // Handle the server's response if needed
-                    //     console.log(response);
-                    // },
-                    // error: function (error) {
-                    //     console.error(error);
-                    // }
+                    success: function (response) {
+                        window.location.href = response.redirect;
+                        // // Handle the server's response
+                        // console.log(response.message);
+                        // if (response.category === 'success') {
+                        //     // Display success message
+                        //     alert(response.message);
+
+                        //     // Redirect to the specified URL
+                        //     window.location.href = response.redirect;
+                        // } else {
+                        //     // Display error message
+                        //     alert('Error: ' + response.message);
+                        // }
+                    },
+                    error: function (error) {
+                        console.error(error);
+                        window.location.href = response.redirect;
+                    }
                 });
 
             });
