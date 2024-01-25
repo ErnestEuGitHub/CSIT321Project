@@ -6,16 +6,16 @@
     box-sizing: border-box;
 }
 
-.content {
+/* .content {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
     margin-left: 240px;
     max-width: 1600px;
     /* Adjust the max-width as needed */
-    overflow-x: auto;
+    /* overflow-x: auto; */
     /* Enable horizontal scrolling for overflow */
-}
+/* }  */
 
 /* Styles for panel 1 */
 .panel {
