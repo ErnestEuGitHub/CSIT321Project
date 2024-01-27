@@ -72,7 +72,7 @@
 
     <div class="panel panel-default">
         {% for i in range(numberOfGroups) %}
-        <div class="card">
+        <div class="card grpcard">
             <div class="card-header d-flex justify-content-between align-items-center mb-3">
                 <h3 class="card-title">Group {{i + 1}}</h3>
             </div>
@@ -81,7 +81,7 @@
                     {% for j in range(numberOfParticipants // numberOfGroups) %}
                     <div class="participant-rowTable d-flex align-items-center" id="modalTrigger" data-location="location2" data-participant-index="{{ j + 1 }}">
                         <div class="me-5">
-                            <p>{{ j + 1 }}</p>
+                            <p>{{ (i * (numberOfParticipants // numberOfGroups)) + j + 1 }}</p>
                         </div>
                         <div class="GrpSelected-participants GrpSelected-participants{{ j + 1 }}"></div>
                     </div>
@@ -359,6 +359,16 @@
             $('.participant-rowTable[data-location="location2"]').on('click', function () {
                 participantIndex = $(this).data('participant-index');
                 groupIndex = $(this).closest('.card').index();
+
+                //count total participants and no of grps to know number of participants in a grp
+                var participantElements = document.querySelectorAll('[class*="selected-participants"]');
+                var participantCount = participantElements.length;
+                
+                var grpElements = document.querySelectorAll('.grpcard');
+                var grpCount = grpElements.length;
+
+                var noOfPartInAGrp = participantCount / grpCount;
+
                 // groupIndex = getgroupIndex += 1;
                 
                 $('[class*="selected-participants"]').each(function () {
@@ -367,7 +377,7 @@
                     currentParticipantsHTMLArray.push(participantText);
                 });
 
-                var eq = groupIndex * 4 + participantIndex - 1
+                var eq = groupIndex * noOfPartInAGrp + participantIndex - 1
                 OmmitOption = currentParticipantsHTMLArray[eq]
 
                 $('[class*="participantNewModal"]').each(function () {
@@ -412,8 +422,23 @@
                 console.log('After pressing save, currentparticipants array:',currentParticipantsHTMLArray);
                 console.log('ivalue after update:', iValue);
 
+                //count total participants and no of grps to know number of participants in a grp
+                var participantElements = document.querySelectorAll('[class*="selected-participants"]');
+                var participantCount = participantElements.length;
+
+                console.log('participantCount is '+participantCount);
+                
+                var grpElements = document.querySelectorAll('.grpcard');
+                var grpCount = grpElements.length;
+
+                console.log('grpCount is '+grpCount);
+
+                var noOfPartInAGrp = participantCount / grpCount;
+
+                console.log('noOfPartInAGrp is '+noOfPartInAGrp);
+
                 if (location === 2){
-                    iValue = groupIndex * 4 + participantIndex - 1
+                    iValue = groupIndex * noOfPartInAGrp + participantIndex - 1
 
                     console.log('Location 2 detected, iValue is now:', iValue)
                 }

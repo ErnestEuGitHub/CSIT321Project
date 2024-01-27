@@ -291,10 +291,14 @@ def seeding(projID, tourID, stageID):
                                 inputs = {'participantID': participantID, 'matchID':matchID}
                                 result = conn.execute(text(query), inputs)
 
+                flash('Seeding Updated!', 'success')
+                print('Flash msg activated')
+                return jsonify({'message': 'Seeding Updated!', 'category': 'success', 'redirect': url_for("loadSeeding", projID=projID, tourID=tourID, stageID=stageID)})
+            
             except Exception as e:
                 flash('Oops, something went wrong while trying to update seeding!', 'error')
                 print(f"Error details: {e}")
-                return jsonify({'message': 'Error updating seeding!', 'category': 'error'})
+                return jsonify({'message': 'Error updating seeding!', 'category': 'error', 'redirect': url_for("loadSeeding", projID=projID, tourID=tourID, stageID=stageID)})
     else:
         #stageformat 1 is Single Elim, 2 is Double Elim, 3 is Single RR, 4 is Double RR
         with dbConnect.engine.connect() as conn:
