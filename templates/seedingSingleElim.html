@@ -34,8 +34,7 @@
         <div class="card mb-3 mb-sm-0">
             <div class="card-header d-flex justify-content-between align-items-center mb-3">
                 <h2 class="card-title mb-0">Seeding Single Elim</h2>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                    data-bs-target="#myModal">Add</button>
+                <button type="button" class="btn btn-success" id="addButton">Add</button>
             </div>
             <div class="card-content">
                 <div class="container">
@@ -50,7 +49,7 @@
                     <hr>
                     <!-- Dynamic content -->
                     {% for i in range(numberOfParticipants) %}
-                    <div class="participant-rowTable d-flex align-items-center" data-location="location1" data-participant-index="{{ i }}" data-bs-toggle="modal" data-bs-target="#myNewModal">
+                    <div class="participant-rowTable d-flex align-items-center" data-location="location1" data-participant-index="{{ i }}">
                         <div class="me-5">
                             <p>{{ i + 1 }}</p>
                         </div>
@@ -124,7 +123,7 @@
             </section>
     </div>
 
-    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -154,14 +153,14 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="myNewModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal" id="myNewModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -188,7 +187,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary newClose" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="saveChangesBtnNewModal">Save Changes</button>
                 </div>
             </div>
@@ -297,15 +296,15 @@
                 // Perform other actions on saving changes if needed
             });
 
-            // Event triggered after the modal is completely hidden
-            $('#myModal').on('hidden.bs.modal', function () {
-                resetModal();
-            });
+            // // Event triggered after the modal is completely hidden
+            // $('#myModal').on('hidden.bs.modal', function () {
+            //     resetModal();
+            // });
 
-            // Event triggered when the modal is shown
-            $('#myModal').on('shown.bs.modal', function () {
-                $('body').css('overflow', 'hidden');
-            });
+            // // Event triggered when the modal is shown
+            // $('#myModal').on('shown.bs.modal', function () {
+            //     $('body').css('overflow', 'hidden');
+            // });
 
             $('.participant-rowTable[data-location="location1"]').on('click', function () {
                 
@@ -334,7 +333,8 @@
 
                 console.log("Clicked participant with index:", iValue);
 
-                $('#myNewModal').modal('show');
+                // $('#myNewModal').modal('show');
+                newModal.style.display = "block";
             });
 
             $('#saveChangesBtnNewModal').on('click', function () {
@@ -343,7 +343,7 @@
                 const index = $('input[name="participantSelection"]:checked').val();
                 participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
                 updateSingleParticipant();
-
+                resetModal();
             });
 
             function updateSingleParticipant() {
@@ -385,15 +385,15 @@
 
             }
 
-            // Event triggered after the second modal is completely hidden
-            $('#myNewModal').on('hidden.bs.modal', function () {
-                resetModal();
-            });
+            // // Event triggered after the second modal is completely hidden
+            // $('#myNewModal').on('hidden.bs.modal', function () {
+            //     resetModal();
+            // });
 
-            // Event triggered when the second modal is shown
-            $('#myNewModal').on('shown.bs.modal', function () {
-                $('body').css('overflow', 'hidden');
-            });
+            // // Event triggered when the second modal is shown
+            // $('#myNewModal').on('shown.bs.modal', function () {
+            //     $('body').css('overflow', 'hidden');
+            // });
 
             //Submit Placements for Single Elim
             $('#submitSingElimButton').on('click', function () {

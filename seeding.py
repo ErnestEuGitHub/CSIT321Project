@@ -50,7 +50,7 @@ def seeding(projID, tourID, stageID):
                 seqcount = seqcount + 1
         
         else:
-            #Else update seeding table
+            #If seeding exists, update seeding table
             seqcount = 1
             seedcount = 0
             for teams in placements:
@@ -222,7 +222,7 @@ def seeding(projID, tourID, stageID):
             except Exception as e:
                 flash('Oops, something went wrong while trying to update seeding!', 'error')
                 print(f"Error details: {e}")
-                return jsonify({'message': 'Error updating seeding!', 'category': 'error'})
+                return jsonify({'message': 'Error updating seeding!', 'category': 'error', 'redirect': url_for("loadSeeding", projID=projID, tourID=tourID, stageID=stageID)})
             
         elif formIdentifier == 'SE':
             try:
