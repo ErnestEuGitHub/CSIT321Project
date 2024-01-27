@@ -34,8 +34,7 @@
         <div class="card mb-3 mb-sm-0">
             <div class="card-header d-flex justify-content-between align-items-center mb-3">
                 <h2 class="card-title mb-0">Seeding</h2>
-                <button type="button" class="btn btn-success" id="addButton" data-bs-toggle="modal"
-                    data-bs-target="#myModal">Add</button>
+                <button type="button" class="btn btn-success" id="addButton">Add</button>
             </div>
             <div class="card-content">
                 <div class="container">
@@ -50,8 +49,7 @@
                     <hr>
                     
                     {% for i in range(numberOfParticipants) %}
-                    <div class="participant-rowTable d-flex align-items-center" id="modalTrigger" data-location="location1" data-participant-index="{{ i }}" data-bs-toggle="modal"
-                        data-bs-target="#myNewModal">
+                    <div class="participant-rowTable d-flex align-items-center" id="modalTrigger" data-location="location1" data-participant-index="{{ i }}">
                         <div class="me-5">
                             <p>{{ i + 1 }}</p>
                         </div>
@@ -74,17 +72,16 @@
 
     <div class="panel panel-default">
         {% for i in range(numberOfGroups) %}
-        <div class="card">
+        <div class="card grpcard">
             <div class="card-header d-flex justify-content-between align-items-center mb-3">
                 <h3 class="card-title">Group {{i + 1}}</h3>
             </div>
             <div class="card-content">
                 <div class="container">
                     {% for j in range(numberOfParticipants // numberOfGroups) %}
-                    <div class="participant-rowTable d-flex align-items-center" id="modalTrigger" data-location="location2" data-bs-toggle="modal"
-                        data-bs-target="#myNewModal" data-participant-index="{{ j + 1 }}">
+                    <div class="participant-rowTable d-flex align-items-center" id="modalTrigger" data-location="location2" data-participant-index="{{ j + 1 }}">
                         <div class="me-5">
-                            <p>{{ j + 1 }}</p>
+                            <p>{{ (i * (numberOfParticipants // numberOfGroups)) + j + 1 }}</p>
                         </div>
                         <div class="GrpSelected-participants GrpSelected-participants{{ j + 1 }}"></div>
                     </div>
@@ -95,7 +92,7 @@
         {% endfor %}
     </div>
 
-    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal" id="myModal">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -124,14 +121,14 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary close" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="myNewModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal" id="myNewModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -158,7 +155,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary newClose" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="saveChangesBtnNewModal">Save Changes</button>
                 </div>
             </div>
@@ -252,20 +249,74 @@
 
             // Save Changes button functionality
             $('#saveChangesBtn').on('click', function () {
-                $('#myModal').modal('hide');
+                modal.style.display = "none";
                 updateSelectedParticipants()
+                resetModal();
                 // Perform other actions on saving changes if needed
             });
 
-            // Event triggered after the modal is completely hidden
-            $('#myModal').on('hidden.bs.modal', function () {
-                resetModal();
-            });
+            // // Event triggered after the modal is completely hidden
+            // $('#myModal').on('hidden.bs.modal', function () {
+            //     resetModal();
+            // });
 
             // Event triggered when the modal is shown
-            $('#myModal').on('shown.bs.modal', function () {
-                $('body').css('overflow', 'hidden');
-            });
+            // $('#myModal').on('shown.bs.modal', function () {
+            //     $('body').css('overflow', 'hidden');
+            // });
+
+            // Get the modal
+            var modal = document.getElementById("myModal");
+
+            var newModal = document.getElementById("myNewModal");
+
+            // Get the button that opens the modal
+            var btn = document.getElementById("addButton");
+
+            // Get the <span> element that closes the modal
+            var closeBtn = document.getElementsByClassName("close")[0];
+
+            var closeBtn2 = document.getElementsByClassName("btn-close")[0];
+
+            // Get the <span> element that closes the modal
+            var newCloseBtn = document.getElementsByClassName("newClose")[0];
+
+            var newCloseBtn2 = document.getElementsByClassName("btn-close")[1];
+
+            // When the user clicks the button, open the modal
+            btn.onclick = function() {
+            modal.style.display = "block";
+            }
+
+            // When the user clicks on button (x), close the modal
+            closeBtn.onclick = function() {
+            modal.style.display = "none";
+            resetModal();
+            }
+
+            closeBtn2.onclick = function() {
+            modal.style.display = "none";
+            resetModal();
+            }
+
+            // When the user clicks on button (x), close NewModal
+            newCloseBtn.onclick = function() {
+            newModal.style.display = "none";
+            resetModal();
+            }
+
+            newCloseBtn2.onclick = function() {
+            newModal.style.display = "none";
+            resetModal();
+            }
+            
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                    resetModal();
+                }
+            }
 
             $('.participant-rowTable[data-location="location1"]').on('click', function () {
                 
@@ -301,12 +352,23 @@
 
                 console.log("Clicked participant with index:", iValue);
 
-                $('#myNewModal').modal('show');
+                // $('#myNewModal').modal('show');
+                newModal.style.display = "block";
             });
 
             $('.participant-rowTable[data-location="location2"]').on('click', function () {
                 participantIndex = $(this).data('participant-index');
                 groupIndex = $(this).closest('.card').index();
+
+                //count total participants and no of grps to know number of participants in a grp
+                var participantElements = document.querySelectorAll('[class*="selected-participants"]');
+                var participantCount = participantElements.length;
+                
+                var grpElements = document.querySelectorAll('.grpcard');
+                var grpCount = grpElements.length;
+
+                var noOfPartInAGrp = participantCount / grpCount;
+
                 // groupIndex = getgroupIndex += 1;
                 
                 $('[class*="selected-participants"]').each(function () {
@@ -315,7 +377,7 @@
                     currentParticipantsHTMLArray.push(participantText);
                 });
 
-                var eq = groupIndex * 4 + participantIndex - 1
+                var eq = groupIndex * noOfPartInAGrp + participantIndex - 1
                 OmmitOption = currentParticipantsHTMLArray[eq]
 
                 $('[class*="participantNewModal"]').each(function () {
@@ -335,16 +397,18 @@
                 console.log("Clicked participant-rowTable in Group", groupIndex, "with participant index:", participantIndex);
                 // Additional actions if needed
                 
-                $('#myNewModal').modal('show');
+                // $('#myNewModal').modal('show');
+                newModal.style.display = "block";
             });
 
             $('#saveChangesBtnNewModal').on('click', function () {
-                $('#myNewModal').modal('hide');
+                // $('#myNewModal').modal('hide');
+                newModal.style.display = "none";
                 // Assuming you want to update the selected participant with the last radio selection
                 const index = $('input[name="participantSelection"]:checked').val();
                 participantName = $('input[name="participantSelection"]:checked').closest('.participant-row').find('.participant-label').text().trim();
                 updateSingleParticipant();
-
+                resetModal();
             });
 
             function updateSingleParticipant() {
@@ -358,8 +422,23 @@
                 console.log('After pressing save, currentparticipants array:',currentParticipantsHTMLArray);
                 console.log('ivalue after update:', iValue);
 
+                //count total participants and no of grps to know number of participants in a grp
+                var participantElements = document.querySelectorAll('[class*="selected-participants"]');
+                var participantCount = participantElements.length;
+
+                console.log('participantCount is '+participantCount);
+                
+                var grpElements = document.querySelectorAll('.grpcard');
+                var grpCount = grpElements.length;
+
+                console.log('grpCount is '+grpCount);
+
+                var noOfPartInAGrp = participantCount / grpCount;
+
+                console.log('noOfPartInAGrp is '+noOfPartInAGrp);
+
                 if (location === 2){
-                    iValue = groupIndex * 4 + participantIndex - 1
+                    iValue = groupIndex * noOfPartInAGrp + participantIndex - 1
 
                     console.log('Location 2 detected, iValue is now:', iValue)
                 }
@@ -387,14 +466,14 @@
             }
 
             // Event triggered after the second modal is completely hidden
-            $('#myNewModal').on('hidden.bs.modal', function () {
-                resetModal();
-            });
+            // $('#myNewModal').on('hidden.bs.modal', function () {
+            //     resetModal();
+            // });
 
             // Event triggered when the second modal is shown
-            $('#myNewModal').on('shown.bs.modal', function () {
-                $('body').css('overflow', 'hidden');
-            });
+            // $('#myNewModal').on('shown.bs.modal', function () {
+            //     $('body').css('overflow', 'hidden');
+            // });
 
             //Submit Placements for Round Robin
             $('#submitRRButton').on('click', function () {
@@ -442,7 +521,26 @@
                     },
                     error: function (error) {
                         console.error(error);
-                        window.location.href = response.redirect;
+
+                        // Create a new error alert element
+                        var errorAlert = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                                            'Oops, something went wrong while trying to update seeding! Refreshing in 3 seconds...' +
+                                            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                        '</div>');
+                        
+                        // Append the error alert to the container
+                        $('.navbarcontentpadding').append(errorAlert);
+
+                        // Display the alert
+                        errorAlert.show();
+
+                        window.scrollTo(0, 0);
+
+                        setTimeout(function() {
+                            window.location.href = currentURL;
+                        }, 4000);
+
+                        // window.location.href = currentURL;
                     }
                 });
 
