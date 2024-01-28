@@ -3,13 +3,166 @@
 {% block content %}
 <link rel="stylesheet" href="/static/css/seeding.css">
 
-<div class="container h-100 navbarcontentpadding">
-    <div class="dropdown">
-        <div class="d-flex justify-content-between">
-            <label class="fs-4 fw-bold my-4">Match</label>
-        </div>
-        <div>
-            {{matchstageList | safe}}
+<div class="content">
+    <div class="panel panel-default ms-2">
+        <div class="bracket">
+            <section class="round one">
+                {% for one in range(numberOfParticipants//4) %}
+                    <div class="winners">
+                        <div class="matchups">
+                            <div class="matchup">
+                                <label class="fs-6">Date and Time</label>
+                                <div class="participants">
+                                    <div class="participant"><span class="GrpSelected-participants"></span></div>
+                                    <div class="participant"><span class="GrpSelected-participants"></span></div>
+                                </div>
+                            </div>
+                            <div class="matchup">
+                                <div class="participants">
+                                    <div class="participant"><span class="GrpSelected-participants"></span></div>
+                                    <div class="participant"><span class="GrpSelected-participants"></span></div>
+                                </div>
+                                <label class="fs-6">Date and Time</label>
+                            </div>
+                        </div>
+                        <div class="connector">
+                            <div class="merger"></div>
+                            <div class="line"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
+
+            <section class="round two">
+                {% for two in range(numberOfParticipants//8) %}
+                    <div class="winners py-roundtwo">
+                        <div class="matchups">
+                            <div class="matchup">
+                                <label class="fs-6">Date and Time</label>
+                                <div class="participants">
+                                <div class="participant"></div>
+                                <div class="participant"></div>
+                                </div>
+                            </div>
+                            <div class="matchup">
+                                <div class="participants">
+                                    <div class="participant"></div>
+                                    <div class="participant"></div>
+                                </div>
+                                <label class="fs-6">Date and Time</label>
+                            </div>
+                        </div>
+                        <div class="connector">
+                            <div class="merger"></div>
+                            <div class="line"></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
+            
+            {% if numberOfParticipants > 15 %}
+            <section class="round three">
+                {% for three in range(numberOfParticipants//16) %}
+                <div class="winners py-roundthree">
+                    <div class="matchups">
+                        <div class="matchup">
+                            <label class="fs-6">Date and Time</label>
+                            <div class="participants">
+                                <div class="participant"></div>
+                                <div class="participant"></div>
+                            </div>
+                        </div>
+                        <div class="matchup">
+                            
+                            <div class="participants">
+                                <div class="participant"></div>
+                                <div class="participant"></div>
+                            </div>
+                            <label class="fs-6">Date and Time</label>
+                        </div>
+                    </div>
+                    <div class="connector">
+                        <div class="merger"></div>
+                        <div class="line"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+            
+            {% if numberOfParticipants > 31 %}
+            <section class="round four">
+                {% for four in range(numberOfParticipants//32) %}
+                <div class="winners py-roundfour">
+                    <div class="matchups">
+                        <div class="matchup">
+                            <label class="fs-6">Date and Time</label>
+                            <div class="participants">
+                                <div class="participant"></div>
+                                <div class="participant"></div>
+                            </div>
+                        </div>
+                        <div class="matchup">
+                            
+                            <div class="participants">
+                                <div class="participant"></div>
+                                <div class="participant"></div>
+                            </div>
+                            <label class="fs-6">Date and Time</label>
+                        </div>
+                    </div>
+                    <div class="connector">
+                        <div class="merger"></div>
+                        <div class="line"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+            {% if numberOfParticipants > 63 %}
+            <section class="round five">
+                {% for five in range(numberOfParticipants//64) %}
+                <div class="winners py-roundfive">
+                    <div class="matchups">
+                        <div class="matchup">
+                            <label class="fs-6">Date and Time</label>
+                            <div class="participants">
+                                <div class="participant"></div>
+                                <div class="participant"></div>
+                            </div>
+                        </div>
+                        <div class="matchup">
+                            
+                            <div class="participants">
+                                <div class="participant"></div>
+                                <div class="participant"></div>
+                            </div>
+                            <label class="fs-6">Date and Time</label>
+                        </div>
+                    </div>
+                    <div class="connector">
+                        <div class="merger"></div>
+                        <div class="line"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+            <section class="round final">
+                <div class="winners">
+                    <div class="matchups">
+                        <div class="matchup">
+                            <label class="fs-6">Date and Time</label>
+                            <div class="participants">
+                                <div class="participant"></div>
+                                <div class="participant"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 </div>
