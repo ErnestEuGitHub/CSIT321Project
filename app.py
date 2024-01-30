@@ -182,7 +182,7 @@ def loadCreateMedia(projID, tourID):
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * from news WHERE news.userID = :userID AND news.tourID = :tourID"
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
             inputs = {'userID': session["id"], 'tourID': tourID}
             checknews = conn.execute(text(query), inputs)
             rows = checknews.fetchall()

@@ -7,12 +7,14 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseUpload
 from io import BytesIO
+import mimetypes
 
 #Google Drive API credentials
 SCOPES = ['https://www.googleapis.com/auth/drive']
 SERVICE_ACCOUNT_FILE = 'service_account.json'
 PARENT_FOLDER_ID = "1Gjt43kVhn6yAmRT88w11KQSbO2IQvTNZ"
 PARENT_FOLDER_ID_2 = "1UOe9hiR1xh__jy-ZbWjs4NidcBjtEfp7" ### This is part of the parent folder 2 ###
+PARENT_FOLDER_ID_3 = "1RqGSH2e3ISRwE_AahdqsqPHL5eW9JUTg" ### Media pics
 
 def authenticate():
     # Authentication
@@ -26,12 +28,13 @@ def get_drive_service():
 
 ### This part slowly code in the meta data 2 and parent folder 2
 
-def upload_to_google_drive(image, image_2, tour_name):
+def upload_to_google_drive(image, image_2, newsMedia, tour_name):
     try:
         drive_service = get_drive_service()
 
         google_drive_folder_id = PARENT_FOLDER_ID
         google_drive_folder_id_2 = PARENT_FOLDER_ID_2
+        google_drive_folder_id_3 = PARENT_FOLDER_ID_3
         
         ### Upload the first file
         if image:
@@ -64,8 +67,22 @@ def upload_to_google_drive(image, image_2, tour_name):
         else:
             file_id_2 = None
             print("No file2 provided. Skipping upload.")
-        
-        return file_id, file_id_2
+
+        if newsMedia:
+            file_metadata_3 = {'name': f'{tour_name}', 'parents': [google_drive_folder_id_3]}
+            file_bytes_3 = newsMedia.read()
+            file_like_object_3 = BytesIO(file_bytes_3)
+            media_3 = MediaIoBaseUpload(file_like_object_3, mimetype='application/octet-stream', resumable=True)
+            file_3 = drive_service.files().create(body=file_metadata_3, media_body=media_3, fields='id').execute()
+            #Get the file_3 ID
+            file_id_3 = file_3.get('id')
+            print(f"File 3 ID: {file_id_3}")
+
+        else:
+            file_id_3 = None
+            print("No file3 provided. Skipping upload.")
+
+        return file_id, file_id_2, file_id_3
     
     except Exception as e:
         print(f"Error uploading to Google Drive: {e}")
@@ -1018,16 +1035,39 @@ class Tournaments:
         if request.method == "POST":
             newsTitle = request.form.get("newsTitle")
             newsDesc = request.form.get("newsDesc")
+            mediaImage = request.files.getlist("mediaImage")
+            type = request.form.get("type")
             userID = session["id"]
 
             with dbConnect.engine.connect() as conn:
                 queryNews = "INSERT INTO news (newsTitle, newsDesc, tourID, userID) VALUES (:newsTitle, :newsDesc, :tourID, :userID)"
                 inputNews = {'newsTitle':newsTitle, 'newsDesc':newsDesc, 'tourID':tourID, 'userID':userID}
-                createNewMedia = conn.execute(text(queryNews), inputNews)
+                createNews = conn.execute(text(queryNews), inputNews)
 
                 newsID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
 
-                flash('Media Created!', 'success')
+                print(mediaImage)
+                
+                for files in mediaImage:
+                    print('Hello')
+                    content_type, encoding = mimetypes.guess_type(files.filename)
+
+                    # Check the content type or file extension
+                    if content_type and content_type.startswith('image'):
+                        print(f'{files.filename} is an image')
+                    # Handle image file
+                    elif content_type and content_type.startswith('video'):
+                        print(f'{files.filename} is a video')
+                    # Handle video file
+                    else:
+                        print(f'{files.filename} has an unknown format')
+
+                    queryMedia = "INSERT INTO newsMedia(type, newsMediaCode, newsID) VALUES (:typeMedia, :newsMediaCode, :newsID)"
+                    file_id = upload_to_google_drive(mediaImage)
+                    inputMedia = {'type':type, 'newsMediaCode': file_id[3], 'newsID':newsID }
+                    createMedia = conn.execute(text(queryMedia), inputMedia)
+
+            flash('Media Created!', 'success')
 
             return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
         else:

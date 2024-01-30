@@ -111,7 +111,7 @@
     {% endfor %}
 
     <h2 class="my-3">Create Media</h2>
-    <form action="/createMedia//{{projID}}/{{tourID}}" method="POST">
+    <form action="/createMedia//{{projID}}/{{tourID}}" method="POST" enctype="multipart/form-data">
         <div id="Information">
             <div class="mb-3">
                 <label for="exampleTitle" class="form-label">Title</label>
@@ -119,14 +119,15 @@
             </div>
             <div class="mb-3">
                 <label for="exampleDesc" class="form-label">Description</label>
-                <input type="text" class="form-control" id="newsDesc" name="newsDesc" required>
+                <textarea class="form-control" id="newsDesc" name="newsDesc" rows="5" required></textarea>
             </div>
         </div>
         <div class="upload__box">
             <div class="upload__btn-box">
                 <label class="upload__btn">
                     <p>Media Upload</p>
-                    <input type="file" id="mediaImage" class="upload__inputfile" multiple="" data-max_length="20" required>
+                    <input type="file" name="mediaImage" class="upload__inputfile" data-max_length="20"
+                        accept="image/*, video/*, audio/*" multiple="">
                 </label>
             </div>
             <div class="upload__img-wrap"></div>
@@ -142,6 +143,13 @@
         ImgUpload();
     });
 
+    var fileInput = document.querySelector('input[type="file"]');
+
+    // Add event listener for change event
+    fileInput.addEventListener('change', function () {
+        console.log('Files selected:', fileInput.files);
+    });
+
     function ImgUpload() {
         var imgWrap = "";
         var imgArray = [];
@@ -153,10 +161,16 @@
 
                 var files = e.target.files;
                 var filesArr = Array.prototype.slice.call(files);
+                if (files.length > 0) {
+                    console.log('Files are selected:', files);
+                } else {
+                    console.log('No files selected.');
+                }
+
                 var iterator = 0;
                 filesArr.forEach(function (f, index) {
 
-                    if (!f.type.match('image.*')) {
+                    if (!f.type.match('image.*') && !f.type.match('video.*') && !f.type.match('audio.*')) {
                         return;
                     }
 
