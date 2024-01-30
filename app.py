@@ -387,6 +387,12 @@ def loadCreateModerator(projID, tourID):
             
             else:
                 return render_template('notfound.html')
+            
+@app.route('/venuetest' , methods=["POST", "GET"])
+def loadvenuetest():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    
 
 @app.errorhandler(404)
 def loadnotfound(error):
