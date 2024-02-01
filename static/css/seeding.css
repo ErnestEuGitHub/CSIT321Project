@@ -212,37 +212,37 @@
     height: 18rem;
   }
   .bracket .round.two .winners .connector .line {
-    height: 8rem;
+    height: 9rem;
   }
 
   .bracket .round.three .winners .matchups .matchup:not(:last-child) {
-    margin-bottom: 31.5rem;
+    margin-bottom: 31rem;
   }
   .bracket .round.three .winners .connector .merger {
-    height: 37.3rem;
+    height: 36.8rem;
   }
   .bracket .round.three .winners .connector .line {
-    height: 16.5rem;
+    height: 18.4rem;
   }
 
   .bracket .round.four .winners .matchups .matchup:not(:last-child) {
-    margin-bottom: 58rem;
+    margin-bottom: 67.5rem;
   }
   .bracket .round.four .winners .connector .merger {
-    height: 64rem;
+    height: 73.2rem;
   }
   .bracket .round.four .winners .connector .line {
-    height: 32rem;
+    height: 36.6rem;
   }
 
   .bracket .round.five .winners .matchups .matchup:not(:last-child) {
-    margin-bottom: 125rem;
+    margin-bottom: 140.5rem;
   }
   .bracket .round.five .winners .connector .merger {
-    height: 131rem;
+    height: 136rem;
   }
   .bracket .round.five .winners .connector .line {
-    height: 64rem;
+    height: 68rem;
   }
 
   .bracket .round.final .winners .connector .merger {

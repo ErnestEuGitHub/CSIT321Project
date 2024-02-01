@@ -7,6 +7,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseUpload
 from io import BytesIO
+import math
 
 #Google Drive API credentials
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -352,6 +353,19 @@ class Tournaments:
                         elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
                         elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                         conn.execute(text(elimFormatQuery), elimInputs)
+
+                        noOfMatch = numberOfParticipants - 1
+                        noOfRound= math.log2(numberOfParticipants)
+
+                        for currentRoundNo in range(noOfRound):
+                            noOfRoundMatch = numberOfParticipants / (2 * currentRoundNo)
+                            for m in noOfRoundMatch:
+                                matchCreateQuery = """INSERT INTO matches (startTime, venueID, stageID, facilityID, parentMatchID, bracketSequence) 
+                                VALUES (:startTime, :venueID, :stageID, :facilityID, :parentMatchID, :bracketSequence)
+                                """
+                                matchCreateInputs = {'startTime': startTime, 'venueID': venueID, 'stageID': stageID, 'facilityID': facilityID, 'parentMatchID': parentMatchID, 'bracketSequence': bracketSequence}
+                                conn.execute(text(matchCreateQuery), matchCreateInputs)
+                        
 
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
                         print("stageFormatID is "+ stageFormatID)
