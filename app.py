@@ -7,6 +7,7 @@ from projects import *
 
 from placement import *
 from seeding import *
+from venue import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -392,7 +393,9 @@ def loadCreateModerator(projID, tourID):
 def loadvenuetest():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    
+    else:
+        page = venue()
+        return page
 
 @app.errorhandler(404)
 def loadnotfound(error):

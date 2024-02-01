@@ -30,29 +30,32 @@
 								<form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">
 	
 									<div class="row mb-3 justify-content-sm-center">
-										
+
 										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="venue">Venue</label>
+											<label class="mb-2 text-muted" for="startDate">Match Start Date<span class="text-danger">*</span></label>
+											<input id="startDate" type="datetime-local" class="form-control" name="startDate" value="{{ matchstart }}" required autofocus>
+										</div>
+
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="endDate">Match End Date<span class="text-danger">*</span></label>
+											<input id="endDate" type="datetime-local" class="form-control" name="endDate" value="{{ matchend }}" required autofocus>
+										</div>
+
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="venue">Available Venues</label>
 											<select id="venue" class="form-select" name="venue" required autofocus>
-												<option value="{{venueID}}">{{venueName}}</option>
+												<option value="">Choose start and end date time first </option>
+												{% for v in venuelist %}
+													<option value="{{v['venueID']}}" {% if currentvenueID == v['venueID'] %} selected {% endif %}>{{v['venueName']}}</option>
+												{% endfor %}
 											</select>
 										</div>
 
 										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="format">Facilities<span class="text-danger">*</span></label>
+											<label class="mb-2 text-muted" for="format">Available Facilities<span class="text-danger">*</span></label>
 											<select id="facilities" class="form-select" name="facilities" required autofocus>
 												
 											</select>
-										</div>
-
-										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="startDate">Start Date<span class="text-danger">*</span></label>
-											<input id="startDate" type="date" class="form-control" name="startDate" value="{{ startDate }}" required autofocus>
-										</div>
-
-										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="endDate">End Date<span class="text-danger">*</span></label>
-											<input id="endDate" type="date" class="form-control" name="endDate" value="{{ endDate }}" required autofocus>
 										</div>
 
 										<!-- <div class="mb-4">
@@ -63,7 +66,7 @@
 
 									<div class="d-flex align-items-center">
 										<button type="submit" class="btn btn-primary ms-auto">
-											Set Venue
+											Book Venue
 										</button>
 									</div>
 								</form>
@@ -83,35 +86,59 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
 	
 	<script>
-		$(document).ready(function () {
-			function populateFormatDropdown(selectedSport) {
-				$.ajax({
-					type: "POST",
-					url: "/get_formats",  // Update the route to handle format retrieval
-					data: { sport_id: selectedSport },
-					success: function (response) {
-						// Populate format dropdown with the received data
-						$("#format").html(response.options);
+		// $(document).ready(function () {
+		// 	function populateFormatDropdown(selectedSport) {
+		// 		$.ajax({
+		// 			type: "POST",
+		// 			url: "/get_formats",  // Update the route to handle format retrieval
+		// 			data: { sport_id: selectedSport },
+		// 			success: function (response) {
+		// 				// Populate format dropdown with the received data
+		// 				$("#format").html(response.options);
 
-						var selectedFormat = "{{ format }}";  // Replace with the actual variable from Flask
-						$("#format").val(selectedFormat);
-					},
-					error: function (error) {
-						console.error("Error:", error);
-					}
-				});
-			}
+		// 				var selectedFormat = "{{ format }}";  // Replace with the actual variable from Flask
+		// 				$("#format").val(selectedFormat);
+		// 			},
+		// 			error: function (error) {
+		// 				console.error("Error:", error);
+		// 			}
+		// 		});
+		// 	}
 			
-			// Initial population on page load
-			var selectedSport = $("#sport").val();
-			populateFormatDropdown(selectedSport);
+		const startDateInput = document.getElementById('startDate');
+		const endDateInput = document.getElementById('endDate');
+		const venueSelect = document.getElementById('venue');
 
-			// Change event for the sport dropdown
-			$("#sport").change(function () {
-				var selectedSport = $(this).val();
-				populateFormatDropdown(selectedSport);
-			});
-    	});
+		startDateInput.addEventListener('change', updateVenueOptions);
+		endDateInput.addEventListener('change', updateVenueOptions);
+
+		function updateVenueOptions() {
+			if (startDateInput.value && endDateInput.value) {
+				// Both start and end dates are selected
+				venueSelect.disabled = false;
+				document.querySelectorAll('#venue option:not(:first-child)').forEach(option => option.style.display = 'block');
+			} else {
+				// Either start or end date is not selected
+				venueSelect.disabled = true;
+				document.querySelectorAll('#venue option:not(:first-child)').forEach(option => option.style.display = 'none');
+			}
+    	}
+
+		function checkStartDate() {
+        var startDate = document.getElementById("startDate").value;
+        var venueSelect = document.getElementById("venue");
+
+			if (!startDate) {
+				// If start date is null, disable the venue select element
+				venueSelect.disabled = true;
+			} else {
+				// If start date is not null, enable the venue select element
+				venueSelect.disabled = false;
+			}
+		}
+
+		// Call the function initially to check the start date on page load
+		checkStartDate();
 	</script>
 
 {% endblock %}
