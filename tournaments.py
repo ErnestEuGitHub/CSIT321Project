@@ -354,18 +354,33 @@ class Tournaments:
                         elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                         conn.execute(text(elimFormatQuery), elimInputs)
 
-                        noOfMatch = numberOfParticipants - 1
-                        noOfRound= math.log2(numberOfParticipants)
+                        # noOfMatch = numberOfParticipants - 1
+                        noOfRound = math.log2(numberOfParticipants)
+                        currentArray = []
+                        pastArray = []
 
                         for currentRoundNo in range(noOfRound):
-                            noOfRoundMatch = numberOfParticipants / (2 * currentRoundNo)
+                            noOfRoundMatch = numberOfParticipants / (math.pow(2,currentRoundNo))
                             for m in noOfRoundMatch:
                                 matchCreateQuery = """INSERT INTO matches (startTime, venueID, stageID, facilityID, parentMatchID, bracketSequence) 
                                 VALUES (:startTime, :venueID, :stageID, :facilityID, :parentMatchID, :bracketSequence)
                                 """
-                                matchCreateInputs = {'startTime': startTime, 'venueID': venueID, 'stageID': stageID, 'facilityID': facilityID, 'parentMatchID': parentMatchID, 'bracketSequence': bracketSequence}
+                                matchCreateInputs = {'startTime': startTime, 'venueID': venueID, 'stageID': stageID, 'facilityID': facilityID, 'parentMatchID': parentMatchID, 'bracketSequence': currentRoundNo}
                                 conn.execute(text(matchCreateQuery), matchCreateInputs)
-                        
+                                matchID = IDfetch.scalar()
+                                currentArray.append(matchID)
+                            
+                                # Add the matchIDs of current round into currentArray
+                                # if currentRoundNo != 1:
+                                # For currentMatchID in currentArray:
+                                #   counter = 0
+                                #   while (counter < 2):                                                              
+                                #       For pastMatchID in pastArray:
+                                #       counter++   
+                                #       insert currentMatchID as parentMatchID for each past match
+                                #       kick out the pastMatchID in the array after insert
+                                #   counter = 0
+                                # pastArray = currentArray
 
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
                         print("stageFormatID is "+ stageFormatID)
