@@ -118,6 +118,14 @@ def getformatspy():
     formats = Tournaments.getformat()
     return formats
 
+@app.route('/get_venues', methods=['POST'])
+def getvenuepy():
+    matchstart = request.form.get('matchstart')
+    matchend = request.form.get('matchend')
+    
+    loadgetvenue = updateVenue(matchstart, matchend)
+    return loadgetvenue
+
 @app.route('/tournamentOverviewPage/<projID>/<tourID>')
 def loadTourOverviewWithID(projID, tourID):
     if "id" not in session:

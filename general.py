@@ -1,4 +1,4 @@
-from flask import render_template, session
+from flask import render_template, session, jsonify
 from database import dbConnect
 from sqlalchemy import text
 
@@ -65,3 +65,24 @@ def updateNavProjects():
 
             session["projnav"] = projects
             return projects
+        
+def updateVenue(matchstart, matchend):
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT matchID, venueID FROM matches WHERE (:matchstart >= matches.startTime AND :matchend <= matches.endTime) OR (:matchstart <= matches.startTime AND :matchend >= matches.endTime) OR (:matchstart >= matches.startTime AND :matchstart <= matches.endTime) OR (:matchend >= matches.startTime AND :matchend <= matches.endTime) UNION SELECT exEventName, venueID FROM venueExtEvent WHERE (:matchstart >= venueExtEvent.startDateTime AND :matchend <= venueExtEvent.endDateTime) OR (:matchstart <= venueExtEvent.startDateTime AND :matchend >= venueExtEvent.endDateTime) OR (:matchstart >= venueExtEvent.startDateTime AND :matchstart <= venueExtEvent.endDateTime) OR (:matchend >= venueExtEvent.startDateTime AND :matchend <= venueExtEvent.endDateTime)"
+            inputs = {'matchstart': matchstart, 'matchend': matchend}
+            getUnavailableVenues = conn.execute(text(query), inputs)
+            unavailableVenuesfetch = getUnavailableVenues.fetchall()
+
+            unavailableVenuesListDict = [row._asdict() for row in unavailableVenuesfetch]
+            venueIDs = [row['venueID'] for row in unavailableVenuesListDict]
+            venueIDs = [venueID for venueID in venueIDs if venueID is not None]
+            unavailableVenueIDs = set(venueIDs)
+
+            query = "SELECT * from venue"
+            getVenues = conn.execute(text(query))
+            venuelist = getVenues.fetchall()
+
+            venuelistFiltered = [venue for venue in venuelist if venue[0] not in unavailableVenueIDs]
+            venuelistFiltered_dicts = [{'venueID': venue[0], 'venueName': venue[1]} for venue in venuelistFiltered]
+
+            return jsonify(venuelistFiltered_dicts)
