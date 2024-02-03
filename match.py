@@ -3,6 +3,7 @@ from database import dbConnect
 from sqlalchemy import text
 from datetime import datetime
 from general import *
+import math
 
 class Match:
 
@@ -27,9 +28,30 @@ class Match:
                 matchFormatID = stage[0]['matchFormatID']
                 maxGames = stage[0]['maxGames']
 
+                #Select all matches of the stage
+                matchQuery = "SELECT * FROM matches WHERE stageID = :stageID"
+                matchInputs = {'stageID': stageID}
+                result = conn.execute(text(matchQuery), matchInputs)
+                matchRows = result.fetchall()
+                match = [row._asdict() for row in matchRows]
+                print("The match list is below:")
+                print(match)
+
+                #Separate them into different rounds
+                noOfRound = int(math.log2(int(numberOfParticipants)))
+                stageMatchArray = []
+                for no in range(noOfRound):
+                    roundMatchArray = []
+                    for m in match:
+                        if m["bracketSequence"] == no + 1:
+                            roundMatchArray.append(m)
+                    stageMatchArray.append(roundMatchArray)        
+                print("Below is stageMatchArray")
+                print(stageMatchArray)   
+                
             return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                     stageName = stageName, stageSequence = stageSequence, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                    numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, maxGames = maxGames)
+                                    numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, maxGames = maxGames, stageMatchArray = stageMatchArray)
         
                                     
         except Exception as e:

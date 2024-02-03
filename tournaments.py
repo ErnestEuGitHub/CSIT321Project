@@ -349,39 +349,61 @@ class Tournaments:
                     stageID = IDfetch.scalar()
 
                     if int(stageFormatID) == 1 or int(stageFormatID) == 2:
-                        print("stageFormatID is" + stageFormatID)
+                        print("stageFormatID is " + stageFormatID)
                         elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
                         elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                         conn.execute(text(elimFormatQuery), elimInputs)
 
                         # noOfMatch = numberOfParticipants - 1
-                        noOfRound = math.log2(numberOfParticipants)
-                        currentArray = []
-                        pastArray = []
+                        noOfRound = int(math.log2(int(numberOfParticipants)))
+                        currentMatchArray = []
+                        childMatchArray = []
+                        print(noOfRound)
 
-                        for currentRoundNo in range(noOfRound):
-                            noOfRoundMatch = numberOfParticipants / (math.pow(2,currentRoundNo))
-                            for m in noOfRoundMatch:
-                                matchCreateQuery = """INSERT INTO matches (startTime, venueID, stageID, facilityID, parentMatchID, bracketSequence) 
-                                VALUES (:startTime, :venueID, :stageID, :facilityID, :parentMatchID, :bracketSequence)
+                        for currentRoundNo in range(int(noOfRound)):
+                            print(currentRoundNo)
+                            noOfRoundMatch = int(int(numberOfParticipants) / (math.pow(2, currentRoundNo + 1)))
+                            print(noOfRoundMatch)
+                            for m in range(noOfRoundMatch):
+                                matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence) 
+                                VALUES (:stageID, :bracketSequence)
                                 """
-                                matchCreateInputs = {'startTime': startTime, 'venueID': venueID, 'stageID': stageID, 'facilityID': facilityID, 'parentMatchID': parentMatchID, 'bracketSequence': currentRoundNo}
+                                matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1}
                                 conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                 matchID = IDfetch.scalar()
-                                currentArray.append(matchID)
+                                currentMatchArray.append(matchID)
+                                print(currentMatchArray)
                             
-                                # Add the matchIDs of current round into currentArray
-                                # if currentRoundNo != 1:
-                                # For currentMatchID in currentArray:
-                                #   counter = 0
-                                #   while (counter < 2):                                                              
-                                #       For pastMatchID in pastArray:
-                                #       counter++   
-                                #       insert currentMatchID as parentMatchID for each past match
-                                #       kick out the pastMatchID in the array after insert
-                                #   counter = 0
-                                # pastArray = currentArray
+                            if currentRoundNo != 0:
+                                for currentMatchID in currentMatchArray:
+                                    print("The currentMatchID is " + str(currentMatchID))
+                                    counter = 0
+                                    childMatchArrayCopy = childMatchArray.copy()
+                                    print("The childMatchArrayCopy is: ")
+                                    print(childMatchArrayCopy)
+                                    
+                                    for childMatchID in childMatchArrayCopy:
+                                        if counter < 2:
+                                            print("The childMatchID is " + str(childMatchID))
+                                            counter += 1
+                                            print("The counter now is " + str(counter))
+                                            parentMatchIDQuery = "UPDATE matches SET parentMatchID = :parentMatchID WHERE matchID = :matchID"
+                                            parentMatchIDInputs = {'parentMatchID': currentMatchID, 'matchID': childMatchID}
+                                            conn.execute(text(parentMatchIDQuery), parentMatchIDInputs)
+                                            childMatchArray.remove(childMatchID)
+                                            print("The childMatchArray is: ")
+                                            print(childMatchArray)
+                                        else:
+                                            break
 
+                            childMatchArray = currentMatchArray.copy()
+                            print("The childMatchArray is: ")
+                            print(childMatchArray)
+                            currentMatchArray = []
+                            print("The currentMatchArray is: ")
+                            print(currentMatchArray)
+                                
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
                         print("stageFormatID is "+ stageFormatID)
                         roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
