@@ -10,14 +10,14 @@
                 {% for one in range(numberOfParticipants//4) %}
                     <div class="winners">
                         <div class="matchups">
-                            <div class="matchup">
+                            <div class="matchup roundone" id="">
                                 <label class="fs-6">Date and Time</label>
                                 <div class="participants">
                                     <div class="participant"><span class="GrpSelected-participants"></span></div>
                                     <div class="participant"><span class="GrpSelected-participants"></span></div>
                                 </div>
                             </div>
-                            <div class="matchup">
+                            <div class="matchup roundone" id="">
                                 <div class="participants">
                                     <div class="participant"><span class="GrpSelected-participants"></span></div>
                                     <div class="participant"><span class="GrpSelected-participants"></span></div>
@@ -73,7 +73,6 @@
                             </div>
                         </div>
                         <div class="matchup">
-                            
                             <div class="participants">
                                 <div class="participant"></div>
                                 <div class="participant"></div>
@@ -133,7 +132,6 @@
                             </div>
                         </div>
                         <div class="matchup">
-                            
                             <div class="participants">
                                 <div class="participant"></div>
                                 <div class="participant"></div>
@@ -166,4 +164,31 @@
         </div>
     </div>
 </div>
+
+<script>
+    
+    var stageMatchArray = {{stageMatchArray|tojson|safe}};
+    console.log(stageMatchArray);
+
+    roundOneMatchArray = stageMatchArray[0]
+    console.log(roundOneMatchArray);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("triggered!")
+        // Select all elements with class "matchup"
+        var matchups = document.querySelectorAll('.matchup.roundone');
+        console.log(matchups)
+
+        // Loop through each matchup element and set the id attribute
+        matchups.forEach(function (matchup, index) {
+            // Check if the current index is within the array bounds
+            if (index < roundOneMatchArray.length) {
+                // Set the id attribute with the corresponding matchID
+                matchup.id = roundOneMatchArray[index].matchID;
+                console.log("matchupid triggered!")
+            }
+        });
+    });
+
+</script>
 {% endblock %}
