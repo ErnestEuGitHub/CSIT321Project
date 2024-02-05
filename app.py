@@ -8,6 +8,8 @@ from match import *
 
 from placement import *
 from seeding import *
+from venue import *
+from sysadmin import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -42,8 +44,21 @@ def loadregister():
 def loadhome():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    page = Projects.home()
-    return page
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT profileID from users WHERE userID = :userID"
+            inputs = {'userID': session["id"]}
+            checksysadmin = conn.execute(text(query), inputs)
+            rows = checksysadmin.fetchone()
+
+        if rows[0] == 1:
+            page = Projects.home()
+            return page
+        elif rows[0] == 3 :
+            page = sysAdminHome()
+            return page
+        else:
+            return render_template('notfound.html')
 
 @app.route('/projects/<projID>')
 def loadtournaments(projID):
@@ -117,6 +132,14 @@ def loadSuspendProj(projID):
 def getformatspy():
     formats = Tournaments.getformat()
     return formats
+
+@app.route('/get_venues', methods=['POST'])
+def getvenuepy():
+    matchstart = request.form.get('matchstart')
+    matchend = request.form.get('matchend')
+
+    loadgetvenue = updateVenue(matchstart, matchend)
+    return loadgetvenue
 
 @app.route('/tournamentOverviewPage/<projID>/<tourID>')
 def loadTourOverviewWithID(projID, tourID):
@@ -462,6 +485,33 @@ def loadmatchdetails(projID, tourID, stageID, matchID):
             
             else:
                 return render_template('notfound.html')
+              
+@app.route('/venuetest' , methods=["POST", "GET"])
+def loadvenuetest():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        page = venue()
+        return page
+
+#sysAdmin Routing
+# @app.route('/sysadminhome' , methods=["POST", "GET"])
+# def loadSysAdminHome():
+#     if "id" not in session:
+#         return redirect(url_for('loadLogin'))
+#     else:
+#         with dbConnect.engine.connect() as conn:
+#             query = "SELECT profileID from users WHERE userID = :userID"
+#             inputs = {'userID': session["id"]}
+#             checksysadmin = conn.execute(text(query), inputs)
+#             rows = checksysadmin.fetchone()
+
+#         if rows[0] != 3:
+#             return render_template('notfound.html')
+#         else:
+#             page = sysAdminHome()
+#             return page
+
 
 @app.errorhandler(404)
 def loadnotfound(error):
