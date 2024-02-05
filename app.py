@@ -7,6 +7,7 @@ from projects import *
 
 from placement import *
 from seeding import *
+from venue import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -116,6 +117,14 @@ def loadSuspendProj(projID):
 def getformatspy():
     formats = Tournaments.getformat()
     return formats
+
+@app.route('/get_venues', methods=['POST'])
+def getvenuepy():
+    matchstart = request.form.get('matchstart')
+    matchend = request.form.get('matchend')
+    
+    loadgetvenue = updateVenue(matchstart, matchend)
+    return loadgetvenue
 
 @app.route('/tournamentOverviewPage/<projID>/<tourID>')
 def loadTourOverviewWithID(projID, tourID):
@@ -387,6 +396,14 @@ def loadCreateModerator(projID, tourID):
             
             else:
                 return render_template('notfound.html')
+            
+@app.route('/venuetest' , methods=["POST", "GET"])
+def loadvenuetest():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        page = venue()
+        return page
 
 @app.errorhandler(404)
 def loadnotfound(error):
