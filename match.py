@@ -28,14 +28,33 @@ class Match:
                 matchFormatID = stage[0]['matchFormatID']
                 maxGames = stage[0]['maxGames']
 
-                #Select all matches of the stage
-                matchQuery = "SELECT * FROM matches WHERE stageID = :stageID"
+                # Select all matches of the stage
+                matchQuery = "SELECT * FROM matches WHERE matches.stageID = :stageID"
                 matchInputs = {'stageID': stageID}
                 result = conn.execute(text(matchQuery), matchInputs)
                 matchRows = result.fetchall()
                 match = [row._asdict() for row in matchRows]
-                print("The match list is below:")
-                print(match)
+                # print("The match list is below:")
+                # print(match)
+
+                for m in match:
+                    # print(m["matchID"])
+                    matchParticipantQuery = 'SELECT * FROM matchParticipant JOIN participants ON matchParticipant.participantID = participants.participantID WHERE matchParticipant.matchID = :matchID'
+                    matchParticipantInputs = {'matchID': m["matchID"]}
+                    result = conn.execute(text(matchParticipantQuery), matchParticipantInputs)
+                    matchParticipantRows = result.fetchall()
+                    # print(matchParticipantRows)
+                    matchParticipant = [row._asdict() for row in matchParticipantRows]
+                    if not matchParticipant:
+                        matchParticipant = [{'matchParticipantID': None, 'participantID': None, 'participantMatchOutcome': None, 'matchID': m["matchID"], 'participantName': None, 'participantEmail': None, 'tourID': None},
+                                            {'matchParticipantID': None, 'participantID': None, 'participantMatchOutcome': None, 'matchID': m["matchID"], 'participantName': None, 'participantEmail': None, 'tourID': None}]
+                
+                    if len(matchParticipant) < 2:
+                        matchParticipant += [{'matchParticipantID': None, 'participantID': None, 'participantMatchOutcome': None, 'matchID': m["matchID"], 'participantName': None, 'participantEmail': None, 'tourID': None}]
+
+                    print("Below is matchParticipantArray")
+                    print(matchParticipant)
+                    m["matchParticipants"] = matchParticipant
 
                 #Separate them into different rounds
                 noOfRound = int(math.log2(int(numberOfParticipants)))
@@ -46,8 +65,8 @@ class Match:
                         if m["bracketSequence"] == no + 1:
                             roundMatchArray.append(m)
                     stageMatchArray.append(roundMatchArray)        
-                print("Below is stageMatchArray")
-                print(stageMatchArray)   
+                # print("Below is stageMatchArray")
+                # print(stageMatchArray)   
                 
             return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                     stageName = stageName, stageSequence = stageSequence, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
@@ -59,8 +78,11 @@ class Match:
             print(f"Error details: {e}")
             return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID = stageID)
     
-    def configureMatch():
-        return
+    def loadMatchDetails(projID, tourID, stageID, matchID):
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        return render_template('stageMatchDetails.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID, matchID = matchID)
     
     def deleteMatch():
         return

@@ -444,6 +444,24 @@ def loadmatch(projID, tourID, stageID):
             
             else:
                 return render_template('notfound.html')
+            
+@app.route('/loadmatchdetails/<projID>/<tourID>/<stageID>/<matchID>', methods=["POST", "GET"])
+def loadmatchdetails(projID, tourID, stageID, matchID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Match.loadMatchDetails(projID, tourID, stageID, matchID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
 
 @app.errorhandler(404)
 def loadnotfound(error):

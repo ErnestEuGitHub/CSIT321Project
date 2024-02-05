@@ -374,6 +374,13 @@ class Tournaments:
                                 matchID = IDfetch.scalar()
                                 currentMatchArray.append(matchID)
                                 print(currentMatchArray)
+
+                                for n in range(2):
+                                    matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID) 
+                                    VALUES (:matchID)
+                                    """
+                                    matchParticipantCreateInputs = {'matchID': matchID}
+                                    conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
                             
                             if currentRoundNo != 0:
                                 for currentMatchID in currentMatchArray:
