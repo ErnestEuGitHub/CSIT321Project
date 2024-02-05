@@ -10,9 +10,11 @@
 <head>
     <title>
         {% if navtype == 'tournament' %}
-           Tournaments
+            Tournaments
         {% elif navtype == 'project' %}
             Projects
+        {% elif navtype == 'sysAdmin' %}
+            System Admin
         {% endif %}
     </title>
 </head>
@@ -22,7 +24,12 @@
         <button class="navbar-toggler" type="button" onclick="toggleNavBar()">
             <i class="bi bi-list"></i>
         </button>
-        <a href="/home">GameSphere</a>
+        {% if navtype == 'sysAdmin' %}
+            <a href="/sysadminhome">GameSphere</a>
+        {% else %}
+            <a href="/home">GameSphere</a>
+        {% endif %}
+
         <div class="toprightnav">
             <div class="firstname">Welcome {{ session["fname"] }}</div>
             <div class="dropdown">
@@ -94,6 +101,17 @@
             <a href="#">Final Standing</a>
             <a href="#">Public Page</a>
             <a href="#">Media</a>
+
+        {% elif navtype == 'sysAdmin' %}
+
+            <h2>System Admin</h2>
+
+            <a href="#">Projects</a>
+            <a href="#">Stages</a>
+            <a href="#">Matches</a>
+            <a href="#">Venues</a>
+            <a href="#">Participants</a>
+    
         {% endif %}
     </div>
 
