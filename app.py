@@ -4,6 +4,7 @@ from stages import *
 from user import *
 from tournaments import *
 from projects import *
+from match import *
 
 from placement import *
 from seeding import *
@@ -411,6 +412,80 @@ def loadCreateModerator(projID, tourID):
             else:
                 return render_template('notfound.html')
             
+@app.route('/editModerator/<projID>/<tourID>/<moderatorID>', methods=["POST", "GET"])
+def loadEditModerator(projID, tourID, moderatorID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = """SELECT * from tournaments JOIN users JOIN moderators
+            ON tournaments.userID = users.userID AND users.userID = moderators.userID
+            WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND moderators.moderatorID = :moderatorID"""
+            inputs = {'userID': session["id"], 'tourID': tourID, 'moderatorID': moderatorID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.editModerator(projID, tourID, moderatorID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/match/<projID>/<tourID>', methods=["POST", "GET"])
+def match(projID, tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.match(projID, tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/loadmatch/<projID>/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadmatch(projID, tourID, stageID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Match.loadMatch(projID, tourID, stageID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/loadmatchdetails/<projID>/<tourID>/<stageID>/<matchID>', methods=["POST", "GET"])
+def loadmatchdetails(projID, tourID, stageID, matchID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Match.loadMatchDetails(projID, tourID, stageID, matchID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+              
 @app.route('/venuetest' , methods=["POST", "GET"])
 def loadvenuetest():
     if "id" not in session:
@@ -436,6 +511,7 @@ def loadvenuetest():
 #         else:
 #             page = sysAdminHome()
 #             return page
+
 
 @app.errorhandler(404)
 def loadnotfound(error):

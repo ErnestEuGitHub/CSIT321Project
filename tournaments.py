@@ -7,6 +7,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseUpload
 from io import BytesIO
+import math
 
 #Google Drive API credentials
 SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -245,7 +246,6 @@ class Tournaments:
         return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
     
     #Structure
-
     def structure(projID, tourID):
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
@@ -286,7 +286,7 @@ class Tournaments:
                                                     Edit
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="/configureStage/{tourID}/{stage["stageID"]}">Configure</a></li>
+                                                    <li><a class="dropdown-item" href="/configureStage/{projID}/{tourID}/{stage["stageID"]}">Configure</a></li>
                                                     <li><a class="dropdown-item" href="#" onclick="deleteStage({tourID}, {stage["stageID"]})">Delete</a></li>
                                                 </ul>
                                             </div>
@@ -349,11 +349,68 @@ class Tournaments:
                     stageID = IDfetch.scalar()
 
                     if int(stageFormatID) == 1 or int(stageFormatID) == 2:
-                        print("stageFormatID is" + stageFormatID)
+                        print("stageFormatID is " + stageFormatID)
                         elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
                         elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                         conn.execute(text(elimFormatQuery), elimInputs)
 
+                        # noOfMatch = numberOfParticipants - 1
+                        noOfRound = int(math.log2(int(numberOfParticipants)))
+                        currentMatchArray = []
+                        childMatchArray = []
+                        print(noOfRound)
+
+                        for currentRoundNo in range(int(noOfRound)):
+                            print(currentRoundNo)
+                            noOfRoundMatch = int(int(numberOfParticipants) / (math.pow(2, currentRoundNo + 1)))
+                            print(noOfRoundMatch)
+                            for m in range(noOfRoundMatch):
+                                matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence) 
+                                VALUES (:stageID, :bracketSequence)
+                                """
+                                matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1}
+                                conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                matchID = IDfetch.scalar()
+                                currentMatchArray.append(matchID)
+                                print(currentMatchArray)
+
+                                for n in range(2):
+                                    matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID) 
+                                    VALUES (:matchID)
+                                    """
+                                    matchParticipantCreateInputs = {'matchID': matchID}
+                                    conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                            
+                            if currentRoundNo != 0:
+                                for currentMatchID in currentMatchArray:
+                                    print("The currentMatchID is " + str(currentMatchID))
+                                    counter = 0
+                                    childMatchArrayCopy = childMatchArray.copy()
+                                    print("The childMatchArrayCopy is: ")
+                                    print(childMatchArrayCopy)
+                                    
+                                    for childMatchID in childMatchArrayCopy:
+                                        if counter < 2:
+                                            print("The childMatchID is " + str(childMatchID))
+                                            counter += 1
+                                            print("The counter now is " + str(counter))
+                                            parentMatchIDQuery = "UPDATE matches SET parentMatchID = :parentMatchID WHERE matchID = :matchID"
+                                            parentMatchIDInputs = {'parentMatchID': currentMatchID, 'matchID': childMatchID}
+                                            conn.execute(text(parentMatchIDQuery), parentMatchIDInputs)
+                                            childMatchArray.remove(childMatchID)
+                                            print("The childMatchArray is: ")
+                                            print(childMatchArray)
+                                        else:
+                                            break
+
+                            childMatchArray = currentMatchArray.copy()
+                            print("The childMatchArray is: ")
+                            print(childMatchArray)
+                            currentMatchArray = []
+                            print("The currentMatchArray is: ")
+                            print(currentMatchArray)
+                                
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
                         print("stageFormatID is "+ stageFormatID)
                         roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
@@ -383,6 +440,61 @@ class Tournaments:
             return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         else:
             return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+    
+    #Match
+    def match(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+    
+        try:
+            with dbConnect.engine.connect() as conn:
+
+                matchquery = "SELECT stageName, stageSequence, stageFormatID, stageStatusID, stageID FROM stages WHERE tourID = :tourID AND stageStatusID <> 4"
+                inputs = {'tourID': tourID}
+                result = conn.execute(text(matchquery), inputs)
+                rows = result.fetchall()
+                print(rows)
+                matchStages = [row._asdict() for row in rows]
+                print(matchStages)
+
+                matchstageList = ''
+                
+                for matchstage in matchStages:
+
+                    if int(matchstage["stageFormatID"]) == 1:
+                        matchstage["stageFormatID"] = "Single Elimination"
+                    elif int(matchstage["stageFormatID"]) == 2:
+                        matchstage["stageFormatID"] = "Double Elimination"
+                    elif int(matchstage["stageFormatID"]) == 3:
+                        matchstage["stageFormatID"] = "Single Round Robin"
+                    elif int(matchstage["stageFormatID"]) == 4:
+                        matchstage["stageFormatID"] = "Double Round Robin"
+                    else:
+                        print("Invalid stage format!!!")
+
+                    matchstage_html = f'''
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
+                                                <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
+                                                <a href="/loadmatch/{projID}/{tourID}/{matchstage["stageID"]}">
+                                                    <button class="btn btn-primary" type="button" aria-expanded="true">
+                                                        View
+                                                    </button>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                '''
+                    
+                    matchstageList += matchstage_html
+
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, matchstageList = matchstageList)
+        except Exception as e:
+            flash('Oops, an error has occured.', 'error')
+            print(f"Error details: {e}")
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         
     #Settings
     def settingsGeneral(projID, tourID):

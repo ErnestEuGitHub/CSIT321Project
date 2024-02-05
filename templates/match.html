@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100 navbarcontentpadding">
+    <div class="dropdown">
+        <div class="d-flex justify-content-between">
+            <label class="fs-4 fw-bold my-4">Match</label>
+        </div>
+        <div>
+            {{matchstageList | safe}}
+        </div>
+    </div>
+</div>
+{% endblock %}
