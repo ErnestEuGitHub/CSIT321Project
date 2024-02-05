@@ -229,7 +229,7 @@ def seeding(projID, tourID, stageID):
                 with dbConnect.engine.connect() as conn:
                     #remove any existing matches from matchParticipant
 
-                    query = "SELECT matchID FROM matches WHERE stageID = :stageID"
+                    query = "SELECT matchID FROM matches WHERE stageID = :stageID AND bracketSequence = 1"
                     inputs = {'stageID': stageID}
                     result = conn.execute(text(query), inputs)
                     fetchmatches = result.fetchall()
