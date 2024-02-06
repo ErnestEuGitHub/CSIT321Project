@@ -30,7 +30,7 @@
             </div>
             <label name="permissionName" value="{{ permissionList }}">
             <label for="attributes" class="form-label">Attributes</label>
-            {% for permission in ["Setup Tournament", "Setup Structure", "Manage Registration", "Manage Participant", "Place Participant", "Manage Final Standing", "Report Result"] %}
+            {% for permission in ["Setup Structure", "Manage Registration", "Manage Participant", "Place Participant", "Start Match", "Manage Final Standing", "Manage Public Page", "Manage Media"] %}
                 <div class="mb-3 form-check">
                     <input type="checkbox" class="form-check-input" id="{{ permission }}" name="{{ permission }}" {% if permission in permissionList %}checked{% endif %} disabled>
                     <label class="form-check-label" for="{{ permission }}">{{ permission }}</label>
