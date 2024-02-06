@@ -205,6 +205,22 @@
     box-sizing: border-box;
 }
 
+/* CSS for SysAdmin */
+.search-input {
+    padding: 10px;
+    margin-right: 10px;
+    width: 400px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.list-group-item{
+    display: flex;
+}
+
+/* End of CSS for SysAdmin */
+
 .search-container button {
     padding: 10px 20px;
     border: none;
@@ -213,6 +229,7 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
 
 .search-container button:hover {
     background: #45a049;

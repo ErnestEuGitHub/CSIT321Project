@@ -184,6 +184,10 @@ class Projects:
     def SuspendProj(projID):
         #for navbar
         navtype = 'project'
+
+        if session["profileID"] == 3:
+            navtype = 'sysAdmin'
+
         projects = updateNavProjects()
 
         if request.method == "POST":
@@ -201,12 +205,18 @@ class Projects:
 
                     projects = updateNavProjects()
                     flash('Status Updated!', 'success')
-                    return redirect(url_for('loadProjSettings', projID=projID))
+                    if session["profileID"] == 3:
+                        return redirect(url_for('loadProjSettingsAdmin', projID=projID))
+                    else:
+                        return redirect(url_for('loadProjSettings', projID=projID))
         
             except Exception as e:
                 flash('Oops, an error has occured while changing status for project.', 'error')
                 print(f"Error details: {e}")
-                return render_template('suspendProj.html', projName=projName, startDate=startDate, endDate=endDate, status=status, navtype=navtype, projID=projID, projects=projects)
+                if session["profileID"] == 3:
+                    return redirect(url_for('loadProjSettingsAdmin', projID=projID))
+                else:
+                    return render_template('suspendProj.html', projName=projName, startDate=startDate, endDate=endDate, status=status, navtype=navtype, projID=projID, projects=projects)
 
         else:
             try:
