@@ -144,5 +144,25 @@ def updateNavTournamentsModerator(projID):
 
             session["tournav"] = tournamentlist
             return tournamentlist
+        
+def verifyOwner(tourID):
+    with dbConnect.engine.connect() as conn:
+        query = """SELECT userID
+                   FROM tournaments            
+                   WHERE tourID = :tourID"""
+        inputs = {'tourID': tourID}
+        getTour = conn.execute(text(query), inputs)
+        row = getTour.fetchone()  # Assuming tourID is unique
+        
+        print("row: ", row)
+        
+        if row and row[0] == session["id"]:
+            isOwner = True
+        else:
+            isOwner = False
+
+        print("is_owner: ", isOwner)
+        return isOwner
+            
 
     
