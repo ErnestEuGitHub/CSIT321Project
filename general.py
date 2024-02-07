@@ -76,7 +76,7 @@ def updateNavProjects():
 def gettingModeratorPermissions(tourID):
         with dbConnect.engine.connect() as conn:
                 queryRetrieveModerator = """
-                SELECT permissions.permissionName
+                SELECT permissions.permissionName, moderators.userID
                 FROM moderators 
                 LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID 
                 LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
