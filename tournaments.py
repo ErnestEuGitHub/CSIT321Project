@@ -205,7 +205,7 @@ class Tournaments:
                     #for navbar
                     tournamentlist = updateNavTournaments(projID)
                     projectName = retrieveProjectNavName(projID)
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID)
+                    return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID)
                 
         else:
             with dbConnect.engine.connect() as conn:
@@ -462,6 +462,7 @@ class Tournaments:
                     except Exception as e:
                         flash('Oops, an error has occured in updating general details tab.', 'error')
                         print(f"Error details: {e}")
+                        return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
                 # elif identifier == "details":
 
@@ -486,6 +487,7 @@ class Tournaments:
                 except Exception as e:
                     flash('Oops, an error has occured in updating details tab.', 'error')
                     print(f"Error details: {e}")
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
                 # elif identifier == "contact":
 
@@ -502,6 +504,7 @@ class Tournaments:
                 except Exception as e:
                     flash('Oops, an error has occured in updating contact tab.', 'error')
                     print(f"Error details: {e}")
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
                 flash('Tournament Details Updated!', 'success')
                 return redirect(url_for('loadsettings', tourID=tourID, projID=projID))
@@ -557,6 +560,10 @@ class Tournaments:
     def SuspendTour(projID, tourID):
         #for navbar
         navtype = 'dashboard'
+
+        if session["profileID"] == 3:
+            navtype = 'sysAdmin'
+
         tournamentName = retrieveDashboardNavName(tourID)
 
         if request.method == "POST":
@@ -573,12 +580,18 @@ class Tournaments:
                     updateStatus = conn.execute(text(query), inputs)
 
                     flash('Status Updated!', 'success')
-                    return redirect(url_for('loadsettings', projID=projID, tourID=tourID))
+                    if session["profileID"] == 3:
+                        return redirect(url_for('loadTourSettingsAdmin', tourID=tourID))
+                    else:
+                        return redirect(url_for('loadsettings', projID=projID, tourID=tourID))
         
             except Exception as e:
                 flash('Oops, an error has occured while changing status for tournament.', 'error')
                 print(f"Error details: {e}")
-                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                if session["profileID"] == 3:
+                    return redirect(url_for('loadTourSettingsAdmin', tourID=tourID))
+                else:
+                    return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
         else:
             try:

@@ -226,7 +226,11 @@ def loadSuspendTour(projID, tourID):
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
 
-            if rows:
+            if session["profileID"] == 3 :
+                page = Tournaments.SuspendTour(projID, tourID)
+                return page
+        
+            elif rows:
                 page = Tournaments.SuspendTour(projID, tourID)
                 return page
             
@@ -448,6 +452,38 @@ def loadProjSettingsAdmin(projID):
         page = ProjSettingsAdmin(projID)
         return page
 
+@app.route('/tourAdmin', methods=["POST", "GET"])
+def loadTourAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = tourAdmin()
+        return page
+    
+@app.route('/createTourAdmin', methods=["POST", "GET"])
+def loadCreateTourAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = createTourAdmin()
+        return page
+
+@app.route('/tourAdminSetting/<tourID>', methods=["POST", "GET"])
+def loadTourSettingsAdmin(tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = TourSettingsAdmin(tourID)
+        return page
+
+#end of sysAdmin routing
+    
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)
