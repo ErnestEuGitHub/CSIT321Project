@@ -24,11 +24,8 @@
         <button class="navbar-toggler" type="button" onclick="toggleNavBar()">
             <i class="bi bi-list"></i>
         </button>
-        {% if navtype == 'sysAdmin' %}
-            <a href="/sysadminhome">GameSphere</a>
-        {% else %}
+
             <a href="/home">GameSphere</a>
-        {% endif %}
 
         <div class="toprightnav">
             <div class="firstname">Welcome {{ session["fname"] }}</div>
@@ -124,7 +121,8 @@
 
             <h2>System Admin</h2>
 
-            <a href="#">Projects</a>
+            <a href="/projAdmin">Projects</a>
+            <a href="/tourAdmin">Tournaments</a>
             <a href="#">Stages</a>
             <a href="#">Matches</a>
             <a href="#">Venues</a>

@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100 navbarcontentpadding">
+    <h2 for="search-input" class="text-center pt-3">Tournaments</h2>
+    <div class="d-flex justify-content-center py-3">
+        <input type="text" placeholder="Search..." class="search-input">
+        <button onclick="location.href='/createTourAdmin'" class="btn btn-success">Create Tournament</button>
+    </div>
+    <div class="row justify-content-center">
+        <ul class="list-group">
+            {% for t in tournamentslist %}
+                <li class="list-group-item align-items-center">
+                    <div class="col-4 projName">{{t['tourName']}}</div>
+                    <div class="col-4 text-center">
+                        Status: {% if t['statusID'] == 4 %} Pending {% elif t['statusID'] == 3 %} Ended {% elif t['statusID'] == 2 %} Ongoing {% elif t['statusID'] == 5 %} Suspended {% elif t['statusID'] == '' or t['statusID'] == None %} None {% elif t['statusID'] == 1 %} Registration {% elif t['statusID'] == 6 %} Published {% endif %}
+                    </div>
+                    <div class="col-4 editbutton d-flex justify-content-end">
+                        <a href="/tourAdminSetting/{{t['tourID']}}" class="btn btn-primary my-4" role="button">Edit</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.search-input');
+        const projNameElements = document.querySelectorAll('.projName');
+        const listgroupElements = document.querySelectorAll('.list-group-item');
+
+        searchInput.addEventListener('input', function() {
+
+            const searchText = this.value.toLowerCase();
+
+            listgroupElements.forEach(listgroupElement => {
+                const projName = listgroupElement.querySelector('.projName').textContent.toLowerCase();
+                
+                if (projName.includes(searchText)) {
+                    listgroupElement.style.display = 'flex'; // Show the item if the search text is found
+                } else {
+                    listgroupElement.style.display = 'none'; // Hide the item if the search text is not found
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
