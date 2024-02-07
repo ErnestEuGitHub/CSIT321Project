@@ -58,7 +58,8 @@ class Projects:
     @staticmethod
     def home():
         projects = updateNavProjects()
-        # for navbar
+        # print("projects:", projects)
+        #for navbar
         navtype = 'project'
         
         return render_template('home.html', projects=projects, navtype=navtype)
