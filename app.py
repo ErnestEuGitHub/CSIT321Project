@@ -47,16 +47,10 @@ def loadhome():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
-        with dbConnect.engine.connect() as conn:
-            query = "SELECT profileID from users WHERE userID = :userID"
-            inputs = {'userID': session["id"]}
-            checksysadmin = conn.execute(text(query), inputs)
-            rows = checksysadmin.fetchone()
-
-        if rows[0] == 1:
+        if session["profileID"] == 1:
             page = Projects.home()
             return page
-        elif rows[0] == 3 :
+        elif session["profileID"] == 3 :
             page = sysAdminHome()
             return page
         else:
@@ -123,7 +117,11 @@ def loadSuspendProj(projID):
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
 
-            if rows:
+            if session["profileID"] == 3 :
+                page = Projects.SuspendProj(projID)
+                return page
+
+            elif rows:
                 page = Projects.SuspendProj(projID)
                 return page
             
@@ -253,7 +251,11 @@ def loadSuspendTour(projID, tourID):
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
 
-            if rows:
+            if session["profileID"] == 3 :
+                page = Tournaments.SuspendTour(projID, tourID)
+                return page
+        
+            elif rows:
                 page = Tournaments.SuspendTour(projID, tourID)
                 return page
             
@@ -549,24 +551,68 @@ def loadvenuetest():
         return page
 
 #sysAdmin Routing
-# @app.route('/sysadminhome' , methods=["POST", "GET"])
-# def loadSysAdminHome():
-#     if "id" not in session:
-#         return redirect(url_for('loadLogin'))
-#     else:
-#         with dbConnect.engine.connect() as conn:
-#             query = "SELECT profileID from users WHERE userID = :userID"
-#             inputs = {'userID': session["id"]}
-#             checksysadmin = conn.execute(text(query), inputs)
-#             rows = checksysadmin.fetchone()
+@app.route('/projAdmin')
+def loadprojAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = projAdmin()
+        return page
+    
+@app.route('/createProjAdmin', methods=["POST", "GET"])
+def loadCreateProjAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = createProjAdmin()
+        return page
+    
+@app.route('/projAdminSetting/<projID>', methods=["POST", "GET"])
+def loadProjSettingsAdmin(projID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = ProjSettingsAdmin(projID)
+        return page
 
-#         if rows[0] != 3:
-#             return render_template('notfound.html')
-#         else:
-#             page = sysAdminHome()
-#             return page
+@app.route('/tourAdmin', methods=["POST", "GET"])
+def loadTourAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = tourAdmin()
+        return page
+    
+@app.route('/createTourAdmin', methods=["POST", "GET"])
+def loadCreateTourAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = createTourAdmin()
+        return page
 
+@app.route('/tourAdminSetting/<tourID>', methods=["POST", "GET"])
+def loadTourSettingsAdmin(tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = TourSettingsAdmin(tourID)
+        return page
 
+#end of sysAdmin routing
+    
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)

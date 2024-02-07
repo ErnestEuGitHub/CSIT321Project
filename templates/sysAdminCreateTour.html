@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+
+{% block content %}
+		<div class="row justify-content-center">
+			<div class="col navbarcontentpadding">
+				{% for message in get_flashed_messages(category_filter=["error"]) %}
+					{% if message %}
+						<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							{{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					{% endif %}
+				{% endfor %}
+
+				{% for message in get_flashed_messages(category_filter=["success"]) %}
+					{% if message %}
+						<div class="alert alert-success alert-dismissible fade show" role="alert">
+							{{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					{% endif %}
+				{% endfor %}
+
+				<div class="container h-100">
+					<div class="row justify-content-center h-100">
+						<div class="col-xxl-10 col-xl-8 col-lg-8 col-md-9 col-sm-10">
+							<div class="card-body p-5">
+								<h1 class="fs-4 card-title fw-bold mb-4">Create Tournament</h1>
+
+								<form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">
+	
+									<div class="row mb-3 justify-content-sm-center">
+										<div class="mb-4">
+											<label class="mb-2 text-muted" for="tourName">Tournament Name<span class="text-danger">*</span></label>
+											<input id="tourName" type="text" class="form-control" name="tourName" value="{{ tourName }}" placeholder="Eg. Men's Singles Badminton" style="#tourName::placeholder {color: #888;}" required autofocus>
+										</div>
+										
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="tourSize">Size of Participants<span class="text-danger">*</span></label>
+											<input id="tourSize" type="number" class="form-control" name="tourSize" value="{{ tourSize }}" min="0" required autofocus>
+										</div>
+
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="startDate">Start Date<span class="text-danger">*</span></label>
+											<input id="startDate" type="date" class="form-control" name="startDate" value="{{ startDate }}" required autofocus>
+										</div>
+
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="endDate">End Date<span class="text-danger">*</span></label>
+											<input id="endDate" type="date" class="form-control" name="endDate" value="{{ endDate }}" required autofocus>
+										</div>
+
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="gender">Gender</label>
+											<select id="gender" class="form-select" name="gender" required autofocus>
+												<option value="Male" {% if gender == 'Male' %} selected {% endif %}>Male</option>
+												<option value="Female" {% if gender == 'Female' %} selected {% endif %}>Female</option>
+												<option value="Mixed" {% if gender == 'Mixed' %} selected {% endif %}>Mixed</option>
+											</select>
+										</div>
+
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="sport">Sport<span class="text-danger">*</span></label>
+											<select id="sport" class="form-select" name="sport" required autofocus>
+												<option value="">Please select a sport first</option>
+												{% for s in sportlist %}
+													<option value="{{s['sportID']}}" {% if sport == s['sportID'] %} selected {% endif %}>{{s['sportName']}}</option>
+												{% endfor %}
+											</select>
+										</div>
+
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="format">Format<span class="text-danger">*</span></label>
+											<select id="format" class="form-select" name="format" required autofocus>
+												
+											</select>
+										</div>
+
+										<!-- <div class="mb-4">
+											<label class="mb-2 text-muted" for="generalInfo">General Info</label>
+											<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" rows="5" required autofocus style="resize: none;">{{ generalInfo }}</textarea>
+										</div> -->
+
+                                        <div class="mb-4 col-xl-4">
+                                            <label class="mb-2 text-muted" for="endDate">Status<span class="text-danger">*</span></label>
+                                            <select id="status" class="form-select" name="status" required autofocus>
+                                                <option value="4" {% if status == 4 %} selected {% endif %}>Pending</option>
+                                                <option value="1" {% if status == 1 %} selected {% endif %}>Registration</option>
+                                                <option value="2" {% if status == 2 %} selected {% endif %}>Ongoing</option>
+                                                <option value="5" {% if status == 6 %} selected {% endif %}>Published</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-4 col-xl-4">
+                                            <label class="mb-2 text-muted" for="endDate">Owner<span class="text-danger">*</span></label>
+                                            <select id="owner" class="form-select" name="owner" required autofocus>
+                                                {% for o in organiserlist%}
+                                                    <option value="{{o['userID']}}" {% if owner == o['userID'] %} selected {% endif %}>{{o['fname']}} {{o['lname']}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-4 col-xl-4">
+                                            <label class="mb-2 text-muted" for="endDate">Project<span class="text-danger">*</span></label>
+                                            <select id="project" class="form-select" name="project" required autofocus>
+                                                {% for p in projectslist%}
+                                                    <option value="{{p['projID']}}" {% if project == p['projID'] %} selected {% endif %}>{{p['projName']}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+									</div>
+
+									<div class="mb-4">
+										<label class="mb-2 text-muted" for="tourImage">Tournament Image</label>
+										<input id="tourImage" type="file" class="form-control" name="tourImage" accept="image/*" required>
+									</div>
+									
+									
+									<div class="mb-4">
+										<label class="mb-2 text-muted" for="bannerImage">Tournament Banner Image</label>
+										<input id="bannerImage" type="file" class="form-control" name="bannerImage" accept="image/*" required>
+									</div>
+									
+
+									<div class="d-flex align-items-center">
+										<button type="submit" class="btn btn-primary ms-auto">
+											Create Tournament
+										</button>
+									</div>
+								</form>
+							</div>
+							
+							<!-- <div class="text-center mt-5 text-muted">
+								Copyright &copy; 2017-2021 &mdash; Your Company 
+							</div> -->
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</section>
+
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+	
+	<script>
+		$(document).ready(function () {
+			function populateFormatDropdown(selectedSport) {
+				$.ajax({
+					type: "POST",
+					url: "/get_formats",  // Update the route to handle format retrieval
+					data: { sport_id: selectedSport },
+					success: function (response) {
+						// Populate format dropdown with the received data
+						$("#format").html(response.options);
+
+						var selectedFormat = "{{ format }}";  // Replace with the actual variable from Flask
+						$("#format").val(selectedFormat);
+					},
+					error: function (error) {
+						console.error("Error:", error);
+					}
+				});
+			}
+			
+			// Initial population on page load
+			var selectedSport = $("#sport").val();
+			populateFormatDropdown(selectedSport);
+
+			// Change event for the sport dropdown
+			$("#sport").change(function () {
+				var selectedSport = $(this).val();
+				populateFormatDropdown(selectedSport);
+			});
+    	});
+	</script>
+
+{% endblock %}
