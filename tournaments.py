@@ -897,7 +897,7 @@ class Tournaments:
                 request.form.get("ManagePublicPage"),
                 request.form.get("ManageMedia"),
             ]
-            print(selectedPermissions)
+            # print(selectedPermissions)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
@@ -906,7 +906,7 @@ class Tournaments:
                     {'moderatorEmail': moderatorEmail}
                 ).fetchone()
                 
-                print("Existing User: ", existingUser)
+                # print("Existing User: ", existingUser)
 
                 if existingUser:
                     # User already exists, use their userID
@@ -941,7 +941,7 @@ class Tournaments:
         tournamentName = retrieveDashboardNavName(tourID)
         moderatorPermissionList = gettingModeratorPermissions(tourID)
         
-        print(request.form)
+        # print(request.form)
         
         if request.method == "POST":
             moderatorEmail = request.form.get("moderatorEmail")
@@ -1113,7 +1113,7 @@ class Tournaments:
             getmoderators = conn.execute(text(queryModeratorList),inputModeratorList)
             moderatorsTournament = getmoderators.fetchall()  
             
-            print("moderatorsTournament",moderatorsTournament)
+            # print("moderatorsTournament",moderatorsTournament)
 
             # Render the HTML template with the moderator data
             return render_template('moderatorsTournament.html', moderatorsTournament=moderatorsTournament)

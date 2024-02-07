@@ -34,7 +34,7 @@ class User:
                     session["profileID"] = rows[0][3]
                     session["fname"] = rows[0][4]
                     session["profileMediaID"] = rows[0][6]
-                    print(session["profileMediaID"])
+                    # print(session["profileMediaID"])
 
                     #profileID 1 = Org, 2 = Participant, 3 = System Admin
                     if session["profileID"] == 1:

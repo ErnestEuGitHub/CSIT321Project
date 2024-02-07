@@ -9,7 +9,7 @@ class Projects:
     #Organiser Projects Page or Home Page
     def home():
         projects = updateNavProjects()
-        print("projects:", projects)
+        # print("projects:", projects)
         #for navbar
         navtype = 'project'
 

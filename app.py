@@ -132,8 +132,8 @@ def loadTourOverviewWithID(projID, tourID):
             checkmod = conn.execute(text(query), inputs)
             modrows = checkmod.fetchall()
 
-            print("Rows: ",rows)
-            print("modrows: ",modrows)
+            # print("Rows: ",rows)
+            # print("modrows: ",modrows)
             
             #statusID=5, the tournament is suspended
             if rows[0][9] == 5:
@@ -158,13 +158,13 @@ def loaddashboard(projID, tourID):
             inputs = {'tourID': tourID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
-            print("Rows: ",rows)
+            # print("Rows: ",rows)
             
             query = "SELECT * from moderators WHERE userID = :userID AND tourID = :tourID"
             inputs = {'userID': session["id"], 'tourID': tourID}
             checkmod = conn.execute(text(query), inputs)
             modrows = checkmod.fetchall()
-            print("modrows: ",modrows)
+            # print("modrows: ",modrows)
             
             #statusID=5, the tournament is suspended
             if rows[0][9] == 5:

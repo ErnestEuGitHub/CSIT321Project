@@ -18,7 +18,7 @@ def retrieveDashboardNavName(tourID):
                 rows = getTour.fetchall()
 
                 tournamentName = rows[0][1]
-                print ("TournamentName: ",tournamentName)
+                # print ("TournamentName: ",tournamentName)
                 return tournamentName
 
 def retrieveProjectNavName(projID):
@@ -30,7 +30,7 @@ def retrieveProjectNavName(projID):
 
                 projectName = rows[0][1]
                 
-                print ("ProjectName: ",projectName)
+                # print ("ProjectName: ",projectName)
                 return projectName
         
         
@@ -64,10 +64,10 @@ def updateNavProjects():
             inputs = {'userID': session["id"]}
             getprojs = conn.execute(text(query), inputs)
             rows = getprojs.fetchall()  
-            print("rows: ",rows)  
+        #     print("rows: ",rows)  
             
             projects = [row._asdict() for row in rows]         
-            print("projects: ",projects)  
+        #     print("projects: ",projects)  
 
             session["projnav"] = projects
             
@@ -82,13 +82,13 @@ def gettingModeratorPermissions(tourID):
                 LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID AND moderators.userID = :userID"""
                 inputRetrieveModerator = {'tourID': tourID, 'userID': session["id"]}
-                print("inputRetrieveModerator: ",inputRetrieveModerator)  
+                # print("inputRetrieveModerator: ",inputRetrieveModerator)  
                 retrieveModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 permissions = retrieveModerator.fetchall()                
-                print("Permissions: ",permissions)  
+                # print("Permissions: ",permissions)  
                   
                 moderatorPermissionList = [row[0] for row in permissions if row[0] is not None] # Assuming permissionList is the second column
-                print("Permission List: ", moderatorPermissionList)
+                # print("Permission List: ", moderatorPermissionList)
             
                 return moderatorPermissionList
         
@@ -101,10 +101,10 @@ def updateNavProjectsModerators():
             inputs = {'userID': session["id"]}
             getprojs = conn.execute(text(query), inputs)
             rowModerator = getprojs.fetchall() 
-            print("rowModerator: ",rowModerator)  
+        #     print("rowModerator: ",rowModerator)  
             
             moderatorProjects = [row._asdict() for row in rowModerator]   
-            print("rowModerator: ",rowModerator)  
+        #     print("rowModerator: ",rowModerator)  
 
             session["projnav"] = moderatorProjects
             
