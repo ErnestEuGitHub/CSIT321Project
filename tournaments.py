@@ -1,8 +1,78 @@
-from flask import render_template, session, request, flash, session, jsonify, url_for, redirect
+from flask import Flask, render_template, session, request, flash, jsonify, url_for, redirect
 from database import dbConnect
 from sqlalchemy import text
 from datetime import datetime
 from general import *
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+from googleapiclient.http import MediaIoBaseUpload
+from io import BytesIO
+import math
+
+#Google Drive API credentials
+SCOPES = ['https://www.googleapis.com/auth/drive']
+SERVICE_ACCOUNT_FILE = 'service_account.json'
+PARENT_FOLDER_ID = "1Gjt43kVhn6yAmRT88w11KQSbO2IQvTNZ"
+PARENT_FOLDER_ID_2 = "1UOe9hiR1xh__jy-ZbWjs4NidcBjtEfp7" ### This is part of the parent folder 2 ###
+
+def authenticate():
+    # Authentication
+    creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    return creds
+
+def get_drive_service():
+    # Create and return a Google Drive service instance using the authenticated credentials
+    creds = authenticate()
+    return build('drive', 'v3', credentials=creds)
+
+### This part slowly code in the meta data 2 and parent folder 2
+
+def upload_to_google_drive(image, image_2, tour_name):
+    try:
+        drive_service = get_drive_service()
+
+        google_drive_folder_id = PARENT_FOLDER_ID
+        google_drive_folder_id_2 = PARENT_FOLDER_ID_2
+        
+        ### Upload the first file
+        if image:
+            # Prepare metadata
+            file_metadata = {'name': f'{tour_name}', 'parents': [google_drive_folder_id]}
+            file_bytes = image.read()
+            file_like_object = BytesIO(file_bytes)
+            media = MediaIoBaseUpload(file_like_object, mimetype='application/octet-stream', resumable=True)
+            file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            # Get the file ID
+            file_id = file.get('id')
+            print(f"File 1 ID: {file_id}")
+
+        else:
+            file_id = None
+            print("No file1 provided. Skipping upload.")
+
+        # Upload the second file
+        
+        if image_2:
+            # Prepare metadata_2
+            file_metadata_2 = {'name': f'{tour_name}', 'parents': [google_drive_folder_id_2]}
+            file_bytes_2 = image_2.read()
+            file_like_object_2 = BytesIO(file_bytes_2)
+            media_2 = MediaIoBaseUpload(file_like_object_2, mimetype='application/octet-stream', resumable=True)
+            file_2 = drive_service.files().create(body=file_metadata_2, media_body=media_2, fields='id').execute()
+            # Get the file_2 ID
+            file_id_2 = file_2.get('id')
+            print(f"File 2 ID: {file_id_2}")
+        else:
+            file_id_2 = None
+            print("No file2 provided. Skipping upload.")
+        
+        return file_id, file_id_2
+    
+    except Exception as e:
+        print(f"Error uploading to Google Drive: {e}")
+        return None
+
+app = Flask(__name__)
 
 class Tournaments:
     #Organiser Tournament Page (Page that shows all tournaments in boxes within a project)
@@ -18,7 +88,7 @@ class Tournaments:
     #Tournament Overview Page
     def TourOverviewDetails(projID, tourID):
         with dbConnect.engine.connect() as conn:
-            query = "SELECT tourName, startDate, endDate, gender, sports.sportName FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID WHERE tourID = :tourID"
+            query = "SELECT tourName, startDate, endDate, gender, sports.sportName, tourBannerID FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
             result = conn.execute(text(query), inputs)
             rows = result.fetchall()
@@ -28,6 +98,7 @@ class Tournaments:
             endDate = rows[0][2]
             gender = rows[0][3]
             sportName = rows[0][4]
+            tourBannerID = rows[0][5]
             
             #for navbar
             navtype = 'tournament'
@@ -35,8 +106,9 @@ class Tournaments:
             # projID = session["currentProj"]
             projectName = retrieveProjectNavName(projID)
     
-        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID)
+        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID, tourBannerID=tourBannerID)
     
+    @staticmethod
     #Create Tournament
     def createTour(projID):
         #for navbar
@@ -51,6 +123,8 @@ class Tournaments:
             gender = request.form.get("gender")
             sport = request.form.get("sport")
             format = request.form.get("format")
+            tourImage = request.files.get("tourImage")
+            bannerImage = request.files.get("bannerImage")
             userID = session["id"]
             status = 4
 
@@ -107,12 +181,14 @@ class Tournaments:
                         rows = getsfID.fetchall()
                         formatID = rows[0][2]
 
+
                         query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
                         createNewGeneralInfo = conn.execute(text(query))
                         getID = createNewGeneralInfo.lastrowid
-            
-                        query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID)"
-                        inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':userID, 'generalInfoID':getID}
+
+                        query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
+                        file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
+                        inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
                         createTournament = conn.execute(text(query), inputs)
 
                         #for navbar
@@ -120,11 +196,13 @@ class Tournaments:
                         projectName = retrieveProjectNavName(projID)
 
                     flash('Tournament Created!', 'success')
+
                     return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName, projID=projID)
-                
+      
                 except Exception as e:
                     flash('Oops, an error has occured.', 'error')
                     print(f"Error details: {e}")
+
                     #for navbar
                     tournamentlist = updateNavTournaments(projID)
                     projectName = retrieveProjectNavName(projID)
@@ -210,7 +288,7 @@ class Tournaments:
                                                     Edit
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="/configureStage/{tourID}/{stage["stageID"]}">Configure</a></li>
+                                                    <li><a class="dropdown-item" href="/configureStage/{projID}/{tourID}/{stage["stageID"]}">Configure</a></li>
                                                     <li><a class="dropdown-item" href="#" onclick="deleteStage({tourID}, {stage["stageID"]})">Delete</a></li>
                                                 </ul>
                                             </div>
@@ -274,11 +352,68 @@ class Tournaments:
                     stageID = IDfetch.scalar()
 
                     if int(stageFormatID) == 1 or int(stageFormatID) == 2:
-                        print("stageFormatID is" + stageFormatID)
+                        print("stageFormatID is " + stageFormatID)
                         elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
                         elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                         conn.execute(text(elimFormatQuery), elimInputs)
 
+                        # noOfMatch = numberOfParticipants - 1
+                        noOfRound = int(math.log2(int(numberOfParticipants)))
+                        currentMatchArray = []
+                        childMatchArray = []
+                        print(noOfRound)
+
+                        for currentRoundNo in range(int(noOfRound)):
+                            print(currentRoundNo)
+                            noOfRoundMatch = int(int(numberOfParticipants) / (math.pow(2, currentRoundNo + 1)))
+                            print(noOfRoundMatch)
+                            for m in range(noOfRoundMatch):
+                                matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence) 
+                                VALUES (:stageID, :bracketSequence)
+                                """
+                                matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1}
+                                conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                matchID = IDfetch.scalar()
+                                currentMatchArray.append(matchID)
+                                print(currentMatchArray)
+
+                                for n in range(2):
+                                    matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID) 
+                                    VALUES (:matchID)
+                                    """
+                                    matchParticipantCreateInputs = {'matchID': matchID}
+                                    conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                            
+                            if currentRoundNo != 0:
+                                for currentMatchID in currentMatchArray:
+                                    print("The currentMatchID is " + str(currentMatchID))
+                                    counter = 0
+                                    childMatchArrayCopy = childMatchArray.copy()
+                                    print("The childMatchArrayCopy is: ")
+                                    print(childMatchArrayCopy)
+                                    
+                                    for childMatchID in childMatchArrayCopy:
+                                        if counter < 2:
+                                            print("The childMatchID is " + str(childMatchID))
+                                            counter += 1
+                                            print("The counter now is " + str(counter))
+                                            parentMatchIDQuery = "UPDATE matches SET parentMatchID = :parentMatchID WHERE matchID = :matchID"
+                                            parentMatchIDInputs = {'parentMatchID': currentMatchID, 'matchID': childMatchID}
+                                            conn.execute(text(parentMatchIDQuery), parentMatchIDInputs)
+                                            childMatchArray.remove(childMatchID)
+                                            print("The childMatchArray is: ")
+                                            print(childMatchArray)
+                                        else:
+                                            break
+
+                            childMatchArray = currentMatchArray.copy()
+                            print("The childMatchArray is: ")
+                            print(childMatchArray)
+                            currentMatchArray = []
+                            print("The currentMatchArray is: ")
+                            print(currentMatchArray)
+                                
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
                         print("stageFormatID is "+ stageFormatID)
                         roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
@@ -308,12 +443,67 @@ class Tournaments:
             return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList)
         else:
             return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList)
+            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+    
+    #Match
+    def match(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+    
+        try:
+            with dbConnect.engine.connect() as conn:
+
+                matchquery = "SELECT stageName, stageSequence, stageFormatID, stageStatusID, stageID FROM stages WHERE tourID = :tourID AND stageStatusID <> 4"
+                inputs = {'tourID': tourID}
+                result = conn.execute(text(matchquery), inputs)
+                rows = result.fetchall()
+                print(rows)
+                matchStages = [row._asdict() for row in rows]
+                print(matchStages)
+
+                matchstageList = ''
+                
+                for matchstage in matchStages:
+
+                    if int(matchstage["stageFormatID"]) == 1:
+                        matchstage["stageFormatID"] = "Single Elimination"
+                    elif int(matchstage["stageFormatID"]) == 2:
+                        matchstage["stageFormatID"] = "Double Elimination"
+                    elif int(matchstage["stageFormatID"]) == 3:
+                        matchstage["stageFormatID"] = "Single Round Robin"
+                    elif int(matchstage["stageFormatID"]) == 4:
+                        matchstage["stageFormatID"] = "Double Round Robin"
+                    else:
+                        print("Invalid stage format!!!")
+
+                    matchstage_html = f'''
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
+                                                <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
+                                                <a href="/loadmatch/{projID}/{tourID}/{matchstage["stageID"]}">
+                                                    <button class="btn btn-primary" type="button" aria-expanded="true">
+                                                        View
+                                                    </button>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                '''
+                    
+                    matchstageList += matchstage_html
+
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, matchstageList = matchstageList)
+        except Exception as e:
+            flash('Oops, an error has occured.', 'error')
+            print(f"Error details: {e}")
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
         
     #Settings
     def settingsGeneral(projID, tourID):
         #for navbar
         navtype = 'dashboard'
-        navexpand = 'Yes'
         tournamentName = retrieveDashboardNavName(tourID)
         moderatorPermissionList = gettingModeratorPermissions(tourID)
         if request.method == "POST":
@@ -347,28 +537,28 @@ class Tournaments:
 
                 if not tourName:
                     flash('Please fill in a tournament name!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
                 elif len(tourName) > 100:
                     flash('Please keep tournament name less than 100 characters!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
                 elif not tourSize:
                     flash('Please Enter a minimum participation size!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
                 elif int(tourSize) > 10000:
                     flash('Please enter participant size from 1-10,000!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
                 elif int(tourSize) < 0:
                     flash('Please enter participant size from 1-10,000!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
                 elif not format:
                     flash('That is not a valid format for the sport!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
                 elif not endDate or not startDate:
                     flash('Start or End Dates are not filled!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
                 elif endDate < startDate:
                     flash('End Date cannot be earlier than Start Date!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
                 else:
             
                     try:
@@ -477,13 +667,12 @@ class Tournaments:
                     prize = ""
                     contact = ""
       
-            return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+            return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
         
     #End Tournament
     def SuspendTour(projID, tourID):
         #for navbar
         navtype = 'dashboard'
-        navexpand = 'Yes'
         tournamentName = retrieveDashboardNavName(tourID)
         moderatorPermissionList = gettingModeratorPermissions(tourID)
 
@@ -506,7 +695,7 @@ class Tournaments:
             except Exception as e:
                 flash('Oops, an error has occured while changing status for tournament.', 'error')
                 print(f"Error details: {e}")
-                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
 
         else:
             try:
@@ -560,12 +749,12 @@ class Tournaments:
                         contact = ""
 
                 flash('This tournament is Suspended!', 'error')
-                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
 
             except Exception as e:
                 flash('Oops, an error has occured while ending tournament.', 'error')
                 print(f"Error details: {e}")
-                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, navexpand=navexpand, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
+                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList)
          
       
     #View Participant List
@@ -701,9 +890,7 @@ class Tournaments:
                 WHERE participants.tourID = :tourID AND participants.participantID = :participantID"""
                 inputOne = {'tourID': tourID, 'participantID': participantID}
                 editParticipant = conn.execute(text(queryOne),inputOne)
-                participants = editParticipant.fetchall()     
-                
-                print(participants)     
+                participants = editParticipant.fetchall()          
 
                 # Check if the participant exists
                 if participants:
@@ -712,8 +899,8 @@ class Tournaments:
 
                     # Fetch all player names for the participant
                     playerList = [(row[2], row[3]) for row in participants if row[2] is not None and row[3] is not None]  
-                    # Assuming playerName is the third column 
-                    # Assuming playerID is the forth column
+                    # Assuming playerID is the third column
+                    # Assuming playerName is the forth column
 
                     # Now, you have participant information and a list of player names
                     # You can use participantID, participantName, participantEmail, and playerNames in your template or further processing
@@ -780,6 +967,7 @@ class Tournaments:
 
         
         else:
+          
             with dbConnect.engine.connect() as conn:
                     queryOne = """SELECT participantName, participantEmail, playerName, playerID
                     FROM participants LEFT JOIN players
@@ -878,6 +1066,7 @@ class Tournaments:
             flash("An error occurred while retrieving participant data.", "error")
             return render_template('moderator.html')  # Create an 'error.html' template for error handling 
         
+
     #Create Moderators    
     def createModerator(projID, tourID):
         # for navbar
@@ -942,28 +1131,34 @@ class Tournaments:
         moderatorPermissionList = gettingModeratorPermissions(tourID)
         
         # print(request.form)
-        
+
         if request.method == "POST":
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
+                request.form.get("Setup Tournament"),
                 request.form.get("Setup Structure"),
                 request.form.get("Manage Registration"),
                 request.form.get("Manage Participant"),
                 request.form.get("Place Participant"),
-                request.form.get("Start Match"),
                 request.form.get("Manage Final Standing"),
-                request.form.get("Manage Public Page"),
-                request.form.get("Manage Media"),
+                request.form.get("Report Result"),
             ]
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
-                existingModerator = conn.execute(
-                    text("SELECT moderatorID FROM moderators WHERE moderatorEmail = :moderatorEmail"),
+                existingUser = conn.execute(
+                    text("SELECT userID FROM users WHERE email = :moderatorEmail"),
                     {'moderatorEmail': moderatorEmail}
                 ).fetchone()
-
-                print("Moderator ID", existingModerator)
+                                
+                # User already exists, use their userID
+                userID = existingUser[0]
+                
+                # Check if a moderator with the specified userID and tourID already exists
+                existingModerator = conn.execute(
+                    text("SELECT moderatorID FROM moderators WHERE userID = :userID AND tourID = :tourID"),
+                    {'userID': userID, 'tourID': tourID}
+                ).fetchone()
                 
                 if existingModerator:
                     # Moderator already exists, use their moderatorID
@@ -991,12 +1186,13 @@ class Tournaments:
         else:            
             
             with dbConnect.engine.connect() as conn:
-                queryRetrieveModerator = """SELECT moderators.moderatorEmail, permissions.permissionName
-                FROM tournaments JOIN moderators ON tournaments.tourID = moderators.tourID
+                queryRetrieveModerator = """SELECT users.email, permissions.permissionName
+                FROM tournaments JOIN users ON tournaments.userID = users.userID
+                JOIN moderators ON users.userID = moderators.userID
                 LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
                 LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
-                GROUP BY moderators.moderatorEmail, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
+                GROUP BY users.email, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
                 inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 moderators = editModerator.fetchall()
@@ -1013,8 +1209,8 @@ class Tournaments:
                     # Handle the case when the participant does not exist
                     flash('Moderator not found!', 'error')
 
-            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList, moderatorPermissionList=moderatorPermissionList)
-    
+            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList)
+        
     #Delete Moderators    
     def deleteModerator(projID, tourID, moderatorID):
         # for navbar
@@ -1118,7 +1314,6 @@ class Tournaments:
             # Render the HTML template with the moderator data
             return render_template('moderatorsTournament.html', moderatorsTournament=moderatorsTournament)
    
-        
     #Placement
     def get_updated_content():
         #for navbar
@@ -1130,3 +1325,35 @@ class Tournaments:
         with open('templates\seeding.html', 'r') as file:   
             updated_content = file.read()
         return updated_content
+       
+    def upload():
+        if 'tourImage' not in request.files:
+            flash('No file part', 'error')
+            return redirect(url_for('createTour'))
+
+        tourImage = request.files['tourImage']
+
+        if tourImage.filename == '':
+            flash('No selected file', 'error')
+            return redirect(url_for('createTour'))
+        
+        
+        
+
+        #------------ Banner part -------------------#
+
+        if 'bannerImage' not in request.files:
+            flash('No file part', 'error')
+            return redirect(url_for('createTour'))
+        
+        bannerImage = request.files['bannerImage']
+
+        if bannerImage.filename == '':
+            flash('No selected file', 'error')
+            return redirect(url_for('createTour'))
+
+        upload_to_google_drive(tourImage, bannerImage) 
+
+        flash('File uploaded successfully', 'success')
+        return redirect(url_for('createTour'))
+    

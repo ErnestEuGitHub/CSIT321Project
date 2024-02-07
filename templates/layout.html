@@ -5,13 +5,16 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="/static/css/navbar.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <head>
     <title>
         {% if navtype == 'tournament' %}
-           Tournaments
+            Tournaments
         {% elif navtype == 'project' %}
             Projects
+        {% elif navtype == 'sysAdmin' %}
+            System Admin
         {% endif %}
     </title>
 </head>
@@ -21,7 +24,12 @@
         <button class="navbar-toggler" type="button" onclick="toggleNavBar()">
             <i class="bi bi-list"></i>
         </button>
-        <a href="/home">GameSphere</a>
+        {% if navtype == 'sysAdmin' %}
+            <a href="/sysadminhome">GameSphere</a>
+        {% else %}
+            <a href="/home">GameSphere</a>
+        {% endif %}
+
         <div class="toprightnav">
             <div class="firstname">Welcome {{ session["fname"] }}</div>
             <div class="dropdown">
@@ -100,7 +108,7 @@
                 <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
             {% endif %}
             {% if "Start Match" in moderatorPermissionList %}
-                <a href="#">Match</a>
+                <a href="/match/{{projID}}/{{tourID}}">Match</a>
             {% endif %}
             {% if "Manage Final Standing" in moderatorPermissionList %}
                 <a href="#">Final Standing</a>
@@ -111,6 +119,17 @@
             {% if "Manage Media" in moderatorPermissionList %}
                 <a href="#">Media</a>
             {% endif %}
+
+        {% elif navtype == 'sysAdmin' %}
+
+            <h2>System Admin</h2>
+
+            <a href="#">Projects</a>
+            <a href="#">Stages</a>
+            <a href="#">Matches</a>
+            <a href="#">Venues</a>
+            <a href="#">Participants</a>
+    
         {% endif %}
     </div>
 

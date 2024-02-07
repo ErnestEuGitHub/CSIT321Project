@@ -4,6 +4,12 @@ from stages import *
 from user import *
 from tournaments import *
 from projects import *
+from match import *
+
+from placement import *
+from seeding import *
+from venue import *
+from sysadmin import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -40,8 +46,21 @@ def loadregister():
 def loadhome():
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    page = Projects.home()
-    return page
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT profileID from users WHERE userID = :userID"
+            inputs = {'userID': session["id"]}
+            checksysadmin = conn.execute(text(query), inputs)
+            rows = checksysadmin.fetchone()
+
+        if rows[0] == 1:
+            page = Projects.home()
+            return page
+        elif rows[0] == 3 :
+            page = sysAdminHome()
+            return page
+        else:
+            return render_template('notfound.html')
 
 @app.route('/projects/<projID>')
 def loadtournaments(projID):
@@ -116,6 +135,14 @@ def getformatspy():
     formats = Tournaments.getformat()
     return formats
 
+@app.route('/get_venues', methods=['POST'])
+def getvenuepy():
+    matchstart = request.form.get('matchstart')
+    matchend = request.form.get('matchend')
+
+    loadgetvenue = updateVenue(matchstart, matchend)
+    return loadgetvenue
+
 @app.route('/tournamentOverviewPage/<projID>/<tourID>')
 def loadTourOverviewWithID(projID, tourID):
     if "id" not in session:
@@ -182,51 +209,20 @@ def loaddashboard(projID, tourID):
 
 
 @app.route('/placement/<projID>/<tourID>', methods=["POST", "GET"])
-def placement(projID, tourID):
-    if "id" not in session:
-        return redirect(url_for('loadLogin'))    
-    #fornavbar
-    session["placementTour"] = tourID
-    navtype = 'dashboard'
-    tournamentName = retrieveDashboardNavName(tourID) 
+def loadPlacement(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    else:
-        with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments WHERE tourID = :tourID"
-            inputs = {'tourID': tourID}
-            checktour = conn.execute(text(query), inputs)
-            rows = checktour.fetchall()
-            
-            query = "SELECT * from moderators WHERE userID = :userID AND tourID = :tourID"
-            inputs = {'userID': session["id"], 'tourID': tourID}
-            checkmod = conn.execute(text(query), inputs)
-            modrows = checkmod.fetchall()
 
-            print("Rows: ",rows)
-            print("modrows: ",modrows)
-            
-            #statusID=5, the tournament is suspended
-            if rows[0][9] == 5:
-                return redirect(url_for('loadtournaments', projID=projID))
-            elif rows[0][10] == session['id']:
-                role = "Owner"
-                page = Tournaments.dashboard(projID, tourID, role)
-                return page            
-            elif modrows[0][2] == session['id']:                
-                role = "Moderator"
-                page = Tournaments.dashboard(projID, tourID, role)
-                return page            
-            else:
-                return render_template('notfound.html')
+    page = placement(projID, tourID)
+    return page
 
-    return render_template('placement.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
-
-@app.route('/update_content', methods=['POST'])
-def update_content():
-    updated_content = Tournaments.get_updated_content()
-    return jsonify({'content': updated_content})
-
+@app.route('/seeding/<projID>/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadSeeding(projID, tourID, stageID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    
+    page = seeding(projID, tourID, stageID)
+    return page
 
 @app.route('/settings/general/<projID>/<tourID>', methods=["POST", "GET"])
 def loadsettings(projID, tourID):
@@ -366,10 +362,7 @@ def loadEditParticipant(projID, tourID, participantID):
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = """SELECT * from tournaments JOIN participants 
-            ON tournaments.tourID = participants.tourID 
-            WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID 
-            AND participants.participantID = :participantID"""
+            query = "SELECT * from tournaments JOIN participants ON tournaments.tourID = participants.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND participants.participantID = :participantID"
             inputs = {'userID': session["id"], 'tourID': tourID, 'participantID': participantID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
@@ -457,7 +450,7 @@ def loadEditModerator(projID, tourID, moderatorID):
             inputs = {'userID': session["id"], 'tourID': tourID, 'moderatorID': moderatorID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
-            
+
             if rows:
                 page = Tournaments.editModerator(projID, tourID, moderatorID)
                 return page
@@ -491,6 +484,88 @@ def loadDeleteModerator(projID, tourID, moderatorID):
 def loadModeratorsTournament(userID):
     page = Tournaments.moderatorsTournament(userID)
     return page
+            
+@app.route('/match/<projID>/<tourID>', methods=["POST", "GET"])
+def match(projID, tourID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Tournaments.match(projID, tourID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/loadmatch/<projID>/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadmatch(projID, tourID, stageID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Match.loadMatch(projID, tourID, stageID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/loadmatchdetails/<projID>/<tourID>/<stageID>/<matchID>', methods=["POST", "GET"])
+def loadmatchdetails(projID, tourID, stageID, matchID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Match.loadMatchDetails(projID, tourID, stageID, matchID)
+                return page
+            
+            else:
+                return render_template('notfound.html')
+
+              
+@app.route('/venuetest' , methods=["POST", "GET"])
+def loadvenuetest():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        page = venue()
+        return page
+
+#sysAdmin Routing
+# @app.route('/sysadminhome' , methods=["POST", "GET"])
+# def loadSysAdminHome():
+#     if "id" not in session:
+#         return redirect(url_for('loadLogin'))
+#     else:
+#         with dbConnect.engine.connect() as conn:
+#             query = "SELECT profileID from users WHERE userID = :userID"
+#             inputs = {'userID': session["id"]}
+#             checksysadmin = conn.execute(text(query), inputs)
+#             rows = checksysadmin.fetchone()
+
+#         if rows[0] != 3:
+#             return render_template('notfound.html')
+#         else:
+#             page = sysAdminHome()
+#             return page
+
 
 @app.errorhandler(404)
 def loadnotfound(error):

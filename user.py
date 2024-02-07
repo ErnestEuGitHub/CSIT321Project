@@ -40,8 +40,7 @@ class User:
                     if session["profileID"] == 1:
                         return redirect(url_for('loadhome'))
                     elif session["profileID"] == 3:
-                        flash('Login Successful As A Sys Admin!', 'success')
-                        return render_template('login.html', invalidEmail = False, invalidPassword = False)
+                        return redirect(url_for('loadhome'))
                     else:
                         flash('Login Successful! But seems like theres no page for your role...', 'success')
                         return render_template('login.html', invalidEmail = False, invalidPassword = False)
