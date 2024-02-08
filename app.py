@@ -572,7 +572,7 @@ def loadCreateProjAdmin():
         return page
     
 @app.route('/projAdminSetting/<projID>', methods=["POST", "GET"])
-def loadProjSettingsAdmin(projID):
+def loadProjAdminSetting(projID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     elif session["profileID"] != 3:
@@ -602,7 +602,7 @@ def loadCreateTourAdmin():
         return page
 
 @app.route('/tourAdminSetting/<tourID>', methods=["POST", "GET"])
-def loadTourSettingsAdmin(tourID):
+def loadTourAdminSetting(tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     elif session["profileID"] != 3:
@@ -610,6 +610,37 @@ def loadTourSettingsAdmin(tourID):
     else:
         page = TourSettingsAdmin(tourID)
         return page
+    
+@app.route('/venueAdmin')
+def loadVenueAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = venueAdmin()
+        return page
+    
+@app.route('/createVenueAdmin', methods=["POST", "GET"])
+def loadCreateVenueAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = createVenueAdmin()
+        return page
+    
+@app.route('/venueAdminSetting/<venueID>', methods=["POST", "GET"])
+def loadVenueAdminSetting(venueID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = venueAdminSetting(venueID)
+        return page
+
 
 #end of sysAdmin routing
     
