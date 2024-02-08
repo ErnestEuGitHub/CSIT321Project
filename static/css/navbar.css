@@ -315,7 +315,22 @@
     padding-bottom: 10rem!important;
 }
 
-.py-5rem{
-    padding-top: 5rem!important;
-    padding-bottom: 5rem!important;
+.py-roundtwo{
+    padding-top: 4.87rem!important;
+    padding-bottom: 4.87rem!important;
+}
+
+.py-roundthree{
+    padding-top: 13.9rem!important;
+    padding-bottom: 13.9rem!important;
+}
+
+.py-roundfour{
+    padding-top: 32.2rem!important;
+    padding-bottom: 32.2rem!important;
+}
+
+.py-roundfive{
+    padding-top: 45rem!important;
+    padding-bottom: 45rem!important;
 }
