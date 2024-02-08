@@ -146,11 +146,11 @@ class Match:
                     # print(matchParticipantRows)
                     gameParticipant = [row._asdict() for row in gameParticipantRows]
                     if not gameParticipant:
-                        gameParticipant = [{'gameParticipantID': None, 'gameParticipantScore': None, 'gameID': g["gameID"], 'gameParticipantOutcome': None, 'partcipantID': None},
-                                            {'gameParticipantID': None, 'gameParticipantScore': None, 'gameID': g["gameID"], 'gameParticipantOutcome': None, 'partcipantID': None}]
+                        gameParticipant = [{'gameParticipantID': None, 'gameParticipantScore': None, 'gameID': g["gameID"], 'gameParticipantOutcome': None, 'partcipantID': None, 'participantName': None, 'participantEmail': None, 'tourID': None},
+                                            {'gameParticipantID': None, 'gameParticipantScore': None, 'gameID': g["gameID"], 'gameParticipantOutcome': None, 'partcipantID': None, 'participantName': None, 'participantEmail': None, 'tourID': None}]
                 
                     if len(gameParticipant) < 2:
-                        gameParticipant += [{'gameParticipantID': None, 'gameParticipantScore': None, 'gameID': g["gameID"], 'gameParticipantOutcome': None, 'partcipantID': None}] 
+                        gameParticipant += [{'gameParticipantID': None, 'gameParticipantScore': None, 'gameID': g["gameID"], 'gameParticipantOutcome': None, 'partcipantID': None, 'participantName': None, 'participantEmail': None, 'tourID': None}] 
 
                     print("This is gameParticipant")
                     print(gameParticipant)
