@@ -217,8 +217,8 @@ def loadDeleteMedia(projID, tourID, newsID):
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments JOIN news ON tournaments.tourID = news.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND news.newsID = :newsID"
-            inputs = {'userID': session["id"], 'tourID': tourID, 'newsID': newsID}
+            query = "SELECT * from tournaments JOIN news ON tournaments.tourID = news.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
 
