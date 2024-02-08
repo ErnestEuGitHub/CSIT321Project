@@ -581,7 +581,7 @@ class Tournaments:
 
                     flash('Status Updated!', 'success')
                     if session["profileID"] == 3:
-                        return redirect(url_for('loadTourSettingsAdmin', tourID=tourID))
+                        return redirect(url_for('loadTourAdminSetting', tourID=tourID))
                     else:
                         return redirect(url_for('loadsettings', projID=projID, tourID=tourID))
         
@@ -589,7 +589,7 @@ class Tournaments:
                 flash('Oops, an error has occured while changing status for tournament.', 'error')
                 print(f"Error details: {e}")
                 if session["profileID"] == 3:
-                    return redirect(url_for('loadTourSettingsAdmin', tourID=tourID))
+                    return redirect(url_for('loadTourAdminSetting', tourID=tourID))
                 else:
                     return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
