@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block content %}
+		<div class="row justify-content-center">
+			<div class="col navbarcontentpadding">
+				{% for message in get_flashed_messages(category_filter=["error"]) %}
+					{% if message %}
+						<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							{{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					{% endif %}
+				{% endfor %}
+
+				{% for message in get_flashed_messages(category_filter=["success"]) %}
+					{% if message %}
+						<div class="alert alert-success alert-dismissible fade show" role="alert">
+							{{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					{% endif %}
+				{% endfor %}
+
+				<div class="container h-100">
+					<div class="row justify-content-center h-100">
+						<div class="col-xxl-10 col-xl-8 col-lg-8 col-md-9 col-sm-10">
+							<div class="card-body p-5">
+								<h1 class="fs-4 card-title fw-bold mb-4">User Settings</h1>
+
+								<form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">
+	
+									<div class="row mb-3 justify-content-sm-center">
+										<div class="mb-4">
+											<label class="mb-2 text-muted" for="email">Email<span class="text-danger">*</span></label>
+											<input id="email" type="text" class="form-control" name="email" value="{{ email }}" required autofocus>
+										</div>
+										
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="fname">First Name<span class="text-danger">*</span></label>
+											<input id="fname" type="text" class="form-control" name="fname" value="{{ fname }}"  required autofocus>
+										</div>
+
+										<div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="lname">Last Name<span class="text-danger">*</span></label>
+											<input id="lname" type="text" class="form-control" name="lname" value="{{ lname }}"  required autofocus>
+										</div>
+
+                                        <div class="mb-4 col-xl-4">
+											<label class="mb-2 text-muted" for="profile">Profile<span class="text-danger">*</span></label>
+											<select id="profile" class="form-select" name="profile" required autofocus>
+												<option value="1" {% if profile == 1 %} selected {% endif %}>Organiser</option>
+												<option value="2" {% if profile == 2 %} selected {% endif %}>Participant</option>
+												<option value="3" {% if profile == 3 %} selected {% endif %}>Sys Admin</option>
+											</select>
+										</div>
+
+                                        <div class="mb-4 col-xl-6">
+											<label class="mb-2 text-muted" for="password">Set New Password</label>
+											<input id="password" type="password" class="form-control" name="password" value="{{ password }}" placeholder="Enter only if changing password..." style="#tourName::placeholder {color: #888;}" required autofocus>
+										</div>
+
+                                        <div class="mb-4 col-xl-6">
+											<label class="mb-2 text-muted" for="cpassword">Confirm New Password</label>
+											<input id="cpassword" type="password" class="form-control" name="cpassword" value="{{ cpassword }}"  required autofocus>
+										</div>
+								
+                                        <div class="d-flex align-items-center">
+                                            <button type="submit" class="btn btn-primary ms-auto">
+                                                Update User
+                                            </button>
+                                        </div>
+                                    </div>
+								</form>
+							</div>
+							
+							<!-- <div class="text-center mt-5 text-muted">
+								Copyright &copy; 2017-2021 &mdash; Your Company 
+							</div> -->
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</section>
+
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+	
+	<script>
+	</script>
+
+{% endblock %}
