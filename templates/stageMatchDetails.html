@@ -3,7 +3,136 @@
 {% block content %}
 <div class="container h-100 navbarcontentpadding">
     <div>
-        <label for="">This is match {{matchID}}</label>
+        <header class="d-flex">
+            <label class="fs-4 fw-bold my-4">Match Details</label>
+        </header>
+
+        <div class="card mb-3 p-3 d-flex text-center align-items-center">
+            <div class="card-body">
+                <div class="row flex-row">
+                    <span class="fs-6">Match {{matchID}}</span>
+                </div>
+                <div class="row flex-row">
+                    <div class="col align-self-center">
+                        <span class="matchParticipantName1 fs-1">Manchester United FC</span>         
+                    </div>
+                    <div class="col align-self-center">
+                        <div>
+                            <span class="matchParticipantScore1 fs-1">3</span>
+                            <span class="fs-1">-</span>
+                            <span class="matchParticipantScore2 fs-1">3</span>
+                        </div>
+                    </div>
+                    <div class="col align-self-center">
+                        <span class="matchParticipantName2 fs-1">Liverpool FC</span>         
+                    </div>
+                </div>
+                <div class="row flex-row">
+                    <span class="matchStatus fs-6">Match Completed</span>
+                </div>
+            </div>   
+        </div>
+
+        <div class="card mb-3 p-3 d-flex text-center align-items-between">
+            <div>
+                <ul class="nav nav-pills mb-3">
+                    <li class="nav-item" id="resultTab">
+                        <a class="nav-link active" aria-disabled="false">Result</a>
+                    </li>
+                    <li class="nav-item" id="infoTab">
+                        <a class="nav-link" aria-disabled="false">Info</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mb-3" id="resultTabContent">
+                <form action="/updateMatchDetails/{{projID}}/{{tourID}}/{{stageID}}/{{matchID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+                    {% for n in range(maxGames) %}
+                    <div>
+                        <label class="fs-5 fw-bold my-3">Game {{ n + 1 }}</label>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Score</th>
+                                <th scope="col">Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="align-middle">Manchester United FC</td>
+                                <td class="align-middle"><input class="form-control" type="number"></td>
+                                <td class="align-middle">
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Open this select menu</option>
+                                        <option value="1">Win</option>
+                                        <option value="2">Draw</option>
+                                        <option value="3">Lose</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="align-middle">Liverpool FC</td>
+                                <td class="align-middle"><input class="form-control" type="number"></td>
+                                <td class="align-middle">
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Open this select menu</option>
+                                        <option value="1">Win</option>
+                                        <option value="2">Draw</option>
+                                        <option value="3">Lose</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                    <div class="mb-3 d-flex justify-content-end">
+                        <div>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                            <a href="" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+                        </div>
+                    </div>
+                </form>
+            <div class="mb-3" id="infoTabContent" hidden>
+                <label>Schedule</label>
+                <input type="datetime">
+            </div>
+        </div>
     </div>
 </div>
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var matchups = document.querySelectorAll('.matchup.final');
+
+        });
+
+        let resultTab = document.getElementById("resultTab");
+        let infoTab = document.getElementById("infoTab");
+        let resultTabContent = document.getElementById("resultTabContent");
+        let infoTabContent = document.getElementById("infoTabContent");
+        
+        resultTab.addEventListener("click", function(){tabFn(resultTab);});
+        infoTab.addEventListener("click", function(){tabFn(infoTab);});
+
+        function tabFn(tabClicked) {
+            console.log("clicked on!" + tabClicked.id);
+            const tabs = [resultTab, infoTab];
+            const tabsContent = [resultTabContent, infoTabContent];
+
+            for (tab of tabs){
+                if (tabClicked === tab){
+                    tab.firstElementChild.classList.add("active");
+                    for(tabC of tabsContent){
+                        if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)){
+                            tabC.hidden = false;
+                        } else {
+                            tabC.hidden = true;
+                        }
+                    }
+                } else {
+                    tab.firstElementChild.classList.remove("active");
+                }
+            }
+        }
+</script>
 {% endblock %}
