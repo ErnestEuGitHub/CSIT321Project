@@ -63,8 +63,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="/editMedia/{{projID}}/{{tourID}}/{{ n['newsID'] }}">Edit</a>
                         </li>
-                        <li><a class="dropdown-item" href="#" id="{{ n['newsID'] }}"
-                                onclick="deleteMedia('{{projID}}', '{{tourID}}')">Delete</a>
+                        <li><a class="dropdown-item" href="/deleteMedia/{{projID}}/{{tourID}}/{{ n['newsID'] }}">Delete</a>
                         </li>
                     </ul>
                 </div>
@@ -73,32 +72,4 @@
     </div>
     {% endfor %}
 </div>
-<script>
-    $(document).ready(function () {
-        $('.dropdown-item').click(function () {
-            var closestDropdownItem = $(this).closest('.dropdown-item');
-            // Now you can work with the closest dropdown-item element
-            // For example, you can access its attributes or perform other operations
-        });
-    });
-
-    function deleteMedia(projID, tourID, closestDropdownItem) {
-        console.log(projID);
-        console.log(tourID);
-        console.log(closestDropdownItem);
-
-        fetch('/deleteMedia/' + projID + '/' + tourID + '/' + closestDropdownItem.id, {
-            method: 'POST',
-        })
-            .then(response => { })
-            .then(data => {
-                // Handle the response data as needed
-                console.log("News deleted successfully");
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Handle errors
-            });
-    }
-</script>
 {% endblock %}

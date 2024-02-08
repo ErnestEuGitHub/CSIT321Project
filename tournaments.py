@@ -87,16 +87,13 @@ def upload_to_google_drive2(newsMedia):
             file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             #Get the file_3 ID
             file_id = file.get('id')
-            print(f"File ID: {file_id}")
 
         else:
             file_id = None
-            print("No file provided. Skipping upload.")
 
         return file_id
     
     except Exception as e:
-        print(f"Error uploading news media to Google Drive: {e}")
         return None
 
 app = Flask(__name__)
@@ -1064,13 +1061,10 @@ class Tournaments:
                     
                     if content_type:
                         if content_type.startswith('image'):
-                            print(f'{file.filename} is an image')
                             file_type = 1
                         elif content_type.startswith('video'):
-                            print(f'{file.filename} is a video')
                             file_type = 2
                         elif content_type.startswith('audio'):
-                            print(f'{file.filename} is an audio')
                             file_type = 3
                         else:
                             print(f'{file.filename} has an unknown format')
@@ -1096,33 +1090,25 @@ class Tournaments:
             mediaImage = request.files.getlist("mediaImage")
             newsMediaID = request.form.get("newsMediaID")
 
-            if request.form.get('action') == 'delete':
-                # Perform deletion operation in the database based on the newsMediaID
-                # (Implementation of deletion operation goes here)
+            with dbConnect.engine.connect() as conn:
+                queryUpdate = "UPDATE news SET newsTitle = :newsTitle, newsDesc = :newsDesc WHERE newsID = :newsID"
+                inputUpdate = {'newsTitle': newsTitle, 'newsDesc': newsDesc, 'newsID': newsID}
+                conn.execute(text(queryUpdate), inputUpdate)
 
-                # Redirect to the desired page after deletion
-                return redirect(url_for('loadEditMedia', projID=projID, tourID=tourID))
-            else:
-                with dbConnect.engine.connect() as conn:
-                    queryUpdate = "UPDATE news SET newsTitle = :newsTitle, newsDesc = :newsDesc WHERE newsID = :newsID"
-                    inputUpdate = {'newsTitle': newsTitle, 'newsDesc': newsDesc, 'newsID': newsID}
-                    conn.execute(text(queryUpdate), inputUpdate)
+                if mediaImage is None:
             
                     for file in mediaImage:
                         content_type, encoding = mimetypes.guess_type(file.filename)
                         file_type = 0  # Default value
-                    
+                
                         # Check the content type or file extension
                     
                         if content_type:
                             if content_type.startswith('image'):
-                                print(f'{file.filename} is an image')
                                 file_type = 1
                             elif content_type.startswith('video'):
-                                print(f'{file.filename} is a video')
                                 file_type = 2
                             elif content_type.startswith('audio'):
-                                print(f'{file.filename} is an audio')
                                 file_type = 3
                             else:
                                 print(f'{file.filename} has an unknown format')
@@ -1134,7 +1120,7 @@ class Tournaments:
 
                 flash('Media Updated!', 'success')
 
-                return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
+            return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
         else:
             with dbConnect.engine.connect() as conn:
                 queryOne = """SELECT newsTitle, newsDesc, type, newsMediaCode
@@ -1163,14 +1149,11 @@ class Tournaments:
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
 
-        print(newsID)
+        if request.method == "GET":
 
-        if request.method == "POST":
-
-            print("Delete triggered!")
             try:
                 with dbConnect.engine.connect() as conn:
-                    queryDelete = "DELETE news WHERE newsID = :newsID"
+                    queryDelete = "DELETE FROM news WHERE newsID = :newsID"
                     inputDelete = {'newsID': newsID}
                     conn.execute(text(queryDelete), inputDelete)
             
@@ -1178,9 +1161,9 @@ class Tournaments:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
 
-                return redirect(url_for("loadMedia", navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, newsID=newsID))
+                return redirect(url_for("loadMedia", tourID=tourID, projID=projID))
             else:
-                return redirect(url_for("loadMedia", navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, newsID=newsID))
+                return redirect(url_for("loadMedia", tourID=tourID, projID=projID))
 
 def upload():
     if 'tourImage' not in request.files:

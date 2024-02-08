@@ -56,13 +56,19 @@
         margin: 0 -10px;
     }
 
+    .upload__img-box {
+        width: 200px;
+        padding: 0 10px;
+        margin-bottom: 12px;
+    }
+
     .upload__img-container {
         display: flex;
         flex-wrap: wrap;
         /* Allow items to wrap to the next line */
     }
 
-    .upload__img-box {
+    .upload__img-box2 {
         flex: 0 0 auto;
         /* Prevent items from growing or shrinking */
         margin-right: 10px;
@@ -140,7 +146,7 @@
             <div class="upload__img-wrap"></div>
             <div class="upload__img-container">
                 {% for mediaFile in mediaFiles %}
-                <div class="upload__img-box">
+                <div class="upload__img-box2">
                     {% if mediaFile['newsMediaCode'] %}
                     {% if mediaFile['type'] == 1 %}
                     <img src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}" alt="Image">
@@ -159,11 +165,6 @@
                     {% else %}
                     <p>No file type available: {{ mediaFile['type'] }}</p>
                     {% endif %}
-                    <form action="" method="POST" class="delete-media-form"
-                        data-media-id="{{ mediaFile['newsMediaID'] }}">
-                        <input type="hidden" name="action" value="delete">
-                        <button type="button" class="delete-media-btn">Delete</button>
-                    </form>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -228,7 +229,7 @@
                             console.error('Unsupported file type:', f.type);
                         }
                     };
-                    reader.readAsArrayBuffer(f);
+                    reader.readAsDataURL(f);
                 }
             }
         });
