@@ -1165,12 +1165,12 @@ class Tournaments:
 
         print(newsID)
 
-        if request.method == "POST":
+        if request.method == "GET":
 
             print("Delete triggered!")
             try:
                 with dbConnect.engine.connect() as conn:
-                    queryDelete = "DELETE news WHERE newsID = :newsID"
+                    queryDelete = "DELETE FROM news WHERE newsID = :newsID"
                     inputDelete = {'newsID': newsID}
                     conn.execute(text(queryDelete), inputDelete)
             
@@ -1178,9 +1178,9 @@ class Tournaments:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
 
-                return redirect(url_for("loadMedia", navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, newsID=newsID))
+                return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
             else:
-                return redirect(url_for("loadMedia", navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, newsID=newsID))
+                return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
 
 def upload():
     if 'tourImage' not in request.files:
