@@ -1158,19 +1158,21 @@ class Tournaments:
         moderatorPermissionList = gettingModeratorPermissions(tourID)
         isOwner = verifyOwner(tourID)
         
-        # print(request.form)
+        print("Edit Moderator1:", request.form)
 
         if request.method == "POST":
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
-                request.form.get("Setup Tournament"),
                 request.form.get("Setup Structure"),
                 request.form.get("Manage Registration"),
                 request.form.get("Manage Participant"),
                 request.form.get("Place Participant"),
+                request.form.get("Start Match"),
                 request.form.get("Manage Final Standing"),
-                request.form.get("Report Result"),
+                request.form.get("Manage Public Page"),
+                request.form.get("Manage Media"),
             ]
+            print("Edit Moderator2  :", request.form)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
@@ -1214,13 +1216,12 @@ class Tournaments:
         else:            
             
             with dbConnect.engine.connect() as conn:
-                queryRetrieveModerator = """SELECT users.email, permissions.permissionName
-                FROM tournaments JOIN users ON tournaments.userID = users.userID
-                JOIN moderators ON users.userID = moderators.userID
+                queryRetrieveModerator = """SELECT moderators.moderatorEmail, permissions.permissionName
+                FROM tournaments JOIN moderators ON tournaments.tourID = moderators.tourID
                 LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
                 LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
-                GROUP BY users.email, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
+                GROUP BY moderators.moderatorEmail, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
                 inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 moderators = editModerator.fetchall()
@@ -1237,7 +1238,7 @@ class Tournaments:
                     # Handle the case when the participant does not exist
                     flash('Moderator not found!', 'error')
 
-            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList, isOwner = isOwner)
+            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
     #Delete Moderators    
     def deleteModerator(projID, tourID, moderatorID):
@@ -1259,15 +1260,20 @@ class Tournaments:
                 request.form.get("Manage Public Page"),
                 request.form.get("Manage Media"),
             ]
+            
+            print("Moderator Email: ", moderatorEmail)
+            print("selectedPermissions: ", selectedPermissions) 
+            #Moderator Email:  anothertest@gmail.com
+            #selectedPermissions:  [None, None, None, None, None, None, None, None]
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
                 existingModerator = conn.execute(
-                    text("SELECT moderatorID FROM moderators WHERE moderatorEmail = :moderatorEmail"),
-                    {'moderatorEmail': moderatorEmail}
+                    text("SELECT moderatorID FROM moderators WHERE moderatorEmail = :moderatorEmail AND tourID = :tourID"),
+                    {'moderatorEmail': moderatorEmail, 'tourID': tourID}
                 ).fetchone()
 
-                print("Moderator ID", existingModerator)
+                print("existingModerator", existingModerator)
                 
                 if existingModerator:
                     # Moderator already exists, use their moderatorID
@@ -1319,7 +1325,7 @@ class Tournaments:
                     # Handle the case when the participant does not exist
                     flash('Moderator not found!', 'error')
 
-            return render_template('deleteModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+            return render_template('deleteModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     #View Moderator List
     @staticmethod

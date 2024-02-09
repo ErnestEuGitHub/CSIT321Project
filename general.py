@@ -154,14 +154,11 @@ def verifyOwner(tourID):
         getTour = conn.execute(text(query), inputs)
         row = getTour.fetchone()  # Assuming tourID is unique
         
-        print("row: ", row)
-        
         if row and row[0] == session["id"]:
             isOwner = True
         else:
             isOwner = False
 
-        print("is_owner: ", isOwner)
         return isOwner
             
 
