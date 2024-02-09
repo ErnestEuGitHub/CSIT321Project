@@ -206,7 +206,7 @@ class Tournaments:
                     #for navbar
                     tournamentlist = updateNavTournaments(projID)
                     projectName = retrieveProjectNavName(projID)
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID)
+                    return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID)
                 
         else:
             with dbConnect.engine.connect() as conn:
@@ -241,15 +241,19 @@ class Tournaments:
     def dashboard(projID, tourID):
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
-
         navtype = 'dashboard'
-        return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
+        
+        return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     #Structure
     def structure(projID, tourID):
         #for navbar
         tournamentName = retrieveDashboardNavName(tourID)
-
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
+        
         navtype = 'dashboard'
         try:
             with dbConnect.engine.connect() as conn:
@@ -297,12 +301,12 @@ class Tournaments:
                     stageList += stage_html
                 
                     
-            return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageList=stageList)
+            return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageList=stageList, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
         except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-                return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+                return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
     
 
@@ -311,9 +315,10 @@ class Tournaments:
     def createStage(projID, tourID):
         
         #for navbar
-        tournamentName = retrieveDashboardNavName(tourID)
         navtype = 'dashboard'
-        
+        tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
         if request.method == "POST":
 
             stageName = request.form.get("stageName")
@@ -453,15 +458,17 @@ class Tournaments:
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         else:
-            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+            return render_template('createStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     #Match
     def match(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
     
         try:
             with dbConnect.engine.connect() as conn:
@@ -506,18 +513,20 @@ class Tournaments:
                     
                     matchstageList += matchstage_html
 
-            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, matchstageList = matchstageList)
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, matchstageList = matchstageList, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         except Exception as e:
             flash('Oops, an error has occured.', 'error')
             print(f"Error details: {e}")
-            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+            return render_template('match.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
     #Settings
     def settingsGeneral(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
-
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
+        
         if request.method == "POST":
             identifier = request.form.get("formIdentifier")
             action = request.form.get('action')
@@ -549,28 +558,28 @@ class Tournaments:
 
                 if not tourName:
                     flash('Please fill in a tournament name!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 elif len(tourName) > 100:
                     flash('Please keep tournament name less than 100 characters!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 elif not tourSize:
                     flash('Please Enter a minimum participation size!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 elif int(tourSize) > 10000:
                     flash('Please enter participant size from 1-10,000!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 elif int(tourSize) < 0:
                     flash('Please enter participant size from 1-10,000!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 elif not format:
                     flash('That is not a valid format for the sport!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 elif not endDate or not startDate:
                     flash('Start or End Dates are not filled!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 elif endDate < startDate:
                     flash('End Date cannot be earlier than Start Date!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 else:
             
                     try:
@@ -590,6 +599,7 @@ class Tournaments:
                     except Exception as e:
                         flash('Oops, an error has occured in updating general details tab.', 'error')
                         print(f"Error details: {e}")
+                        return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
                 # elif identifier == "details":
 
@@ -614,6 +624,7 @@ class Tournaments:
                 except Exception as e:
                     flash('Oops, an error has occured in updating details tab.', 'error')
                     print(f"Error details: {e}")
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
                 # elif identifier == "contact":
 
@@ -630,6 +641,7 @@ class Tournaments:
                 except Exception as e:
                     flash('Oops, an error has occured in updating contact tab.', 'error')
                     print(f"Error details: {e}")
+                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
                 flash('Tournament Details Updated!', 'success')
                 return redirect(url_for('loadsettings', tourID=tourID, projID=projID))
@@ -679,13 +691,19 @@ class Tournaments:
                     prize = ""
                     contact = ""
       
-            return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+            return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
     #End Tournament
     def SuspendTour(projID, tourID):
         #for navbar
         navtype = 'dashboard'
+
+        if session["profileID"] == 3:
+            navtype = 'sysAdmin'
+
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
             getstatus = request.form.get("status")
@@ -701,12 +719,19 @@ class Tournaments:
                     updateStatus = conn.execute(text(query), inputs)
 
                     flash('Status Updated!', 'success')
-                    return redirect(url_for('loadsettings', projID=projID, tourID=tourID))
+                    if session["profileID"] == 3:
+                        return redirect(url_for('loadTourAdminSetting', tourID=tourID))
+                    else:
+                        return redirect(url_for('loadsettings', projID=projID, tourID=tourID))
         
             except Exception as e:
                 flash('Oops, an error has occured while changing status for tournament.', 'error')
                 print(f"Error details: {e}")
-                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+
+                if session["profileID"] == 3:
+                    return redirect(url_for('loadTourAdminSetting', tourID=tourID))
+                else:
+                    return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
         else:
             try:
@@ -760,12 +785,12 @@ class Tournaments:
                         contact = ""
 
                 flash('This tournament is Suspended!', 'error')
-                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
             except Exception as e:
                 flash('Oops, an error has occured while ending tournament.', 'error')
                 print(f"Error details: {e}")
-                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
          
       
     #View Participant List
@@ -773,6 +798,8 @@ class Tournaments:
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         try:
             with dbConnect.engine.connect() as conn:            
@@ -800,7 +827,7 @@ class Tournaments:
                 tournamentSize = tournamentSize
 
                 # Render the HTML template with the participant data and total number
-                return render_template('participant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                return render_template('participant.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
         except Exception as e:
             # Handle exceptions (e.g., database connection error)
@@ -813,6 +840,8 @@ class Tournaments:
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
             participantName = request.form.get("participantName")
@@ -835,13 +864,15 @@ class Tournaments:
             
             return redirect(url_for("loadParticipant", projID=projID, tourID=tourID))
         else:
-            return render_template('createParticipant.html',tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
+            return render_template('createParticipant.html',tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
     #Edit Participant
     def editParticipant(projID, tourID, participantID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
             participantName = request.form.get("participantName")
@@ -916,13 +947,15 @@ class Tournaments:
                     # Handle the case when the participant does not exist
                     flash('Participant not found!', 'error')
                         
-            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, playerList=playerList, participantName=participantName, participantEmail=participantEmail, participantID=participantID)
+            return render_template('editParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, playerList=playerList, participantName=participantName, participantEmail=participantEmail, participantID=participantID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     # Delete Participant
     def deleteParticipant(projID, tourID, participantID):       
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID) 
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
             participantName = request.form.get("participantName")
@@ -1001,13 +1034,15 @@ class Tournaments:
                         flash('Participant not found!', 'error')
                         
             
-            return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, playerList=playerList, participantName=participantName, participantEmail=participantEmail, participantID=participantID)
+            return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, playerList=playerList, participantName=participantName, participantEmail=participantEmail, participantID=participantID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
   
     # Delete Player
     def deletePlayer(projID, tourID, participantID, playerID):       
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID) 
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
         
 
         if request.method == "POST":
@@ -1036,58 +1071,65 @@ class Tournaments:
                 flash('Oops, an error has occurred. Details: {}'.format(e), 'error')
                 print(f"Error details: {e}")
 
-            return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, participantID=participantID, playerID=playerID)
+            return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, participantID=participantID, playerID=playerID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
         else:                        
-            return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, participantID=participantID, playerID=playerID)
+            return render_template('deleteParticipant.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, participantID=participantID, playerID=playerID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     #View Moderator List
     def moderator(projID, tourID):
         #for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         try:
             with dbConnect.engine.connect() as conn:            
                 
                 # Query the 'moderator' table
                 queryModeratorList ="""
-                SELECT users.email, GROUP_CONCAT(permissionName) AS permissionName
-                FROM users JOIN moderators JOIN moderatorPermissions JOIN permissions
-                ON moderators.userID = users.userID AND moderators.moderatorID = moderatorPermissions.moderatorID AND moderatorPermissions.permissionID = permissions.permissionID
+                SELECT moderators.moderatorEmail, GROUP_CONCAT(permissionName) AS permissionName, moderators.moderatorID
+                FROM moderators
+                LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID 
+                LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
                 WHERE moderators.tourID = :tourID
                 GROUP BY moderators.moderatorID"""
                 inputModeratorList = {'tourID': tourID}
                 getmoderators = conn.execute(text(queryModeratorList),inputModeratorList)
-                moderators = getmoderators.fetchall()
-                
-                # Render the HTML template with the participant data and total number
-                return render_template('moderator.html',moderators=moderators, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+                moderators = getmoderators.fetchall()  
 
+                # Render the HTML template with the moderator data
+                return render_template('moderator.html',moderators=moderators, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+   
         except Exception as e:
             # Handle exceptions (e.g., database connection error)
             print(f"Error: {e}")
             flash("An error occurred while retrieving participant data.", "error")
             return render_template('moderator.html')  # Create an 'error.html' template for error handling 
+        
 
     #Create Moderators    
     def createModerator(projID, tourID):
         # for navbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
-                request.form.get("SetupTournament"),
                 request.form.get("SetupStructure"),
                 request.form.get("ManageRegistration"),
                 request.form.get("ManageParticipant"),
                 request.form.get("PlaceParticipant"),
+                request.form.get("StartMatch"),
                 request.form.get("ManageFinalStanding"),
-                request.form.get("ReportResult"),
+                request.form.get("ManagePublicPage"),
+                request.form.get("ManageMedia"),
             ]
-            print(selectedPermissions)
+            # print(selectedPermissions)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
@@ -1095,17 +1137,19 @@ class Tournaments:
                     text("SELECT userID FROM users WHERE email = :moderatorEmail"),
                     {'moderatorEmail': moderatorEmail}
                 ).fetchone()
+                
+                # print("Existing User: ", existingUser)
 
                 if existingUser:
                     # User already exists, use their userID
                     userID = existingUser[0]
                 else:
                     # User doesn't exist, redirect to registration page
-                    return redirect(url_for("loadregister"))
+                    return render_template('notfound.html')
 
                 # Insert moderator into the 'moderators' table
-                queryNewModerator = "INSERT INTO moderators (userID, tourID) VALUES (:userID, :tourID)"
-                inputNewModerator = {'userID': userID, 'tourID': tourID}
+                queryNewModerator = "INSERT INTO moderators (userID, tourID, moderatorEmail) VALUES (:userID, :tourID, :moderatorEmail)"
+                inputNewModerator = {'userID': userID, 'tourID': tourID, 'moderatorEmail': moderatorEmail}
                 conn.execute(text(queryNewModerator), inputNewModerator)
                     
                 # Retrieve the newly inserted moderator's ID
@@ -1120,8 +1164,201 @@ class Tournaments:
 
             return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
         else:
-            return render_template('createModerator.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
+            return render_template('createModerator.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
+    #Edit Moderators    
+    def editModerator(projID, tourID, moderatorID):
+        # for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
+        
+        # print(request.form)
+
+        if request.method == "POST":
+            moderatorEmail = request.form.get("moderatorEmail")
+            selectedPermissions = [
+                request.form.get("Setup Tournament"),
+                request.form.get("Setup Structure"),
+                request.form.get("Manage Registration"),
+                request.form.get("Manage Participant"),
+                request.form.get("Place Participant"),
+                request.form.get("Manage Final Standing"),
+                request.form.get("Report Result"),
+            ]
+
+            with dbConnect.engine.connect() as conn:
+                # Check if the user already exists
+                existingUser = conn.execute(
+                    text("SELECT userID FROM users WHERE email = :moderatorEmail"),
+                    {'moderatorEmail': moderatorEmail}
+                ).fetchone()
+                                
+                # User already exists, use their userID
+                userID = existingUser[0]
+                
+                # Check if a moderator with the specified userID and tourID already exists
+                existingModerator = conn.execute(
+                    text("SELECT moderatorID FROM moderators WHERE userID = :userID AND tourID = :tourID"),
+                    {'userID': userID, 'tourID': tourID}
+                ).fetchone()
+                
+                if existingModerator:
+                    # Moderator already exists, use their moderatorID
+                    moderatorID = existingModerator[0]
+                else:
+                    # Moderator does not exist, handle this situation accordingly (e.g., raise an error, log a message)
+                    flash('Moderator not found!', 'error')
+                    return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+
+                # Delete existing permissions for the moderator
+                conn.execute(
+                    text("DELETE FROM moderatorPermissions WHERE moderatorID = :moderatorID"),
+                    {'moderatorID': moderatorID}
+                )
+
+                # Insert selected permissions into the 'moderatorPermissions' table
+                for idx, permission in enumerate(selectedPermissions, start=1):
+                    if permission:  # Check if the permission is selected
+                        query_insert_permission = f"INSERT INTO moderatorPermissions (moderatorID, permissionID) VALUES (:moderatorID, :permissionID)"
+                        input_insert_permission = {'moderatorID': moderatorID, 'permissionID': idx}
+                        conn.execute(text(query_insert_permission), input_insert_permission)
+
+            return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+            
+        else:            
+            
+            with dbConnect.engine.connect() as conn:
+                queryRetrieveModerator = """SELECT users.email, permissions.permissionName
+                FROM tournaments JOIN users ON tournaments.userID = users.userID
+                JOIN moderators ON users.userID = moderators.userID
+                LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
+                LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
+                WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
+                GROUP BY users.email, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
+                inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
+                editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
+                moderators = editModerator.fetchall()
+                
+                print("Moderators: ",moderators)  
+                
+                # Check if the moderators exists
+                if moderators:                    
+                    moderatorEmail = moderators[0][0]  # Assuming moderatorEmail is the first column
+                    permissionList = [row[1] for row in moderators if row[1] is not None] # Assuming permissionList is the second column
+                    print("Moderator Email: ", moderatorEmail)
+                    print("Permission List: ", permissionList)
+                else:
+                    # Handle the case when the participant does not exist
+                    flash('Moderator not found!', 'error')
+
+            return render_template('editModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, permissionList=permissionList, isOwner = isOwner)
+        
+    #Delete Moderators    
+    def deleteModerator(projID, tourID, moderatorID):
+        # for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
+
+        if request.method == "POST":
+            moderatorEmail = request.form.get("moderatorEmail")
+            selectedPermissions = [
+                request.form.get("Setup Structure"),
+                request.form.get("Manage Registration"),
+                request.form.get("Manage Participant"),
+                request.form.get("Place Participant"),
+                request.form.get("Start Match"),
+                request.form.get("Manage Final Standing"),
+                request.form.get("Manage Public Page"),
+                request.form.get("Manage Media"),
+            ]
+
+            with dbConnect.engine.connect() as conn:
+                # Check if the user already exists
+                existingModerator = conn.execute(
+                    text("SELECT moderatorID FROM moderators WHERE moderatorEmail = :moderatorEmail"),
+                    {'moderatorEmail': moderatorEmail}
+                ).fetchone()
+
+                print("Moderator ID", existingModerator)
+                
+                if existingModerator:
+                    # Moderator already exists, use their moderatorID
+                    moderatorID = existingModerator[0]
+                else:
+                    # Moderator does not exist, handle this situation accordingly (e.g., raise an error, log a message)
+                    flash('Moderator not found!', 'error')
+                    return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+
+                # Delete existing permissions for the moderator
+                conn.execute(
+                    text("DELETE FROM moderatorPermissions WHERE moderatorID = :moderatorID"),
+                    {'moderatorID': moderatorID}
+                )
+
+                # Delete the moderator
+                conn.execute(
+                    text("DELETE FROM moderators WHERE moderatorID = :moderatorID"),
+                    {'moderatorID': moderatorID}
+                )
+
+                flash('Moderator deleted successfully!', 'success')
+                return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+
+            return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
+            
+        else:            
+            
+            with dbConnect.engine.connect() as conn:
+                queryRetrieveModerator = """SELECT moderators.moderatorEmail, permissions.permissionName
+                FROM tournaments JOIN moderators ON tournaments.tourID = moderators.tourID
+                LEFT JOIN moderatorPermissions ON moderators.moderatorID = moderatorPermissions.moderatorID
+                LEFT JOIN permissions ON moderatorPermissions.permissionID = permissions.permissionID
+                WHERE moderators.tourID = :tourID AND moderators.moderatorID = :moderatorID
+                GROUP BY moderators.moderatorEmail, permissions.permissionName, moderators.moderatorID, moderators.tourID"""
+                inputRetrieveModerator = {'tourID': tourID, 'moderatorID': moderatorID}
+                editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
+                moderators = editModerator.fetchall()
+                
+                print("Moderators: ",moderators)  
+                
+                # Check if the moderators exists
+                if moderators:                    
+                    moderatorEmail = moderators[0][0]  # Assuming moderatorEmail is the first column
+                    permissionList = [row[1] for row in moderators if row[1] is not None] # Assuming permissionList is the second column
+                    print("Moderator Email: ", moderatorEmail)
+                    print("Permission List: ", permissionList)
+                else:
+                    # Handle the case when the participant does not exist
+                    flash('Moderator not found!', 'error')
+
+            return render_template('deleteModerator.html',navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorEmail=moderatorEmail, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+    
+    #View Moderator List
+    @staticmethod
+    def moderatorsTournament(userID):
+        #for navbar
+        with dbConnect.engine.connect() as conn:            
+            
+            # Query the 'moderator' table
+            queryModeratorList ="""
+            SELECT tournaments.tourName, tournaments.tourID, projects.projID
+            FROM moderators
+            LEFT JOIN tournaments ON moderators.tourID = tournaments.tourID 
+            LEFT JOIN projects ON tournaments.projID = projects.projID 
+            WHERE moderators.userID = :userID"""
+            inputModeratorList = {'userID': session["id"]}
+            getmoderators = conn.execute(text(queryModeratorList),inputModeratorList)
+            moderatorsTournament = getmoderators.fetchall()  
+            
+            # print("moderatorsTournament",moderatorsTournament)
+
+            # Render the HTML template with the moderator data
+            return render_template('moderatorsTournament.html', moderatorsTournament=moderatorsTournament)
+   
     #Placement
     def get_updated_content():
         #for navbar
@@ -1133,34 +1370,35 @@ class Tournaments:
         with open('templates\seeding.html', 'r') as file:   
             updated_content = file.read()
         return updated_content
-    
-def upload():
-    if 'tourImage' not in request.files:
-        flash('No file part', 'error')
+       
+    def upload():
+        if 'tourImage' not in request.files:
+            flash('No file part', 'error')
+            return redirect(url_for('createTour'))
+
+        tourImage = request.files['tourImage']
+
+        if tourImage.filename == '':
+            flash('No selected file', 'error')
+            return redirect(url_for('createTour'))
+        
+        
+        
+
+        #------------ Banner part -------------------#
+
+        if 'bannerImage' not in request.files:
+            flash('No file part', 'error')
+            return redirect(url_for('createTour'))
+        
+        bannerImage = request.files['bannerImage']
+
+        if bannerImage.filename == '':
+            flash('No selected file', 'error')
+            return redirect(url_for('createTour'))
+
+        upload_to_google_drive(tourImage, bannerImage) 
+
+        flash('File uploaded successfully', 'success')
         return redirect(url_for('createTour'))
-
-    tourImage = request.files['tourImage']
-
-    if tourImage.filename == '':
-        flash('No selected file', 'error')
-        return redirect(url_for('createTour'))
     
-    
-    
-
-    #------------ Banner part -------------------#
-
-    if 'bannerImage' not in request.files:
-        flash('No file part', 'error')
-        return redirect(url_for('createTour'))
-    
-    bannerImage = request.files['bannerImage']
-
-    if bannerImage.filename == '':
-        flash('No selected file', 'error')
-        return redirect(url_for('createTour'))
-
-    upload_to_google_drive(tourImage, bannerImage) 
-
-    flash('File uploaded successfully', 'success')
-    return redirect(url_for('createTour'))

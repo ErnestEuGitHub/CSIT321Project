@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="container h-100 navbarcontentpadding">
+        {% for message in get_flashed_messages(category_filter=["error"]) %}
+            {% if message %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% for message in get_flashed_messages(category_filter=["success"]) %}
+            {% if message %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <h2 class="my-3">Delete Moderator</h2>
+        <form action="" method="POST">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Moderator Email</label>
+                <input type="email" class="form-control" name="moderatorEmail" value="{{ moderatorEmail }}" aria-describedby="emailHelp" disabled>
+                <input type="email" class="form-control" name="moderatorEmail" value="{{ moderatorEmail }}" aria-describedby="emailHelp" hidden>
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <label name="permissionName" value="{{ permissionList }}">
+            <label for="attributes" class="form-label">Attributes</label>
+            {% for permission in ["Setup Structure", "Manage Registration", "Manage Participant", "Place Participant", "Start Match", "Manage Final Standing", "Manage Public Page", "Manage Media"] %}
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="{{ permission }}" name="{{ permission }}" {% if permission in permissionList %}checked{% endif %} disabled>
+                    <label class="form-check-label" for="{{ permission }}">{{ permission }}</label>
+                </div>
+            {% endfor %}        
+            <div id="Submit">
+                <button type="submit" class="btn btn-danger my-4">Delete</button>
+                <a href="/moderator/{{projID}}/{{tourID}}" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
