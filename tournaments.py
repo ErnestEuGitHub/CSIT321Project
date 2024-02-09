@@ -370,10 +370,10 @@ class Tournaments:
                             noOfRoundMatch = int(int(numberOfParticipants) / (math.pow(2, currentRoundNo + 1)))
                             print(noOfRoundMatch)
                             for m in range(noOfRoundMatch):
-                                matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence) 
-                                VALUES (:stageID, :bracketSequence)
+                                matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence, matchStatus) 
+                                VALUES (:stageID, :bracketSequence, matchStatus)
                                 """
-                                matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1}
+                                matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1, 'matchStatus': 0}
                                 conn.execute(text(matchCreateQuery), matchCreateInputs)
                                 IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                 matchID = IDfetch.scalar()
@@ -386,6 +386,22 @@ class Tournaments:
                                     """
                                     matchParticipantCreateInputs = {'matchID': matchID}
                                     conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                
+                                for n in range(int(maxGames)):
+                                    gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
+                                    VALUES (:matchID, :gameNo)
+                                    """
+                                    matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
+                                    conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                    IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                    gameID = IDfetch.scalar()
+
+                                    for n in range(2):
+                                        gameParticipantCreateQuery = """INSERT INTO gameParticipant (gameID) 
+                                        VALUES (:gameID)
+                                        """
+                                        gameParticipantCreateInputs = {'gameID': gameID}
+                                        conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
                             
                             if currentRoundNo != 0:
                                 for currentMatchID in currentMatchArray:
@@ -704,7 +720,7 @@ class Tournaments:
 
                     flash('Status Updated!', 'success')
                     if session["profileID"] == 3:
-                        return redirect(url_for('loadTourSettingsAdmin', tourID=tourID))
+                        return redirect(url_for('loadTourAdminSetting', tourID=tourID))
                     else:
                         return redirect(url_for('loadsettings', projID=projID, tourID=tourID))
         
@@ -713,7 +729,7 @@ class Tournaments:
                 print(f"Error details: {e}")
 
                 if session["profileID"] == 3:
-                    return redirect(url_for('loadTourSettingsAdmin', tourID=tourID))
+                    return redirect(url_for('loadTourAdminSetting', tourID=tourID))
                 else:
                     return render_template('suspendTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 

@@ -10,6 +10,8 @@ from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseUpload
 from io import BytesIO
 
+import re, bcrypt
+
 def sysAdminHome():
     navtype = 'sysAdmin'
             
@@ -484,3 +486,264 @@ def TourSettingsAdmin(tourID):
                 contact = ""
 
         return render_template('sysAdminTourSettings.html', navtype=navtype, sportlist=sportsOptions, organiserlist=organiserlist, projectslist=projectslist, tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, owner=owner, project=projID, tourID=tourID)
+
+def venueAdmin():
+    navtype = 'sysAdmin'
+    with dbConnect.engine.connect() as conn:
+        query = "SELECT * FROM venue"
+        result = conn.execute(text(query))
+        rows = result.fetchall()
+        venueslist = [row._asdict() for row in rows]
+
+    return render_template('sysAdminVenue.html', navtype=navtype, venueslist=venueslist)
+
+def createVenueAdmin():
+    navtype = 'sysAdmin'
+    
+    if request.method == "POST":
+        venueName = request.form.get('venueName')
+        venueAddr = request.form.get('venueAddr')
+        venueCapacity = request.form.get('venueCapacity')
+
+        if not venueName:
+            flash('Venue name cannot be empty!', 'error')
+            return render_template('sysAdminCreateVenue.html', venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+        elif not venueAddr:
+            flash('Venue Address cannot be empty!', 'error')
+            return render_template('sysAdminCreateVenue.html', venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+        elif int(venueCapacity) < 0 or not venueCapacity:
+            flash('Please enter a valid capacity!', 'error')
+            return render_template('sysAdminCreateVenue.html', venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+        else:
+            try:
+                with dbConnect.engine.connect() as conn:
+                    query = "INSERT into venue (venueName, venueAddr, venueCapacity) VALUES (:venueName, :venueAddr, :venueCapacity)"
+                    inputs = {'venueName':venueName, 'venueAddr': venueAddr, 'venueCapacity': venueCapacity}
+                    result = conn.execute(text(query), inputs)
+
+                    flash('Venue Updated!', 'success')
+                    return redirect(url_for('loadCreateVenueAdmin'))
+            
+            except Exception as e:
+                flash('Oops, an error has occured trying to create venue.', 'error')
+                return render_template('sysAdminCreateVenue.html', venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+
+    else:
+        return render_template('sysAdminCreateVenue.html', navtype=navtype)
+
+def venueAdminSetting(venueID):
+    navtype = 'sysAdmin'
+
+    if request.method == "POST":
+        venueName = request.form.get('venueName')
+        venueAddr = request.form.get('venueAddr')
+        venueCapacity = request.form.get('venueCapacity')
+        action = request.form.get('action')
+        
+        with dbConnect.engine.connect() as conn:
+            if action == 'delete':
+                try:
+                    query = "DELETE FROM venue WHERE venueID = :venueID"
+                    inputs = {'venueID': venueID}
+                    result = conn.execute(text(query), inputs)
+
+                    query = "SELECT * FROM matches WHERE venueID = :venueID"
+                    inputs = {'venueID': venueID}
+                    result = conn.execute(text(query), inputs)
+                    rows = result.fetchall()
+                    matcheslist = [row._asdict() for row in rows]
+
+                    if matcheslist:
+                        for match in matcheslist:
+                            matchID = match['matchID']
+                            query = "UPDATE matches SET venueID = null WHERE matchID = :matchID"
+                            inputs = {'matchID': matchID}
+                            result = conn.execute(text(query), inputs)
+
+                    flash('Venue Deleted!', 'success')
+                    return redirect(url_for('loadVenueAdmin'))
+                
+                except Exception as e:
+                    flash('Oops, an error has occured trying to delete venue.', 'error')
+                    return redirect(url_for('loadVenueAdmin'))
+                
+            else:
+                if not venueName:
+                    flash('Venue name cannot be empty!', 'error')
+                    return render_template('sysAdminVenueSettings.html', venueID=venueID, venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+                elif not venueAddr:
+                    flash('Venue Address cannot be empty!', 'error')
+                    return render_template('sysAdminVenueSettings.html', venueID=venueID, venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+                elif int(venueCapacity) < 0 or not venueCapacity:
+                    flash('Please enter a valid capacity!', 'error')
+                    return render_template('sysAdminVenueSettings.html', venueID=venueID, venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+                else:
+                    try:
+                        query = "UPDATE venue SET venueName = :venueName, venueAddr = :venueAddr, venueCapacity = :venueCapacity WHERE venueID = :venueID"
+                        inputs = {'venueName':venueName, 'venueAddr': venueAddr, 'venueCapacity': venueCapacity, 'venueID': venueID}
+                        result = conn.execute(text(query), inputs)
+
+                        flash('Venue Updated!', 'success')
+                        return redirect(url_for('loadVenueAdminSetting', venueID=venueID))
+                    
+                    except Exception as e:
+                        flash('Oops, an error has occured trying to update venue.', 'error')
+                        return render_template('sysAdminVenueSettings.html', venueID=venueID, venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * FROM venue WHERE venueID = :venueID"
+            inputs = {'venueID': venueID}
+            result = conn.execute(text(query), inputs)
+            rows = result.fetchall()
+            venueDetails = [row._asdict() for row in rows]
+
+            venueName = venueDetails[0]['venueName']
+            venueAddr = venueDetails[0]['venueAddr']
+            venueCapacity = venueDetails[0]['venueCapacity']
+
+        return render_template('sysAdminVenueSettings.html', navtype=navtype, venueDetails=venueDetails, venueName=venueName, venueAddr=venueAddr, venueCapacity=venueCapacity)
+    
+def UsersAdmin():
+    navtype = 'sysAdmin'
+
+    with dbConnect.engine.connect() as conn:
+        query = "SELECT * FROM users WHERE statusID = 1"
+        result = conn.execute(text(query))
+        rows = result.fetchall()
+        userslist = [row._asdict() for row in rows]
+
+    return render_template('sysAdminUsers.html', navtype=navtype, userslist=userslist)
+
+def createUserAdmin():
+    navtype = 'sysAdmin'
+
+    if request.method == "POST":
+        email = request.form.get('email')
+        fname = request.form.get('fname')
+        lname = request.form.get('lname')
+        # action = request.form.get('action')
+        profile = request.form.get('profile')
+        password = request.form.get('password')
+        cpassword = request.form.get('cpassword')
+
+        emailregex = r"^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$"
+        match = bool(re.match(emailregex, email))
+
+        if not email or not password or not cpassword or not fname or not lname:
+            flash('Please fill in all fields!', 'error')
+            return render_template('sysAdminCreateUser.html', navtype=navtype, email=email, fname=fname, lname=lname, profile=profile)
+        elif not match:
+            flash('That does not look like a valid Email Address. Please try again!', 'error')
+            return render_template('sysAdminCreateUser.html', navtype=navtype, email=email, fname=fname, lname=lname, profile=profile)
+        elif password != cpassword:
+            flash('Password and Confirm Password does not match!', 'error')
+            return render_template('sysAdminCreateUser.html', navtype=navtype, email=email, fname=fname, lname=lname, profile=profile)
+        else:
+            try:
+                hashedpw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+                with dbConnect.engine.connect() as conn:
+                    query = "INSERT INTO users (email, password, profileID, fname, lname) VALUES (:email, :password, :profileID, :fname, :lname)"
+                    inputs = {'email': email, 'password': hashedpw, 'fname': fname, 'lname': lname, 'profileID': profile}
+                    addUser = conn.execute(text(query), inputs)
+
+                flash('Account Created! Try logging in.', 'success')
+                return redirect(url_for('loadCreateUsersAdmin'))
+            
+            except Exception as e:
+                flash('Oops, an error has occured.', 'error')
+                print(f"Error details: {e}")
+                return render_template('sysAdminCreateUser.html', navtype=navtype, email=email, fname=fname, lname=lname, profile=profile)
+    else:
+
+        return render_template('sysAdminCreateUser.html', navtype=navtype)
+
+def userAdminSetting(userID):
+    navtype = 'sysAdmin'
+
+    if request.method == "POST":
+        action = request.form.get('action')
+        if action == 'delete':
+            try:
+                with dbConnect.engine.connect() as conn:
+                    query = "UPDATE users SET statusID = 0 WHERE userID = :userID"
+                    inputs = {'userID': userID}
+                    updateUser = conn.execute(text(query), inputs)
+
+                flash('User Suspended!', 'success')
+                return redirect(url_for('loadUsersAdmin'))
+            except Exception as e:
+                flash('Oops, an error has occured while trying to update user info.', 'error')
+                print(f"Error details: {e}")
+                return redirect(url_for('loadUsersAdmin'))
+            
+        else:
+            email = request.form.get('email')
+            fname = request.form.get('fname')
+            lname = request.form.get('lname')
+            profile = request.form.get('profile')
+            password = request.form.get('password')
+            cpassword = request.form.get('cpassword')
+
+            emailregex = r"^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$"
+            match = bool(re.match(emailregex, email))
+
+            
+            if not email or not fname or not lname:
+                flash('Please fill in email, fname and lname!', 'error')
+                return render_template('sysAdminUserSettings.html', navtype=navtype, email=email, profile=profile, fname=fname, lname=lname)
+            elif not match:
+                flash('That does not look like a valid Email Address. Please try again!', 'error')
+                return render_template('sysAdminUserSettings.html', navtype=navtype, email=email, profile=profile, fname=fname, lname=lname)
+            else:
+                if password or cpassword:
+                    if password != cpassword:
+                        flash('Password and Confirm Password does not match!', 'error')
+                        return render_template('sysAdminUserSettings.html', navtype=navtype, email=email, profile=profile, fname=fname, lname=lname)
+                    else:
+                        try:
+                            hashedpw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+                            with dbConnect.engine.connect() as conn:
+                                query = "UPDATE users SET email = :email, password = :password, profileID = :profileID, fname = :fname, lname = :lname WHERE userID = :userID"
+                                inputs = {'email': email, 'password': hashedpw, 'fname': fname, 'lname': lname, 'profileID': profile, 'userID': userID}
+                                updateUser = conn.execute(text(query), inputs)
+
+                            flash('Account Updated!', 'success')
+                            return redirect(url_for('loadUserAdminSetting', userID=userID))
+                        
+                        except Exception as e:
+                            flash('Oops, an error has occured while trying to update user info.', 'error')
+                            print(f"Error details: {e}")
+                            return redirect(url_for('loadUserAdminSetting', userID=userID))
+                else:
+                    try:
+                        with dbConnect.engine.connect() as conn:
+                            query = "UPDATE users SET email = :email, profileID = :profileID, fname = :fname, lname = :lname WHERE userID = :userID"
+                            inputs = {'email': email, 'fname': fname, 'lname': lname, 'profileID': profile, 'userID': userID}
+                            updateUser = conn.execute(text(query), inputs)
+                        
+                        flash('Account Updated!', 'success')
+                        return redirect(url_for('loadUserAdminSetting', userID=userID))
+                    
+                    except Exception as e:
+                        flash('Oops, an error has occured while trying to update user info.', 'error')
+                        print(f"Error details: {e}")
+                        return redirect(url_for('loadUserAdminSetting', userID=userID))
+
+    else:
+        print('userid is ', userID)
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * FROM users WHERE userID = :userID"
+            inputs = {'userID': userID}
+            result = conn.execute(text(query), inputs)
+            rows = result.fetchall()
+            userDetails = [row._asdict() for row in rows]
+
+            email = userDetails[0]['email']
+            profile = userDetails[0]['profileID']
+            fname = userDetails[0]['fname']
+            lname = userDetails[0]['lname']
+
+        return render_template('sysAdminUserSettings.html', navtype=navtype, email=email, profile=profile, fname=fname, lname=lname)

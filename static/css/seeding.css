@@ -223,6 +223,11 @@
     font-family: var(--bs-font-sans-serif);
   }
 
+  .py-5rem{
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
   /* .one-lh{
     line-height: 1!important;
   } */
