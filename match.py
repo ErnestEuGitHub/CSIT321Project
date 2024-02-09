@@ -138,6 +138,8 @@ class Match:
                 print(game)
                 print("/n")
 
+                gameParticipantArray = []
+
                 for g in game:
                     gameParticipantQuery = 'SELECT * FROM gameParticipant JOIN participants ON gameParticipant.participantID = participants.participantID WHERE gameParticipant.gameID = :gameID'
                     gameParticipantInputs = {'gameID': g["gameID"]}
@@ -151,13 +153,12 @@ class Match:
                 
                     if len(gameParticipant) < 2:
                         gameParticipant += [{'gameParticipantID': None, 'gameParticipantScore': None, 'gameID': g["gameID"], 'gameParticipantOutcome': None, 'partcipantID': None, 'participantName': None, 'participantEmail': None, 'tourID': None}] 
+                    
+                    gameParticipantArray.append(gameParticipant)
 
-                    print("This is gameParticipant")
-                    print(gameParticipant)
+                    print("This is gameParticipantArray")
+                    print(gameParticipantArray)
                     print("/n")
 
         return render_template('stageMatchDetails.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, maxGames=maxGames, match=match, matchParticipant=matchParticipant, game=game, gameParticipant=gameParticipant)
-        
-    def deleteMatch():
-        return
     

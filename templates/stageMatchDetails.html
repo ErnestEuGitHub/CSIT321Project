@@ -48,7 +48,7 @@
                 <form action="/updateMatchDetails/{{projID}}/{{tourID}}/{{stageID}}/{{matchID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off">
                     {% for n in range(maxGames) %}
                     <div>
-                        <label class="fs-5 fw-bold my-3" id="{{ n + 1 }}">Game {{ n + 1 }}</label>
+                        <label class="fs-5 fw-bold my-3">Game {{ n + 1 }}</label>
                         <table class="table">
                             <thead>
                             <tr>
@@ -92,7 +92,7 @@
                     {% endfor %}
                     <div class="mb-3 d-flex justify-content-end">
                         <div>
-                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="submit" class="btn btn-primary" id="updateMatchButton">Update</button>
                             <a href="" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
                         </div>
                     </div>
@@ -176,7 +176,11 @@
         });
 
         gameParticipant1.forEach(function(cell) {
-                cell.id = gameParticipant[0].gameParticipantID
+                cell.setAttribute("gameParticipantID", gameParticipant[0].gameParticipantID);
+        });
+
+        gameParticipant2.forEach(function(cell) {
+                cell.setAttribute("gameParticipantID", gameParticipant[1].gameParticipantID);
         });
     });
 
@@ -207,6 +211,27 @@
                 tab.firstElementChild.classList.remove("active");
             }
         }
+    }
+
+    updateMatchButton = document.getElementById("updateMatchButton");
+    updateMatchButton.addEventListener("click", updateMatchDetails);
+
+    function updateMatchDetails(projID, tourID, stageID, matchID, event) {
+        event.preventDefault();
+
+        fetch('/updateMatchDetails/'+projID+'/'+tourID+'/'+stageID+'/'+matchID, {
+            method: 'POST',
+        })
+        .then(response => {})
+        .then(data => {
+        // Handle the response data as needed
+            console.log("handling response")
+        // Reload the page after the delete operation
+            window.location.reload();
+        })
+        .catch(error => {
+            // Handle errors
+        });
     }
 </script>
 {% endblock %}
