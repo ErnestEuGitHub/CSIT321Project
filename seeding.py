@@ -228,19 +228,28 @@ def seeding(projID, tourID, stageID):
 
                         gamesarray = [row._asdict() for row in games]
 
-                        #check if gameParticipant exists
-                        query = "SELECT gameParticipantID from gameParticipant WHERE gameID = :gameID"
-                        inputs = {'gameID': gamesarray[0]['gameID']}
-                        result = conn.execute(text(query), inputs)
-                        checkgamepart = result.fetchall()
+                        print("This is gamesarray")
+                        print(gamesarray)
+                        print("/n")
 
-                        checkgamepartarray = [row._asdict() for row in checkgamepart]
-                        # print('gamesarray: ', gamesarray)
+                        for game in gamesarray: 
+                            #check if gameParticipant exists
+                            query = "SELECT gameParticipantID from gameParticipant WHERE gameID = :gameID"
+                            inputs = {'gameID': game['gameID']}
+                            result = conn.execute(text(query), inputs)
+                            checkgamepart = result.fetchall()
+                            checkgamepartarray = [row._asdict() for row in checkgamepart]
 
-                        if checkgamepart:
-                            #for each gameID
-                            # print('checkgamepart: ', checkgamepart)
-                            for game in gamesarray:
+                            print("This is checkgamepart")
+                            print(checkgamepart)
+                            print("/n")
+                            
+                            # print('gamesarray: ', gamesarray)
+
+                            if checkgamepart:
+                                #for each gameID
+                                # print('checkgamepart: ', checkgamepart)
+                                
                                 #select match participants where matchID
                                 query = "SELECT participantID from matchParticipant WHERE matchID = :matchID"
                                 inputs = {'matchID': match['matchID']}
@@ -256,10 +265,10 @@ def seeding(projID, tourID, stageID):
                                 query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
                                 inputs = {'gameParticipantID': checkgamepart[1][0], 'participantID': matchParticipants[1][0]}
                                 result = conn.execute(text(query), inputs)
-                        else:    
-                            #for each gameID
-                            # print('checkgamepart else: ', checkgamepart)
-                            for game in gamesarray:
+                            else:    
+                                #for each gameID
+                                # print('checkgamepart else: ', checkgamepart)
+                                
                                 #select match participants where matchID
                                 query = "SELECT participantID from matchParticipant WHERE matchID = :matchID"
                                 inputs = {'matchID': match['matchID']}
@@ -364,19 +373,20 @@ def seeding(projID, tourID, stageID):
 
                         gamesarray = [row._asdict() for row in games]
 
-                        #check if gameParticipant exists
-                        query = "SELECT gameParticipantID from gameParticipant WHERE gameID = :gameID"
-                        inputs = {'gameID': gamesarray[0]['gameID']}
-                        result = conn.execute(text(query), inputs)
-                        checkgamepart = result.fetchall()
+                        for game in gamesarray:
+                            #check if gameParticipant exists
+                            query = "SELECT gameParticipantID from gameParticipant WHERE gameID = :gameID"
+                            inputs = {'gameID': game['gameID']}
+                            result = conn.execute(text(query), inputs)
+                            checkgamepart = result.fetchall()
 
-                        checkgamepartarray = [row._asdict() for row in checkgamepart]
-                        # print('gamesarray: ', gamesarray)
+                            checkgamepartarray = [row._asdict() for row in checkgamepart]
+                            # print('gamesarray: ', gamesarray)
 
-                        if checkgamepart:
-                            #for each gameID
-                            # print('checkgamepart: ', checkgamepart)
-                            for game in gamesarray:
+                            if checkgamepart:
+                                #for each gameID
+                                # print('checkgamepart: ', checkgamepart)
+                                
                                 #select match participants where matchID
                                 query = "SELECT participantID from matchParticipant WHERE matchID = :matchID"
                                 inputs = {'matchID': match['matchID']}
@@ -392,10 +402,10 @@ def seeding(projID, tourID, stageID):
                                 query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
                                 inputs = {'gameParticipantID': checkgamepart[1][0], 'participantID': matchParticipants[1][0]}
                                 result = conn.execute(text(query), inputs)
-                        else:    
-                            #for each gameID
-                            # print('checkgamepart else: ', checkgamepart)
-                            for game in gamesarray:
+                            else:    
+                                #for each gameID
+                                # print('checkgamepart else: ', checkgamepart)
+                                
                                 #select match participants where matchID
                                 query = "SELECT participantID from matchParticipant WHERE matchID = :matchID"
                                 inputs = {'matchID': match['matchID']}

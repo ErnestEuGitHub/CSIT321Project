@@ -143,6 +143,8 @@ class Match:
             print(game)
             print("/n")
 
+            gameParticipantArray = []
+
             for g in game:
                 gameParticipantQuery = 'SELECT * FROM gameParticipant JOIN participants ON gameParticipant.participantID = participants.participantID WHERE gameParticipant.gameID = :gameID'
                 gameParticipantInputs = {'gameID': g["gameID"]}
@@ -156,6 +158,8 @@ class Match:
             
                 if len(gameParticipant) < 2:
                     gameParticipant += [{'gameParticipantID': None, 'gameParticipantScore': None, 'gameID': g["gameID"], 'gameParticipantOutcome': None, 'partcipantID': None}] 
+                
+                gameParticipantArray.append(gameParticipant)
 
                 print("This is gameParticipant")
                 print(gameParticipant)
