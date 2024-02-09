@@ -215,6 +215,66 @@ def seeding(projID, tourID, stageID):
 
                                 count = count + 1
 
+                    #Game Participant Code
+                    matchesarray = [row._asdict() for row in fetchmatches]
+                    # print('matchesarray: ', matchesarray)
+                    
+                    #for each match select gameIDs
+                    for match in matchesarray:
+                        query = "SELECT gameID from games WHERE matchID = :matchID"
+                        inputs = {'matchID': match['matchID']}
+                        result = conn.execute(text(query), inputs)
+                        games = result.fetchall()
+
+                        gamesarray = [row._asdict() for row in games]
+
+                        #check if gameParticipant exists
+                        query = "SELECT gameParticipantID from gameParticipant WHERE gameID = :gameID"
+                        inputs = {'gameID': gamesarray[0]['gameID']}
+                        result = conn.execute(text(query), inputs)
+                        checkgamepart = result.fetchall()
+
+                        checkgamepartarray = [row._asdict() for row in checkgamepart]
+                        # print('gamesarray: ', gamesarray)
+
+                        if checkgamepart:
+                            #for each gameID
+                            # print('checkgamepart: ', checkgamepart)
+                            for game in gamesarray:
+                                #select match participants where matchID
+                                query = "SELECT participantID from matchParticipant WHERE matchID = :matchID"
+                                inputs = {'matchID': match['matchID']}
+                                result = conn.execute(text(query), inputs)
+                                matchParticipants = result.fetchall()
+                                # print('matchParticipants: ', matchParticipants)
+
+                                #update 2 game participants
+                                query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
+                                inputs = {'gameParticipantID': checkgamepart[0][0], 'participantID': matchParticipants[0][0]}
+                                result = conn.execute(text(query), inputs)
+
+                                query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
+                                inputs = {'gameParticipantID': checkgamepart[1][0], 'participantID': matchParticipants[1][0]}
+                                result = conn.execute(text(query), inputs)
+                        else:    
+                            #for each gameID
+                            # print('checkgamepart else: ', checkgamepart)
+                            for game in gamesarray:
+                                #select match participants where matchID
+                                query = "SELECT participantID from matchParticipant WHERE matchID = :matchID"
+                                inputs = {'matchID': match['matchID']}
+                                result = conn.execute(text(query), inputs)
+                                matchParticipants = result.fetchall()
+
+                                #create 2 game participants
+                                query = "INSERT INTO gameParticipant (gameID, participantID) VALUES (:gameID, :participantID)"
+                                inputs = {'gameID': game['gameID'], 'participantID': matchParticipants[0][0]}
+                                result = conn.execute(text(query), inputs)
+
+                                query = "INSERT INTO gameParticipant (gameID, participantID) VALUES (:gameID, :participantID)"
+                                inputs = {'gameID': game['gameID'], 'participantID': matchParticipants[1][0]}
+                                result = conn.execute(text(query), inputs)
+
                 flash('Seeding Updated!', 'success')
                 print('Flash msg activated')
                 return jsonify({'message': 'Seeding Updated!', 'category': 'success', 'redirect': url_for("loadSeeding", projID=projID, tourID=tourID, stageID=stageID)})
@@ -291,6 +351,66 @@ def seeding(projID, tourID, stageID):
                                 inputs = {'participantID': participantID, 'matchID':matchID}
                                 result = conn.execute(text(query), inputs)
 
+                    #Game Participant Code
+                    matchesarray = [row._asdict() for row in fetchmatches]
+                    # print('matchesarray: ', matchesarray)
+                    
+                    #for each match select gameIDs
+                    for match in matchesarray:
+                        query = "SELECT gameID from games WHERE matchID = :matchID"
+                        inputs = {'matchID': match['matchID']}
+                        result = conn.execute(text(query), inputs)
+                        games = result.fetchall()
+
+                        gamesarray = [row._asdict() for row in games]
+
+                        #check if gameParticipant exists
+                        query = "SELECT gameParticipantID from gameParticipant WHERE gameID = :gameID"
+                        inputs = {'gameID': gamesarray[0]['gameID']}
+                        result = conn.execute(text(query), inputs)
+                        checkgamepart = result.fetchall()
+
+                        checkgamepartarray = [row._asdict() for row in checkgamepart]
+                        # print('gamesarray: ', gamesarray)
+
+                        if checkgamepart:
+                            #for each gameID
+                            # print('checkgamepart: ', checkgamepart)
+                            for game in gamesarray:
+                                #select match participants where matchID
+                                query = "SELECT participantID from matchParticipant WHERE matchID = :matchID"
+                                inputs = {'matchID': match['matchID']}
+                                result = conn.execute(text(query), inputs)
+                                matchParticipants = result.fetchall()
+                                # print('matchParticipants: ', matchParticipants)
+
+                                #update 2 game participants
+                                query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
+                                inputs = {'gameParticipantID': checkgamepart[0][0], 'participantID': matchParticipants[0][0]}
+                                result = conn.execute(text(query), inputs)
+
+                                query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
+                                inputs = {'gameParticipantID': checkgamepart[1][0], 'participantID': matchParticipants[1][0]}
+                                result = conn.execute(text(query), inputs)
+                        else:    
+                            #for each gameID
+                            # print('checkgamepart else: ', checkgamepart)
+                            for game in gamesarray:
+                                #select match participants where matchID
+                                query = "SELECT participantID from matchParticipant WHERE matchID = :matchID"
+                                inputs = {'matchID': match['matchID']}
+                                result = conn.execute(text(query), inputs)
+                                matchParticipants = result.fetchall()
+
+                                #create 2 game participants
+                                query = "INSERT INTO gameParticipant (gameID, participantID) VALUES (:gameID, :participantID)"
+                                inputs = {'gameID': game['gameID'], 'participantID': matchParticipants[0][0]}
+                                result = conn.execute(text(query), inputs)
+
+                                query = "INSERT INTO gameParticipant (gameID, participantID) VALUES (:gameID, :participantID)"
+                                inputs = {'gameID': game['gameID'], 'participantID': matchParticipants[1][0]}
+                                result = conn.execute(text(query), inputs)
+                                
                 flash('Seeding Updated!', 'success')
                 print('Flash msg activated')
                 return jsonify({'message': 'Seeding Updated!', 'category': 'success', 'redirect': url_for("loadSeeding", projID=projID, tourID=tourID, stageID=stageID)})

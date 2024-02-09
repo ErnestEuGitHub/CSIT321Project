@@ -641,6 +641,35 @@ def loadVenueAdminSetting(venueID):
         page = venueAdminSetting(venueID)
         return page
 
+@app.route('/usersAdmin')
+def loadUsersAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = UsersAdmin()
+        return page
+    
+@app.route('/createUserAdmin', methods=["POST", "GET"])
+def loadCreateUsersAdmin():
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = createUserAdmin()
+        return page
+
+@app.route('/userAdminSetting/<userID>', methods=["POST", "GET"])
+def loadUserAdminSetting(userID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    elif session["profileID"] != 3:
+        return render_template('notfound.html')
+    else:
+        page = userAdminSetting(userID)
+        return page
 
 #end of sysAdmin routing
     
