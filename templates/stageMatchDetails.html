@@ -93,9 +93,47 @@
                         </div>
                     </div>
                 </form>
+            </div>
             <div class="mb-3" id="infoTabContent" hidden>
                 <label>Schedule</label>
                 <input type="datetime">
+                <form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data" id="venueform">
+                    <div class="row mb-3 justify-content-sm-center">
+                        <input type="hidden" name="action" value="venue">
+                        <div class="mb-4 col-xl-6">
+                            <label class="mb-2 text-muted" for="startDate">Match Start<span class="text-danger">*</span></label>
+                            <input id="startDate" type="datetime-local" class="form-control" name="startDate" value="{{ matchstart }}" required autofocus>
+                        </div>
+
+                        <div class="mb-4 col-xl-6">
+                            <label class="mb-2 text-muted" for="endDate">Expected Match End<span class="text-danger">*</span></label>
+                            <input id="endDate" type="datetime-local" class="form-control" name="endDate" value="{{ matchend }}" required autofocus>
+                        </div>
+
+                        <div class="mb-4 col-xl-6">
+                            <label class="mb-2 text-muted" for="venue">Available Venues</label>
+                            <select id="venue" class="form-select" name="venue" required autofocus>
+                                <option value="-1">Select start and end date time first </option>
+                                {% if currentvenueID is not none %} <option value="{{currentvenueID}}" selected>{{currentvenueName}}</option> {% else %} <option value="-2">Select a venue for match</option> {% endif %}
+                                {% for v in venuelistFiltered %}
+                                    <option value="{{v['venueID']}}" {% if currentvenueID == v['venueID'] %} selected {% endif %}>{{v['venueName']}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-4 col-xl-6">
+                            <label class="mb-2 text-muted" for="format">Filter Facilities</label>
+                            <input type="text" id="venueSearch" class="form-control" placeholder="Type to filter venue">
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-primary ms-auto" onclick="bookVenue()">
+                            Book Venue
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -134,5 +172,78 @@
                 }
             }
         }
+
+        //Venue Javascript
+        const startDateInput = document.getElementById('startDate');
+		const endDateInput = document.getElementById('endDate');
+		const venueSelect = document.getElementById('venue');
+
+		startDateInput.addEventListener('change', updateVenueOptions);
+		endDateInput.addEventListener('change', updateVenueOptions);
+
+		function updateVenueOptions() {
+			if (startDateInput.value && endDateInput.value) {
+				// Both start and end dates are selected
+				venueSelect.disabled = false;
+				var optionToRemove = document.querySelector('#venue option[value="-1"]');
+				if (optionToRemove) {
+					optionToRemove.remove(); // Remove the option from the dropdown
+				}
+
+				$.ajax({
+					type: "POST",
+					url: "/get_venues",  // Update the route to handle format retrieval
+					data: { 
+						matchstart: startDateInput.value, 
+						matchend: endDateInput.value
+					},
+					success: function (response) {
+						console.log(response);
+						// Clear existing options
+						$('#venue').empty();
+						// Add new options based on received data
+						response.forEach(function(venue) {
+							$('#venue').append(`<option value="${venue.venueID}">${venue.venueName}</option>`);
+						});
+					},
+					error: function (error) {
+						console.error("Error:", error);
+					}
+				});
+				// document.querySelector('#venue option[value="-1"]').style.display = 'none';
+			} else {
+				// Either start or end date is not selected
+				venueSelect.disabled = true;
+				// document.querySelector('#venue option[value="-1"]').style.display = 'block';
+			}
+    	}
+
+		// Call the function initially to check the start date on page load
+		updateVenueOptions();
+
+		//Filter for venue
+		document.addEventListener('DOMContentLoaded', function() {
+			const venueSelect = document.getElementById('venue');
+			const venueOptions = venueSelect.getElementsByTagName('option');
+			const venueSearchInput = document.getElementById('venueSearch');
+
+			venueSearchInput.addEventListener('input', function() {
+				const searchValue = this.value.trim().toLowerCase();
+
+				for (let i = 0; i < venueOptions.length; i++) {
+					const option = venueOptions[i];
+					const text = option.textContent.trim().toLowerCase();
+					const isVisible = text.includes(searchValue);
+
+					option.style.display = isVisible ? 'block' : 'none';
+				}
+
+			});
+		});
+
+        function bookVenue() {
+            document.getElementById("venueform").submit();
+        }
+
 </script>
 {% endblock %}
