@@ -1402,3 +1402,10 @@ class Tournaments:
         flash('File uploaded successfully', 'success')
         return redirect(url_for('createTour'))
     
+
+    # def createtemplate():
+    #     with dbConnect.engine.connect() as conn:
+    #         query = "SELECT * FROM tournaments WHERE projID = :projID AND userID = :userID AND (statusID IS NULL OR statusID != 5);"
+    #         inputs = {'projID': projID, 'userID': session["id"]}
+    #         getTour = conn.execute(text(query), inputs)
+    #         rows = getTour.fetchall()

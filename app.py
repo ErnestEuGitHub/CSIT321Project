@@ -137,8 +137,9 @@ def getformatspy():
 def getvenuepy():
     matchstart = request.form.get('matchstart')
     matchend = request.form.get('matchend')
+    matchID = request.form.get('matchID')
 
-    loadgetvenue = updateVenue(matchstart, matchend)
+    loadgetvenue = updateVenue(matchstart, matchend, matchID)
     return loadgetvenue
 
 @app.route('/tournamentOverviewPage/<projID>/<tourID>')
