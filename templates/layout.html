@@ -26,21 +26,14 @@
             <div class="firstname">Welcome {{ session["fname"] }}</div>
             <div class="dropdown">
                 {% if session['profileMediaID'] is none or session['profileMediaID'] == "" %}
-
                 <a href=""><i class="fa fa-fw fa-user"></i>
-                
                 {% else %}
-
                 <div class="profileMedia">
-                    <img src="https://drive.google.com/uc?export=view&id={{ session['profileMediaID'] }}" class="profileImage">
-                    
+                    <img src="https://drive.google.com/thumbnail?id={{ session['profileMediaID'] }}" class="profileImage">
                 </div>
-
                 {% endif %}
-
-
                     <div class="dropdown-content">
-                        <a href="">Account Settings</a>
+                        <a href="/accountSetting/{{session['id']}}">Account Settings</a>
                         <a href="/logout">Logout</a>
                     </div>
             </div>

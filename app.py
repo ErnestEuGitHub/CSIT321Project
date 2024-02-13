@@ -4,6 +4,7 @@ from stages import *
 from user import *
 from tournaments import *
 from projects import *
+from accountSetting import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -405,6 +406,14 @@ def loadEditModerator(projID, tourID, moderatorID):
             
             else:
                 return render_template('notfound.html')
+            
+@app.route('/accountSetting/<userID>', methods=["POST", "GET"])
+def loadAccountSetting(userID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    page = AccountSetting.accountSetting(userID)
+    return page
+
 
 @app.errorhandler(404)
 def loadnotfound(error):
