@@ -35,7 +35,7 @@
 
         <div class="card mb-3 p-3 d-flex text-center align-items-between">
             <div>
-                <ul class="nav nav-pills mb-3">
+                <ul class="nav nav-pills">
                     <li class="nav-item" id="resultTab">
                         <a class="nav-link active" aria-disabled="false">Result</a>
                     </li>
@@ -44,11 +44,10 @@
                     </li>
                 </ul>
             </div>
-            <div class="mb-3" id="resultTabContent">
-                <!-- <form action="/updateMatchDetails/{{projID}}/{{tourID}}/{{stageID}}/{{matchID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off"> -->
+            <div id="resultTabContent">
                     {% for n in range(maxGames) %}
                     <div>
-                        <label class="fs-5 fw-bold my-3">Game {{ n + 1 }}</label>
+                        <label class="fs-5 fw-bold mb-3">Game {{ n + 1 }}</label>
                         <table class="table">
                             <thead>
                             <tr>
@@ -61,7 +60,7 @@
                             <tr class="gameParticipant1">
                                 <td class="gameParticipantName align-middle">Manchester United FC</td>
                                 <td class="align-middle">
-                                    <input class="form-control gameParticipantScore" type="number" name="gameParticipantScore">
+                                    <input class="form-control gameParticipantScore" type="number">
                                 </td>
                                 <td class="align-middle">
                                     <select class="form-select gameParticipantResult" aria-label="Default select example">
@@ -75,7 +74,7 @@
                             <tr class="gameParticipant2">
                                 <td class="gameParticipantName align-middle">Liverpool FC</td>
                                 <td class="align-middle">
-                                    <input class="form-control gameParticipantScore" type="number" name="gameParticipantScore">
+                                    <input class="form-control gameParticipantScore" type="number">
                                 </td>
                                 <td class="align-middle">
                                     <select class="form-select gameParticipantResult" aria-label="Default select example">
@@ -90,13 +89,12 @@
                         </table>
                     </div>
                     {% endfor %}
-                    <div class="mb-3 d-flex justify-content-end">
+                    <div class="d-flex justify-content-end">
                         <div>
                             <button type="submit" class="btn btn-primary" id="updateMatchButton">Update</button>
-                            <a href="" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+                            <a href='/loadmatch/{{projID}}/{{tourID}}/{{stageID}}' class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
                         </div>
                     </div>
-                <!-- </form> -->
             </div>
             <div class="mb-3" id="infoTabContent" hidden>
                 <form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data" id="venueform">
@@ -130,10 +128,13 @@
 
                     </div>
 
-                    <div class="d-flex align-items-center">
-                        <button type="button" class="btn btn-primary ms-auto" onclick="bookVenue()">
-                            Book Venue
-                        </button>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <div>
+                            <button type="button" class="btn btn-primary ms-auto" onclick="bookVenue()">
+                                Book Venue
+                            </button>
+                            <a href='/loadmatch/{{projID}}/{{tourID}}/{{stageID}}' class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -160,6 +161,10 @@
         var gameParticipantName2 = document.querySelectorAll('.gameParticipant2 .gameParticipantName');
         var gameParticipant1 = document.querySelectorAll('.gameParticipant1');
         var gameParticipant2 = document.querySelectorAll('.gameParticipant2');
+        var gameParticipant1Score = document.querySelectorAll('.gameParticipant1 .gameParticipantScore');
+        var gameParticipant2Score = document.querySelectorAll('.gameParticipant2 .gameParticipantScore');
+        var gameParticipant1Result = document.querySelectorAll('.gameParticipant1 .gameParticipantResult');
+        var gameParticipant2Result = document.querySelectorAll('.gameParticipant2 .gameParticipantResult');
 
         console.log(gameParticipantName1)
         console.log(gameParticipantName2)
@@ -218,6 +223,36 @@
         gameParticipant2.forEach(function(cell, index) {
                 cell.setAttribute("gameParticipantID", gameParticipantArray[index][1].gameParticipantID);
                 cell.setAttribute("participantID", gameParticipantArray[index][1].participantID);
+        });
+
+        gameParticipant1Score.forEach(function(cell, index) {
+                cell.value = gameParticipantArray[index][0].gameParticipantScore;
+        });
+
+        gameParticipant2Score.forEach(function(cell, index) {
+                cell.value = gameParticipantArray[index][1].gameParticipantScore;
+        });
+
+        gameParticipant1Result.forEach(function(cell, index) {
+            optionElements = cell.querySelectorAll('option');
+            optionElements.forEach(function(option) {
+                if (option.value == gameParticipantArray[index][0].gameParticipantOutcome) {
+                    option.setAttribute('selected', 'selected');
+                } else {
+                    option.removeAttribute('selected');
+                }
+            });
+        });
+
+        gameParticipant2Result.forEach(function(cell, index) {
+            optionElements = cell.querySelectorAll('option');
+            optionElements.forEach(function(option) {
+                if (option.value == gameParticipantArray[index][1].gameParticipantOutcome) {
+                    option.setAttribute('selected', 'selected');
+                } else {
+                    option.removeAttribute('selected');
+                }
+            });
         });
     });
 

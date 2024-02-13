@@ -39,8 +39,8 @@ class Match:
                 result = conn.execute(text(matchQuery), matchInputs)
                 matchRows = result.fetchall()
                 match = [row._asdict() for row in matchRows]
-                # print("The match list is below:")
-                # print(match)
+                print("The match list is below:")
+                print(match)
 
                 for m in match:
                     # print(m["matchID"])
@@ -164,6 +164,10 @@ class Match:
                 # print(gameParticipant)
                 # print("/n")
 
+            print("This is gameParticipantArray")
+            print(gameParticipantArray)
+            print("/n")
+
             #Venue Details
             query = "SELECT * from matches LEFT JOIN venue ON matches.venueID = venue.venueID WHERE matchID = :matchID"
             inputs = {'matchID': matchID}
@@ -257,7 +261,28 @@ class Match:
                         matchStatusInputs = {'matchID': matchID}
                         conn.execute(text(updateMatchStatusQuery), matchStatusInputs)
 
-                        #Update Parent Match participants
+                        matchQuery = "SELECT * FROM matches WHERE matchID = :matchID"
+                        matchInputs = {'matchID': matchID}
+                        result = conn.execute(text(matchQuery), matchInputs)
+                        matchRows = result.fetchall()
+                        match = [row._asdict() for row in matchRows]
+                        
+                        if match[0]["parentMatchID"] is not None:
+                            setParentMatchQuery = 'UPDATE matchParticipant SET participantID = :participantID WHERE matchID = :matchID AND participantID IS NULL ORDER BY matchParticipantID LIMIT 1'
+                            setParentMatchInputs = {'participantID': mp["participantID"], 'matchID': match[0]["parentMatchID"]}
+                            conn.execute(text(setParentMatchQuery), setParentMatchInputs)
+
+                            gameQuery = "SELECT * FROM games WHERE matchID = :matchID"
+                            gameInputs = {'matchID': match[0]["parentMatchID"]}
+                            result = conn.execute(text(gameQuery), gameInputs)
+                            gameRows = result.fetchall()
+                            game = [row._asdict() for row in gameRows]
+
+                            for g in game:
+                                setParentGameQuery = 'UPDATE gameParticipant SET participantID = :participantID WHERE gameID = :gameID AND participantID IS NULL ORDER BY gameParticipantID LIMIT 1'
+                                setParentGameInputs = {'participantID': mp["participantID"], 'gameID': g["gameID"]}
+                                conn.execute(text(setParentGameQuery), setParentGameInputs)
+
                         #Update Game Status
                                 
             return "updateGamesDetails success!"

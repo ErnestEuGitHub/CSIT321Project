@@ -520,7 +520,6 @@ def loadmatch(projID, tourID, stageID):
             if rows:
                 page = Match.loadMatch(projID, tourID, stageID)
                 return page
-                Match.loadMatch(projID, tourID, stageID)
             else:
                 return render_template('notfound.html')
             
@@ -538,7 +537,6 @@ def loadmatchdetails(projID, tourID, stageID, matchID):
             if rows:
                 page = Match.loadMatchDetails(projID, tourID, stageID, matchID)
                 return page
-            
             else:
                 return render_template('notfound.html')
             
