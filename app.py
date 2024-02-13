@@ -168,6 +168,14 @@ def placement(projID, tourID):
 
     return render_template('placement.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
 
+@app.route('/publicMedia/<projID>/<tourID>')
+def loadPublicMedia(projID, tourID):
+    if "id" not in session:
+        return redirect(url_for('loadlogin'))
+    
+    page = Tournaments.publicMedia(projID, tourID)
+    return page
+
 @app.route('/media/<projID>/<tourID>' ,methods=["POST", "GET"])
 def loadMedia(projID, tourID):
     if "id" not in session:

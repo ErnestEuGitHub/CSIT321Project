@@ -1020,6 +1020,21 @@ class Tournaments:
         else:
             return render_template('createModerator.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
     
+    def publicMedia(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT newsID, newsTitle FROM news WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            result = conn.execute(text(query), inputs)
+            rows = result.fetchall()
+
+            newsBlock = [row._asdict() for row in rows]
+    
+        return render_template('publicMedia.html', newsBlock=newsBlock, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+    
     def media(projID, tourID):
         #for navbar
         navtype = 'dashboard'
@@ -1095,7 +1110,7 @@ class Tournaments:
                 inputUpdate = {'newsTitle': newsTitle, 'newsDesc': newsDesc, 'newsID': newsID}
                 conn.execute(text(queryUpdate), inputUpdate)
 
-                if mediaImage is None:
+                if all(file.filename != '' for file in mediaImage):
             
                     for file in mediaImage:
                         content_type, encoding = mimetypes.guess_type(file.filename)
