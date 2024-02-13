@@ -4,12 +4,16 @@ from stages import *
 from user import *
 from tournaments import *
 from projects import *
+
 from match import *
 
 from placement import *
 from seeding import *
 from venue import *
 from sysadmin import *
+
+from accountSetting import *
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -460,6 +464,7 @@ def loadEditModerator(projID, tourID, moderatorID):
             else:
                 return render_template('notfound.html')
             
+
 @app.route('/deleteModerator/<projID>/<tourID>/<moderatorID>', methods=["POST", "GET"])
 def loadDeleteModerator(projID, tourID, moderatorID):
     if "id" not in session:
@@ -515,6 +520,15 @@ def loadmatch(projID, tourID, stageID):
             inputs = {'userID': session["id"], 'tourID': tourID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
+
+@app.route('/accountSetting/<userID>', methods=["POST", "GET"])
+def loadAccountSetting(userID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    page = AccountSetting.accountSetting(userID)
+    return page
+
+
 
             if rows:
                 page = Match.loadMatch(projID, tourID, stageID)
