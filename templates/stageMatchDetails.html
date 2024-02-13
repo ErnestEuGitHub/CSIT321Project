@@ -1,0 +1,349 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100 navbarcontentpadding">
+    <div>
+        <header class="d-flex">
+            <label class="fs-4 fw-bold my-4">Match Details</label>
+        </header>
+
+        <div class="card mb-3 p-3 d-flex text-center align-items-center">
+            <div class="card-body">
+                <div class="row flex-row">
+                    <span class="fs-6">Match {{matchID}}</span>
+                </div>
+                <div class="row flex-row">
+                    <div class="col align-self-center">
+                        <span class="matchParticipantName1 fs-1">Manchester United FC</span>         
+                    </div>
+                    <div class="col align-self-center">
+                        <div>
+                            <span class="matchParticipantScore1 fs-1">3</span>
+                            <span class="fs-1">-</span>
+                            <span class="matchParticipantScore2 fs-1">3</span>
+                        </div>
+                    </div>
+                    <div class="col align-self-center">
+                        <span class="matchParticipantName2 fs-1">Liverpool FC</span>         
+                    </div>
+                </div>
+                <div class="row flex-row">
+                    <span class="matchStatus fs-6">Match Completed</span>
+                </div>
+            </div>   
+        </div>
+
+        <div class="card mb-3 p-3 d-flex text-center align-items-between">
+            <div>
+                <ul class="nav nav-pills mb-3">
+                    <li class="nav-item" id="resultTab">
+                        <a class="nav-link active" aria-disabled="false">Result</a>
+                    </li>
+                    <li class="nav-item" id="infoTab">
+                        <a class="nav-link" aria-disabled="false">Info</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mb-3" id="resultTabContent">
+                <form action="/updateMatchDetails/{{projID}}/{{tourID}}/{{stageID}}/{{matchID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+                    {% for n in range(maxGames) %}
+                    <div>
+                        <label class="fs-5 fw-bold my-3">Game {{ n + 1 }}</label>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Score</th>
+                                <th scope="col">Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="gameParticipant1">
+                                <td class="gameParticipantName align-middle">Manchester United FC</td>
+                                <td class="gameParticipantScore align-middle">
+                                    <input class="form-control" type="number" name="gameParticipantScore">
+                                </td>
+                                <td class="gameParticipantResult align-middle">
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Open this select menu</option>
+                                        <option value="1">Win</option>
+                                        <option value="2">Draw</option>
+                                        <option value="3">Lose</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="gameParticipant2">
+                                <td class="gameParticipantName align-middle">Liverpool FC</td>
+                                <td class="gameParticipantScore align-middle">
+                                    <input class="form-control" type="number" name="gameParticipantScore">
+                                </td>
+                                <td class="gameParticipantResult align-middle">
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Open this select menu</option>
+                                        <option value="1">Win</option>
+                                        <option value="2">Draw</option>
+                                        <option value="3">Lose</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                    <div class="mb-3 d-flex justify-content-end">
+                        <div>
+                            <button type="submit" class="btn btn-primary" id="updateMatchButton">Update</button>
+                            <a href="" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="mb-3" id="infoTabContent" hidden>
+                <label>Schedule</label>
+                <input type="datetime">
+                <form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data" id="venueform">
+                    <div class="row mb-3 justify-content-sm-center">
+                        <input type="hidden" name="action" value="venue">
+                        <div class="mb-4 col-xl-6">
+                            <label class="mb-2 text-muted" for="startDate">Match Start<span class="text-danger">*</span></label>
+                            <input id="startDate" type="datetime-local" class="form-control" name="startDate" value="{{ matchstart }}" required autofocus>
+                        </div>
+
+                        <div class="mb-4 col-xl-6">
+                            <label class="mb-2 text-muted" for="endDate">Expected Match End<span class="text-danger">*</span></label>
+                            <input id="endDate" type="datetime-local" class="form-control" name="endDate" value="{{ matchend }}" required autofocus>
+                        </div>
+
+                        <div class="mb-4 col-xl-6">
+                            <label class="mb-2 text-muted" for="venue">Available Venues</label>
+                            <select id="venue" class="form-select" name="venue" required autofocus>
+                                <option value="-1">Select start and end date time first </option>
+                                {% if currentvenueID is not none %} <option value="{{currentvenueID}}" selected>{{currentvenueName}}</option> {% else %} <option value="-2">Select a venue for match</option> {% endif %}
+                                {% for v in venuelistFiltered %}
+                                    <option value="{{v['venueID']}}" {% if currentvenueID == v['venueID'] %} selected {% endif %}>{{v['venueName']}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-4 col-xl-6">
+                            <label class="mb-2 text-muted" for="format">Filter Facilities</label>
+                            <input type="text" id="venueSearch" class="form-control" placeholder="Type to filter venue">
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-primary ms-auto" onclick="bookVenue()">
+                            Book Venue
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var match = {{match|tojson|safe}};
+    var matchParticipant = {{matchParticipant|tojson|safe}};
+    var game = {{game|tojson|safe}};
+    var gameParticipant = {{gameParticipant|tojson|safe}};
+    
+    console.log(gameParticipant);
+    console.log(gameParticipant[0].participantName);
+    console.log(gameParticipant[1].participantName);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var matchParticipantName1 = document.querySelector('.matchParticipantName1');
+        var matchParticipantName2 = document.querySelector('.matchParticipantName2');
+        var matchParticipantScore1 = document.querySelector('.matchParticipantScore1');
+        var matchParticipantScore2 = document.querySelector('.matchParticipantScore2');
+        var matchStatus = document.querySelector('.matchStatus');
+        var gameParticipantName1 = document.querySelectorAll('.gameParticipant1 .gameParticipantName');
+        var gameParticipantName2 = document.querySelectorAll('.gameParticipant2 .gameParticipantName');
+        var gameParticipant1 = document.querySelectorAll('.gameParticipant1');
+        var gameParticipant2 = document.querySelectorAll('.gameParticipant2');
+
+        console.log(gameParticipantName1)
+        console.log(gameParticipantName2)
+        
+        if (matchParticipant[0].participantName){
+            matchParticipantName1.textContent = matchParticipant[0].participantName
+        } else {
+            matchParticipantName1.textContent = "TBD"
+        }
+
+        if (matchParticipant[1].participantName){
+            matchParticipantName2.textContent = matchParticipant[1].participantName
+        } else {
+            matchParticipantName2.textContent = "TBD"
+        }
+
+        if (matchParticipant[0].matchScore){
+            matchParticipantScore1.textContent = matchParticipant[0].matchScore
+        } else {
+            matchParticipantScore1.textContent = 0
+        }
+
+        if (matchParticipant[1].matchScore){
+            matchParticipantScore2.textContent = matchParticipant[1].matchScore
+        } else {
+            matchParticipantScore2.textContent = 0
+        }
+
+        if (match[0].matchStatus == 0){
+            matchStatus.textContent = "Match Pending"
+        } else if (match.matchStatus == 1) {
+            matchStatus.textContent = "Match Completed"
+        }
+
+        gameParticipantName1.forEach(function(cell) {
+            if (!gameParticipant[0].participantName){
+                cell.textContent = "TBD";
+            } else {
+                cell.textContent = gameParticipant[0].participantName
+            }
+        });
+
+        gameParticipantName2.forEach(function(cell) {
+            if (!gameParticipant[1].participantName){
+                cell.textContent = "TBD";
+            } else {
+                cell.textContent = gameParticipant[1].participantName
+            }
+        });
+
+        gameParticipant1.forEach(function(cell) {
+                cell.setAttribute("gameParticipantID", gameParticipant[0].gameParticipantID);
+        });
+
+        gameParticipant2.forEach(function(cell) {
+                cell.setAttribute("gameParticipantID", gameParticipant[1].gameParticipantID);
+        });
+    });
+
+    let resultTab = document.getElementById("resultTab");
+    let infoTab = document.getElementById("infoTab");
+    let resultTabContent = document.getElementById("resultTabContent");
+    let infoTabContent = document.getElementById("infoTabContent");
+    
+    resultTab.addEventListener("click", function(){tabFn(resultTab);});
+    infoTab.addEventListener("click", function(){tabFn(infoTab);});
+
+    function tabFn(tabClicked) {
+        console.log("clicked on!" + tabClicked.id);
+        const tabs = [resultTab, infoTab];
+        const tabsContent = [resultTabContent, infoTabContent];
+
+        for (tab of tabs){
+            if (tabClicked === tab){
+                tab.firstElementChild.classList.add("active");
+                for(tabC of tabsContent){
+                    if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)){
+                        tabC.hidden = false;
+                    } else {
+                        tabC.hidden = true;
+                    }
+                }
+            } else {
+                tab.firstElementChild.classList.remove("active");
+            }
+        }
+    }
+
+    updateMatchButton = document.getElementById("updateMatchButton");
+    updateMatchButton.addEventListener("click", updateMatchDetails);
+
+    function updateMatchDetails(projID, tourID, stageID, matchID, event) {
+        event.preventDefault();
+
+        fetch('/updateMatchDetails/'+projID+'/'+tourID+'/'+stageID+'/'+matchID, {
+            method: 'POST',
+        })
+        .then(response => {})
+        .then(data => {
+        // Handle the response data as needed
+            console.log("handling response")
+        // Reload the page after the delete operation
+            window.location.reload();
+        })
+        .catch(error => {
+            // Handle errors
+        });
+    }
+
+        //Venue Javascript
+        const startDateInput = document.getElementById('startDate');
+		const endDateInput = document.getElementById('endDate');
+		const venueSelect = document.getElementById('venue');
+
+		startDateInput.addEventListener('change', updateVenueOptions);
+		endDateInput.addEventListener('change', updateVenueOptions);
+
+		function updateVenueOptions() {
+			if (startDateInput.value && endDateInput.value) {
+				// Both start and end dates are selected
+				venueSelect.disabled = false;
+				var optionToRemove = document.querySelector('#venue option[value="-1"]');
+				if (optionToRemove) {
+					optionToRemove.remove(); // Remove the option from the dropdown
+				}
+
+				$.ajax({
+					type: "POST",
+					url: "/get_venues",  // Update the route to handle format retrieval
+					data: { 
+						matchstart: startDateInput.value, 
+						matchend: endDateInput.value
+					},
+					success: function (response) {
+						console.log(response);
+						// Clear existing options
+						$('#venue').empty();
+						// Add new options based on received data
+						response.forEach(function(venue) {
+							$('#venue').append(`<option value="${venue.venueID}">${venue.venueName}</option>`);
+						});
+					},
+					error: function (error) {
+						console.error("Error:", error);
+					}
+				});
+				// document.querySelector('#venue option[value="-1"]').style.display = 'none';
+			} else {
+				// Either start or end date is not selected
+				venueSelect.disabled = true;
+				// document.querySelector('#venue option[value="-1"]').style.display = 'block';
+			}
+    	}
+
+		// Call the function initially to check the start date on page load
+		updateVenueOptions();
+
+		//Filter for venue
+		document.addEventListener('DOMContentLoaded', function() {
+			const venueSelect = document.getElementById('venue');
+			const venueOptions = venueSelect.getElementsByTagName('option');
+			const venueSearchInput = document.getElementById('venueSearch');
+
+			venueSearchInput.addEventListener('input', function() {
+				const searchValue = this.value.trim().toLowerCase();
+
+				for (let i = 0; i < venueOptions.length; i++) {
+					const option = venueOptions[i];
+					const text = option.textContent.trim().toLowerCase();
+					const isVisible = text.includes(searchValue);
+
+					option.style.display = isVisible ? 'block' : 'none';
+				}
+
+			});
+		});
+
+        function bookVenue() {
+            document.getElementById("venueform").submit();
+        }
+
+
+</script>
+{% endblock %}

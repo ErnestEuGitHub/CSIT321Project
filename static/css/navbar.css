@@ -205,6 +205,22 @@
     box-sizing: border-box;
 }
 
+/* CSS for SysAdmin */
+.search-input {
+    padding: 10px;
+    margin-right: 10px;
+    width: 400px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.list-group-item{
+    display: flex;
+}
+
+/* End of CSS for SysAdmin */
+
 .search-container button {
     padding: 10px 20px;
     border: none;
@@ -213,6 +229,7 @@
     border-radius: 5px;
     cursor: pointer;
 }
+
 
 .search-container button:hover {
     background: #45a049;
@@ -291,4 +308,29 @@
 /* padding for more than 5rem */
 .ps-10{
     padding-left: 10rem!important;
+}
+
+.py-10{
+    padding-top: 10rem!important;
+    padding-bottom: 10rem!important;
+}
+
+.py-roundtwo{
+    padding-top: 4.87rem!important;
+    padding-bottom: 4.87rem!important;
+}
+
+.py-roundthree{
+    padding-top: 13.9rem!important;
+    padding-bottom: 13.9rem!important;
+}
+
+.py-roundfour{
+    padding-top: 32.2rem!important;
+    padding-bottom: 32.2rem!important;
+}
+
+.py-roundfive{
+    padding-top: 45rem!important;
+    padding-bottom: 45rem!important;
 }
