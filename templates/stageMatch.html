@@ -314,19 +314,10 @@
                 } else {
                     participantName2[k].textContent = "TBD";
                 }
-                
-                //Partcipant Score
-                if (stageMatchArray[i][k].matchParticipants[0].matchScore){
-                    participantScore1[k].textContent = stageMatchArray[i][k].matchParticipants[0].matchScore;
-                } else {
-                    participantScore1[k].textContent = "TBD";
-                }
 
-                if (stageMatchArray[i][k].matchParticipants[1].matchScore){
-                    participantScore2[k].textContent = stageMatchArray[i][k].matchParticipants[1].matchScore;
-                } else {
-                    participantScore2[k].textContent = "TBD";
-                }
+                //Partcipant Score
+                participantScore1[k].textContent = stageMatchArray[i][k].matchParticipants[0].matchScore;
+                participantScore2[k].textContent = stageMatchArray[i][k].matchParticipants[1].matchScore;
                 
             }
         }

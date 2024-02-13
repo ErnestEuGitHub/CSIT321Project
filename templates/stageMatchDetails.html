@@ -45,7 +45,7 @@
                 </ul>
             </div>
             <div class="mb-3" id="resultTabContent">
-                <form action="/updateMatchDetails/{{projID}}/{{tourID}}/{{stageID}}/{{matchID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+                <!-- <form action="/updateMatchDetails/{{projID}}/{{tourID}}/{{stageID}}/{{matchID}}" method="POST" class="needs-validation" novalidate="" autocomplete="off"> -->
                     {% for n in range(maxGames) %}
                     <div>
                         <label class="fs-5 fw-bold my-3">Game {{ n + 1 }}</label>
@@ -60,11 +60,11 @@
                             <tbody>
                             <tr class="gameParticipant1">
                                 <td class="gameParticipantName align-middle">Manchester United FC</td>
-                                <td class="gameParticipantScore align-middle">
-                                    <input class="form-control" type="number" name="gameParticipantScore">
+                                <td class="align-middle">
+                                    <input class="form-control gameParticipantScore" type="number" name="gameParticipantScore">
                                 </td>
-                                <td class="gameParticipantResult align-middle">
-                                    <select class="form-select" aria-label="Default select example">
+                                <td class="align-middle">
+                                    <select class="form-select gameParticipantResult" aria-label="Default select example">
                                         <option selected>Open this select menu</option>
                                         <option value="1">Win</option>
                                         <option value="2">Draw</option>
@@ -74,11 +74,11 @@
                             </tr>
                             <tr class="gameParticipant2">
                                 <td class="gameParticipantName align-middle">Liverpool FC</td>
-                                <td class="gameParticipantScore align-middle">
-                                    <input class="form-control" type="number" name="gameParticipantScore">
+                                <td class="align-middle">
+                                    <input class="form-control gameParticipantScore" type="number" name="gameParticipantScore">
                                 </td>
-                                <td class="gameParticipantResult align-middle">
-                                    <select class="form-select" aria-label="Default select example">
+                                <td class="align-middle">
+                                    <select class="form-select gameParticipantResult" aria-label="Default select example">
                                         <option selected>Open this select menu</option>
                                         <option value="1">Win</option>
                                         <option value="2">Draw</option>
@@ -96,7 +96,7 @@
                             <a href="" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
                         </div>
                     </div>
-                </form>
+                <!-- </form> -->
             </div>
             <div class="mb-3" id="infoTabContent" hidden>
                 <form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data" id="venueform">
@@ -141,15 +141,14 @@
     </div>
 </div>
 <script>
-
+    var projID = {{projID|tojson|safe}};
+    var tourID = {{tourID|tojson|safe}};
+    var stageID = {{stageID|tojson|safe}};
+    var matchID = {{matchID|tojson|safe}};
     var match = {{match|tojson|safe}};
     var matchParticipant = {{matchParticipant|tojson|safe}};
     var game = {{game|tojson|safe}};
-    var gameParticipant = {{gameParticipant|tojson|safe}};
-    
-    console.log(gameParticipant);
-    console.log(gameParticipant[0].participantName);
-    console.log(gameParticipant[1].participantName);
+    var gameParticipantArray = {{gameParticipantArray|tojson|safe}};
 
     document.addEventListener("DOMContentLoaded", function () {
         var matchParticipantName1 = document.querySelector('.matchParticipantName1');
@@ -195,28 +194,30 @@
             matchStatus.textContent = "Match Completed"
         }
 
-        gameParticipantName1.forEach(function(cell) {
-            if (!gameParticipant[0].participantName){
+        gameParticipantName1.forEach(function(cell, index) {
+            if (!gameParticipantArray[index][0].participantName){
                 cell.textContent = "TBD";
             } else {
-                cell.textContent = gameParticipant[0].participantName
+                cell.textContent = gameParticipantArray[index][0].participantName
             }
         });
 
-        gameParticipantName2.forEach(function(cell) {
-            if (!gameParticipant[1].participantName){
+        gameParticipantName2.forEach(function(cell, index) {
+            if (!gameParticipantArray[index][1].participantName){
                 cell.textContent = "TBD";
             } else {
-                cell.textContent = gameParticipant[1].participantName
+                cell.textContent = gameParticipantArray[index][1].participantName
             }
         });
 
-        gameParticipant1.forEach(function(cell) {
-                cell.setAttribute("gameParticipantID", gameParticipant[0].gameParticipantID);
+        gameParticipant1.forEach(function(cell, index) {
+                cell.setAttribute("gameParticipantID", gameParticipantArray[index][0].gameParticipantID);
+                cell.setAttribute("participantID", gameParticipantArray[index][0].participantID);
         });
 
-        gameParticipant2.forEach(function(cell) {
-                cell.setAttribute("gameParticipantID", gameParticipant[1].gameParticipantID);
+        gameParticipant2.forEach(function(cell, index) {
+                cell.setAttribute("gameParticipantID", gameParticipantArray[index][1].gameParticipantID);
+                cell.setAttribute("participantID", gameParticipantArray[index][1].participantID);
         });
     });
 
@@ -250,23 +251,64 @@
     }
 
     updateMatchButton = document.getElementById("updateMatchButton");
-    updateMatchButton.addEventListener("click", updateMatchDetails);
+    updateMatchButton.addEventListener("click", function() {
+        updateMatchDetails(projID, tourID, stageID, matchID);
+    });
 
-    function updateMatchDetails(projID, tourID, stageID, matchID, event) {
-        event.preventDefault();
+    function updateMatchDetails(projID, tourID, stageID, matchID) {
 
-        fetch('/updateMatchDetails/'+projID+'/'+tourID+'/'+stageID+'/'+matchID, {
-            method: 'POST',
-        })
-        .then(response => {})
-        .then(data => {
-        // Handle the response data as needed
-            console.log("handling response")
-        // Reload the page after the delete operation
-            window.location.reload();
-        })
-        .catch(error => {
-            // Handle errors
+        const games1 = document.querySelectorAll('.gameParticipant1');
+        const games2 = document.querySelectorAll('.gameParticipant2');
+        const gamesData = [];
+
+        function iteration(gamesNo){
+            gamesNo.forEach((game, index) => {
+                const gameParticipantID = game.getAttribute('gameparticipantid');
+                const participantID = game.getAttribute('participantid');
+                const gameParticipantScoreInput = game.querySelector('.gameParticipantScore');
+                const gameParticipantResultSelect = game.querySelector('.gameParticipantResult');
+                // Accessing the values
+                const scoreValue = gameParticipantScoreInput.value;
+                const resultValue = gameParticipantResultSelect.value;
+                if (resultValue != "Open this select menu" || scoreValue != "" ){
+                    const gameData = {
+                    gameParticipantID: gameParticipantID,
+                    participantID: participantID,
+                    score: scoreValue,
+                    result: resultValue
+                    };
+                    gamesData.push(gameData);
+                }
+            });
+        }
+
+        iteration(games1);
+        iteration(games2);
+        console.log(gamesData);
+        console.log(projID);
+        console.log(tourID);
+        console.log(stageID);
+        
+        $.ajax({
+            type: 'POST',
+            url: '/updategamesdetails',
+            contentType: 'application/json',
+            data: JSON.stringify({ 
+                gamesData: gamesData,
+                projID: projID,
+                tourID: tourID,
+                stageID: stageID,
+                matchID: matchID
+            }),
+            success: function (response) {
+                    // Backend operation completed successfully
+                    console.log("Backend operation completed successfully");
+                    // Redirect to the desired page
+                    window.location.href = '/loadmatch/'+projID+'/'+tourID+'/'+stageID;
+            },
+            error: function (error) {
+                console.error("Error:", error);
+            }
         });
     }
 
