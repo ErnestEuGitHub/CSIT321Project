@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100">
+    <div class="row justify-content-center h-100">
+        <div class="col-xxl-10 col-xl-8 col-lg-8 col-md-9 col-sm-10">
+            <div class="card-body p-5">
+                <div class="card-body pt-5 d-flex justify-content-between align-items-center">
+                    <h1 class="fs-4 card-title fw-bold mb-4">Account</h1>
+                    <button type="button" class="btn btn-danger ms-auto mb-4" onclick="confirmDelete()">
+                        Delete Account
+                    </button>
+                </div>
+                
+                <div class="row mb-3 justify-content-sm-center">
+                    <div class="mb-4">
+                        <label class="mb-2 text-muted" for="fName">First Name<span class="text-danger">*</span></label>
+                        <input id="fName" type="text" class="form-control" name="fName" value="{{ fName }}" required autofocus>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="mb-2 text-muted" for="fName">Last Name<span class="text-danger">*</span></label>
+                        <input id="lName" type="text" class="form-control" name="lName" value="{{ lName }}" required autofocus>
+                    </div>
+
+                    <p>Current Profile picture</p>
+                    {% if session['profileMediaID'] is none or session['profileMediaID'] == "" %}
+                    <a href=""><i class="fa fa-fw fa-user"></i>
+                    {% else %}
+                    <div class="profileMedia">
+                        <img src="https://drive.google.com/thumbnail?id={{ session['profileMediaID'] }}" class="profileImage">
+                    </div>
+    
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <label class="mb-2 text-muted" for="tourImage">Profile picture</label>
+                        <input id="tourImage" type="file" class="form-control" name="profileImage" accept="image/*" required>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <button type="submit" class="btn btn-primary ms-auto">
+                            Update Profile Setting
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // High change gonna need JS here
+</script>
+{% endblock %}
