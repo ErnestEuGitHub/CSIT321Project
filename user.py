@@ -34,14 +34,15 @@ class User:
                     session["profileID"] = rows[0][3]
                     session["fname"] = rows[0][4]
                     session["profileMediaID"] = rows[0][6]
+
                     print(session["profileMediaID"])
+                    print(session["profileID"])
 
                     #profileID 1 = Org, 2 = Participant, 3 = System Admin
                     if session["profileID"] == 1:
                         return redirect(url_for('loadhome'))
                     elif session["profileID"] == 3:
-                        flash('Login Successful As A Sys Admin!', 'success')
-                        return render_template('login.html', invalidEmail = False, invalidPassword = False)
+                        return redirect(url_for('loadhome'))
                     else:
                         flash('Login Successful! But seems like theres no page for your role...', 'success')
                         return render_template('login.html', invalidEmail = False, invalidPassword = False)

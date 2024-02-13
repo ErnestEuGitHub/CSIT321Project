@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100 navbarcontentpadding">
+    {% for message in get_flashed_messages(category_filter=["error"]) %}
+        {% if message %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    {% for message in get_flashed_messages(category_filter=["success"]) %}
+        {% if message %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <h2 for="search-input" class="text-center pt-3">Venues</h2>
+    <div class="d-flex justify-content-center py-3">
+        <input type="text" placeholder="Search..." class="search-input">
+        <button onclick="location.href='/createVenueAdmin'" class="btn btn-success">Create Venue</button>
+    </div>
+    <div class="row justify-content-center">
+        <ul class="list-group">
+            {% for v in venueslist %}
+                <li class="list-group-item align-items-center">
+                    <div class="col-4 projName">{{v['venueName']}}</div>
+                    <div class="col-4 text-center">
+                        Capacity: {{v['venueCapacity']}}
+                    </div>
+                    <div class="col-4 editbutton d-flex justify-content-end">
+                        <a href="/venueAdminSetting/{{v['venueID']}}" class="btn btn-primary my-4" role="button">Edit</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.search-input');
+        const projNameElements = document.querySelectorAll('.projName');
+        const listgroupElements = document.querySelectorAll('.list-group-item');
+
+        searchInput.addEventListener('input', function() {
+
+            const searchText = this.value.toLowerCase();
+
+            listgroupElements.forEach(listgroupElement => {
+                const projName = listgroupElement.querySelector('.projName').textContent.toLowerCase();
+                
+                if (projName.includes(searchText)) {
+                    listgroupElement.style.display = 'flex'; // Show the item if the search text is found
+                } else {
+                    listgroupElement.style.display = 'none'; // Hide the item if the search text is not found
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
