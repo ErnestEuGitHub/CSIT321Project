@@ -10,7 +10,7 @@
         <div class="card mb-3 p-3 d-flex text-center align-items-center">
             <div class="card-body">
                 <div class="row flex-row">
-                    <span class="fs-6">Match {{matchID}}</span>
+                    <span class="fs-6">Match Score</span>
                 </div>
                 <div class="row flex-row">
                     <div class="col align-self-center">
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="row flex-row">
-                    <span class="matchStatus fs-6">Match Completed</span>
+                    <span class="matchStatus fs-6">Match ???</span>
                 </div>
             </div>   
         </div>
@@ -195,8 +195,8 @@
 
         if (match[0].matchStatus == 0){
             matchStatus.textContent = "Match Pending"
-        } else if (match.matchStatus == 1) {
-            matchStatus.textContent = "Match Completed"
+        } else if (match[0].matchStatus == 1) {
+            matchStatus.textContent = "Match Ended"
         }
 
         gameParticipantName1.forEach(function(cell, index) {
