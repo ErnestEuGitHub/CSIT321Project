@@ -76,10 +76,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td class="align-middle">Manchester United FC</td>
-                                <td class="align-middle"><input class="form-control" type="number"></td>
-                                <td class="align-middle">
+                            <tr class="gameParticipant1">
+                                <td class="gameParticipantName align-middle">Manchester United FC</td>
+                                <td class="gameParticipantScore align-middle">
+                                    <input class="form-control" type="number" name="gameParticipantScore">
+                                </td>
+                                <td class="gameParticipantResult align-middle">
                                     <select class="form-select" aria-label="Default select example">
                                         <option selected>Open this select menu</option>
                                         <option value="1">Win</option>
@@ -88,10 +90,12 @@
                                     </select>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="align-middle">Liverpool FC</td>
-                                <td class="align-middle"><input class="form-control" type="number"></td>
-                                <td class="align-middle">
+                            <tr class="gameParticipant2">
+                                <td class="gameParticipantName align-middle">Liverpool FC</td>
+                                <td class="gameParticipantScore align-middle">
+                                    <input class="form-control" type="number" name="gameParticipantScore">
+                                </td>
+                                <td class="gameParticipantResult align-middle">
                                     <select class="form-select" aria-label="Default select example">
                                         <option selected>Open this select menu</option>
                                         <option value="1">Win</option>
@@ -106,7 +110,7 @@
                     {% endfor %}
                     <div class="mb-3 d-flex justify-content-end">
                         <div>
-                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="submit" class="btn btn-primary" id="updateMatchButton">Update</button>
                             <a href="" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
                         </div>
                     </div>
@@ -157,39 +161,134 @@
     </div>
 </div>
 <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var matchups = document.querySelectorAll('.matchup.final');
 
+    var match = {{match|tojson|safe}};
+    var matchParticipant = {{matchParticipant|tojson|safe}};
+    var game = {{game|tojson|safe}};
+    var gameParticipant = {{gameParticipant|tojson|safe}};
+    
+    console.log(gameParticipant);
+    console.log(gameParticipant[0].participantName);
+    console.log(gameParticipant[1].participantName);
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var matchParticipantName1 = document.querySelector('.matchParticipantName1');
+        var matchParticipantName2 = document.querySelector('.matchParticipantName2');
+        var matchParticipantScore1 = document.querySelector('.matchParticipantScore1');
+        var matchParticipantScore2 = document.querySelector('.matchParticipantScore2');
+        var matchStatus = document.querySelector('.matchStatus');
+        var gameParticipantName1 = document.querySelectorAll('.gameParticipant1 .gameParticipantName');
+        var gameParticipantName2 = document.querySelectorAll('.gameParticipant2 .gameParticipantName');
+        var gameParticipant1 = document.querySelectorAll('.gameParticipant1');
+        var gameParticipant2 = document.querySelectorAll('.gameParticipant2');
+
+        console.log(gameParticipantName1)
+        console.log(gameParticipantName2)
+        
+        if (matchParticipant[0].participantName){
+            matchParticipantName1.textContent = matchParticipant[0].participantName
+        } else {
+            matchParticipantName1.textContent = "TBD"
+        }
+
+        if (matchParticipant[1].participantName){
+            matchParticipantName2.textContent = matchParticipant[1].participantName
+        } else {
+            matchParticipantName2.textContent = "TBD"
+        }
+
+        if (matchParticipant[0].matchScore){
+            matchParticipantScore1.textContent = matchParticipant[0].matchScore
+        } else {
+            matchParticipantScore1.textContent = 0
+        }
+
+        if (matchParticipant[1].matchScore){
+            matchParticipantScore2.textContent = matchParticipant[1].matchScore
+        } else {
+            matchParticipantScore2.textContent = 0
+        }
+
+        if (match[0].matchStatus == 0){
+            matchStatus.textContent = "Match Pending"
+        } else if (match.matchStatus == 1) {
+            matchStatus.textContent = "Match Completed"
+        }
+
+        gameParticipantName1.forEach(function(cell) {
+            if (!gameParticipant[0].participantName){
+                cell.textContent = "TBD";
+            } else {
+                cell.textContent = gameParticipant[0].participantName
+            }
         });
 
-        let resultTab = document.getElementById("resultTab");
-        let infoTab = document.getElementById("infoTab");
-        let resultTabContent = document.getElementById("resultTabContent");
-        let infoTabContent = document.getElementById("infoTabContent");
-        
-        resultTab.addEventListener("click", function(){tabFn(resultTab);});
-        infoTab.addEventListener("click", function(){tabFn(infoTab);});
+        gameParticipantName2.forEach(function(cell) {
+            if (!gameParticipant[1].participantName){
+                cell.textContent = "TBD";
+            } else {
+                cell.textContent = gameParticipant[1].participantName
+            }
+        });
 
-        function tabFn(tabClicked) {
-            console.log("clicked on!" + tabClicked.id);
-            const tabs = [resultTab, infoTab];
-            const tabsContent = [resultTabContent, infoTabContent];
+        gameParticipant1.forEach(function(cell) {
+                cell.setAttribute("gameParticipantID", gameParticipant[0].gameParticipantID);
+        });
 
-            for (tab of tabs){
-                if (tabClicked === tab){
-                    tab.firstElementChild.classList.add("active");
-                    for(tabC of tabsContent){
-                        if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)){
-                            tabC.hidden = false;
-                        } else {
-                            tabC.hidden = true;
-                        }
+        gameParticipant2.forEach(function(cell) {
+                cell.setAttribute("gameParticipantID", gameParticipant[1].gameParticipantID);
+        });
+    });
+
+    let resultTab = document.getElementById("resultTab");
+    let infoTab = document.getElementById("infoTab");
+    let resultTabContent = document.getElementById("resultTabContent");
+    let infoTabContent = document.getElementById("infoTabContent");
+    
+    resultTab.addEventListener("click", function(){tabFn(resultTab);});
+    infoTab.addEventListener("click", function(){tabFn(infoTab);});
+
+    function tabFn(tabClicked) {
+        console.log("clicked on!" + tabClicked.id);
+        const tabs = [resultTab, infoTab];
+        const tabsContent = [resultTabContent, infoTabContent];
+
+        for (tab of tabs){
+            if (tabClicked === tab){
+                tab.firstElementChild.classList.add("active");
+                for(tabC of tabsContent){
+                    if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)){
+                        tabC.hidden = false;
+                    } else {
+                        tabC.hidden = true;
                     }
-                } else {
-                    tab.firstElementChild.classList.remove("active");
                 }
+            } else {
+                tab.firstElementChild.classList.remove("active");
             }
         }
+    }
+
+    updateMatchButton = document.getElementById("updateMatchButton");
+    updateMatchButton.addEventListener("click", updateMatchDetails);
+
+    function updateMatchDetails(projID, tourID, stageID, matchID, event) {
+        event.preventDefault();
+
+        fetch('/updateMatchDetails/'+projID+'/'+tourID+'/'+stageID+'/'+matchID, {
+            method: 'POST',
+        })
+        .then(response => {})
+        .then(data => {
+        // Handle the response data as needed
+            console.log("handling response")
+        // Reload the page after the delete operation
+            window.location.reload();
+        })
+        .catch(error => {
+            // Handle errors
+        });
+    }
 
         //Venue Javascript
         const startDateInput = document.getElementById('startDate');
@@ -271,6 +370,7 @@
         function bookVenue() {
             document.getElementById("venueform").submit();
         }
+
 
 </script>
 {% endblock %}
