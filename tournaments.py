@@ -136,6 +136,12 @@ class Tournaments:
 
                 sportsOptions = [row._asdict() for row in rows]
 
+                query = "SELECT * from template WHERE userID = :userID"
+                inputs = {'userID': session["id"]}
+                getTemplates = conn.execute(text(query), inputs)
+                fetchTemplates = getTemplates.fetchall()
+                templatelist = [row._asdict() for row in fetchTemplates]
+
             if not sport:
                 flash('Please select a sport!', 'error')
                 return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=sport, sportlist=sportsOptions, projID=projID, templatelist=templatelist)
@@ -169,6 +175,7 @@ class Tournaments:
             
             else:
                 if int(templateID) > 0:
+                    print('Template Detected!')
                     sport = int(sport)
                     tourSize = int(tourSize)
                     startDate = datetime.strptime(startDate, "%Y-%m-%d")
@@ -180,7 +187,7 @@ class Tournaments:
                             createNewGeneralInfo = conn.execute(text(query))
                             getID = createNewGeneralInfo.lastrowid
 
-                            query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
+                            query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, 0, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
                             file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
                             inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
                             createTournament = conn.execute(text(query), inputs)
@@ -221,6 +228,7 @@ class Tournaments:
                             IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                             stageID = IDfetch.scalar()
                             
+                            print('Stage Created with Template!')
                             if stageFormatID == 1 or stageFormatID == 2:
                                 query = "SELECT * from elimFormat WHERE stageID = :stageID"
                                 inputs = {'stageID': templateStageID}
@@ -307,7 +315,7 @@ class Tournaments:
                                     currentMatchArray = []
                                     print("The currentMatchArray is: ")
                                     print(currentMatchArray)
-
+                                    print('Match/Rounds Created with Template!')
 
                             elif stageFormatID == 3 or stageFormatID == 4:
                                 query = "SELECT * from roundFormat WHERE stageID = :stageID"
