@@ -200,162 +200,164 @@ class Tournaments:
                             fetchTemplateTourID = getTemplateTourID.fetchone()
                             templateTourID = fetchTemplateTourID[0]
 
-                            #Copy Structure Codes
+                            #Copy Create Stage Codes
                             
                             query = "SELECT * from stages WHERE tourID = :tourID"
                             inputs = {'tourID': templateTourID}
                             getStageFields = conn.execute(text(query), inputs)
                             fetchStageFields = getStageFields.fetchall()
-                            stageFields = [row._asdict() for row in fetchStageFields]
+                            stagelists = [row._asdict() for row in fetchStageFields]
 
-                            templateStageID = stageFields[0]["stageID"]
-                            stageName = stageFields[0]["stageName"]
-                            stageSequence = stageFields[0]["stageSequence"]
-                            stageFormatID = stageFields[0]["stageFormatID"]
-                            stageStatusID = 1
-                            numberOfParticipants = stageFields[0]["numberOfParticipants"]
-                            numberOfGroups = stageFields[0]["numberOfGroups"]
-                            matchFormatID = stageFields[0]["matchFormatID"]
-                            maxGames = stageFields[0]["maxGames"]
+                            for stage in stagelists:
 
-                            stageQuery = """
-                                INSERT INTO stages (stageName, stageSequence, stageFormatID, stageStatusID, tourID, numberOfParticipants, numberOfGroups, matchFormatID, maxGames)
-                                VALUES (:stageName, :stageSequence, :stageFormatID, :stageStatusID, :tourID, :numberOfParticipants, :numberOfGroups, :matchFormatID, :maxGames)
-                                """
-                            stageInputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': newtourID, 
-                                   'numberOfParticipants': numberOfParticipants, 'numberOfGroups': numberOfGroups, 'matchFormatID': matchFormatID, 'maxGames': maxGames}
-                            conn.execute(text(stageQuery), stageInputs)
-                            IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
-                            stageID = IDfetch.scalar()
-                            
-                            print('Stage Created with Template!')
-                            if stageFormatID == 1 or stageFormatID == 2:
-                                query = "SELECT * from elimFormat WHERE stageID = :stageID"
-                                inputs = {'stageID': templateStageID}
-                                getElimFormat = conn.execute(text(query), inputs)
-                                fetchElimFormat = getElimFormat.fetchall()
-                                elimFormat = [row._asdict() for row in fetchElimFormat]
+                                templateStageID = stage["stageID"]
+                                stageName = stage["stageName"]
+                                stageSequence = stage["stageSequence"]
+                                stageFormatID = stage["stageFormatID"]
+                                stageStatusID = 1
+                                numberOfParticipants = stage["numberOfParticipants"]
+                                numberOfGroups = stage["numberOfGroups"]
+                                matchFormatID = stage["matchFormatID"]
+                                maxGames = stage["maxGames"]
 
-                                # elimID = elimFormat[0]["elimID"]
-                                tfMatch = elimFormat[0]["tfMatch"]
+                                stageQuery = """
+                                    INSERT INTO stages (stageName, stageSequence, stageFormatID, stageStatusID, tourID, numberOfParticipants, numberOfGroups, matchFormatID, maxGames)
+                                    VALUES (:stageName, :stageSequence, :stageFormatID, :stageStatusID, :tourID, :numberOfParticipants, :numberOfGroups, :matchFormatID, :maxGames)
+                                    """
+                                stageInputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': newtourID, 
+                                    'numberOfParticipants': numberOfParticipants, 'numberOfGroups': numberOfGroups, 'matchFormatID': matchFormatID, 'maxGames': maxGames}
+                                conn.execute(text(stageQuery), stageInputs)
+                                IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                stageID = IDfetch.scalar()
+                                
+                                print('Stage Created with Template!')
+                                if stageFormatID == 1 or stageFormatID == 2:
+                                    query = "SELECT * from elimFormat WHERE stageID = :stageID"
+                                    inputs = {'stageID': templateStageID}
+                                    getElimFormat = conn.execute(text(query), inputs)
+                                    fetchElimFormat = getElimFormat.fetchall()
+                                    elimFormat = [row._asdict() for row in fetchElimFormat]
 
-                                elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
-                                elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
-                                conn.execute(text(elimFormatQuery), elimInputs)
+                                    # elimID = elimFormat[0]["elimID"]
+                                    tfMatch = elimFormat[0]["tfMatch"]
 
-                                 # noOfMatch = numberOfParticipants - 1
-                                noOfRound = int(math.log2(int(numberOfParticipants)))
-                                currentMatchArray = []
-                                childMatchArray = []
-                                print(noOfRound)
+                                    elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
+                                    elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
+                                    conn.execute(text(elimFormatQuery), elimInputs)
 
-                                for currentRoundNo in range(int(noOfRound)):
-                                    print(currentRoundNo)
-                                    noOfRoundMatch = int(int(numberOfParticipants) / (math.pow(2, currentRoundNo + 1)))
-                                    print(noOfRoundMatch)
-                                    for m in range(noOfRoundMatch):
-                                        matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence, matchStatus) 
-                                        VALUES (:stageID, :bracketSequence, matchStatus)
-                                        """
-                                        matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1, 'matchStatus': 0}
-                                        conn.execute(text(matchCreateQuery), matchCreateInputs)
-                                        IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
-                                        matchID = IDfetch.scalar()
-                                        currentMatchArray.append(matchID)
-                                        print(currentMatchArray)
+                                    # noOfMatch = numberOfParticipants - 1
+                                    noOfRound = int(math.log2(int(numberOfParticipants)))
+                                    currentMatchArray = []
+                                    childMatchArray = []
+                                    print(noOfRound)
 
-                                        for n in range(2):
-                                            matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID) 
-                                            VALUES (:matchID)
+                                    for currentRoundNo in range(int(noOfRound)):
+                                        print(currentRoundNo)
+                                        noOfRoundMatch = int(int(numberOfParticipants) / (math.pow(2, currentRoundNo + 1)))
+                                        print(noOfRoundMatch)
+                                        for m in range(noOfRoundMatch):
+                                            matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence, matchStatus) 
+                                            VALUES (:stageID, :bracketSequence, matchStatus)
                                             """
-                                            matchParticipantCreateInputs = {'matchID': matchID}
-                                            conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
-                                        
-                                        for n in range(int(maxGames)):
-                                            gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
-                                            VALUES (:matchID, :gameNo)
-                                            """
-                                            matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
-                                            conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                            matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1, 'matchStatus': 0}
+                                            conn.execute(text(matchCreateQuery), matchCreateInputs)
                                             IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
-                                            gameID = IDfetch.scalar()
+                                            matchID = IDfetch.scalar()
+                                            currentMatchArray.append(matchID)
+                                            print(currentMatchArray)
 
                                             for n in range(2):
-                                                gameParticipantCreateQuery = """INSERT INTO gameParticipant (gameID) 
-                                                VALUES (:gameID)
+                                                matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID) 
+                                                VALUES (:matchID)
                                                 """
-                                                gameParticipantCreateInputs = {'gameID': gameID}
-                                                conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
-                                    
-                                    if currentRoundNo != 0:
-                                        for currentMatchID in currentMatchArray:
-                                            print("The currentMatchID is " + str(currentMatchID))
-                                            counter = 0
-                                            childMatchArrayCopy = childMatchArray.copy()
-                                            print("The childMatchArrayCopy is: ")
-                                            print(childMatchArrayCopy)
+                                                matchParticipantCreateInputs = {'matchID': matchID}
+                                                conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
                                             
-                                            for childMatchID in childMatchArrayCopy:
-                                                if counter < 2:
-                                                    print("The childMatchID is " + str(childMatchID))
-                                                    counter += 1
-                                                    print("The counter now is " + str(counter))
-                                                    parentMatchIDQuery = "UPDATE matches SET parentMatchID = :parentMatchID WHERE matchID = :matchID"
-                                                    parentMatchIDInputs = {'parentMatchID': currentMatchID, 'matchID': childMatchID}
-                                                    conn.execute(text(parentMatchIDQuery), parentMatchIDInputs)
-                                                    childMatchArray.remove(childMatchID)
-                                                    print("The childMatchArray is: ")
-                                                    print(childMatchArray)
-                                                else:
-                                                    break
+                                            for n in range(int(maxGames)):
+                                                gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
+                                                VALUES (:matchID, :gameNo)
+                                                """
+                                                matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
+                                                conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                                IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                                gameID = IDfetch.scalar()
 
-                                    childMatchArray = currentMatchArray.copy()
-                                    print("The childMatchArray is: ")
-                                    print(childMatchArray)
-                                    currentMatchArray = []
-                                    print("The currentMatchArray is: ")
-                                    print(currentMatchArray)
-                                    print('Match/Rounds Created with Template!')
+                                                for n in range(2):
+                                                    gameParticipantCreateQuery = """INSERT INTO gameParticipant (gameID) 
+                                                    VALUES (:gameID)
+                                                    """
+                                                    gameParticipantCreateInputs = {'gameID': gameID}
+                                                    conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
+                                        
+                                        if currentRoundNo != 0:
+                                            for currentMatchID in currentMatchArray:
+                                                print("The currentMatchID is " + str(currentMatchID))
+                                                counter = 0
+                                                childMatchArrayCopy = childMatchArray.copy()
+                                                print("The childMatchArrayCopy is: ")
+                                                print(childMatchArrayCopy)
+                                                
+                                                for childMatchID in childMatchArrayCopy:
+                                                    if counter < 2:
+                                                        print("The childMatchID is " + str(childMatchID))
+                                                        counter += 1
+                                                        print("The counter now is " + str(counter))
+                                                        parentMatchIDQuery = "UPDATE matches SET parentMatchID = :parentMatchID WHERE matchID = :matchID"
+                                                        parentMatchIDInputs = {'parentMatchID': currentMatchID, 'matchID': childMatchID}
+                                                        conn.execute(text(parentMatchIDQuery), parentMatchIDInputs)
+                                                        childMatchArray.remove(childMatchID)
+                                                        print("The childMatchArray is: ")
+                                                        print(childMatchArray)
+                                                    else:
+                                                        break
 
-                            elif stageFormatID == 3 or stageFormatID == 4:
-                                query = "SELECT * from roundFormat WHERE stageID = :stageID"
-                                inputs = {'stageID': templateStageID}
-                                getRoundFormat = conn.execute(text(query), inputs)
-                                fetchRoundFormat = getRoundFormat.fetchall()
-                                roundFormat = [row._asdict() for row in fetchRoundFormat]
+                                        childMatchArray = currentMatchArray.copy()
+                                        print("The childMatchArray is: ")
+                                        print(childMatchArray)
+                                        currentMatchArray = []
+                                        print("The currentMatchArray is: ")
+                                        print(currentMatchArray)
+                                        print('Match/Rounds Created with Template!')
 
-                                roundRobinID = roundFormat[0]["roundRobinID"]
-                                winPts = roundFormat[0]["winPts"]
-                                drawPts = roundFormat[0]["drawPts"]
-                                lossPts = roundFormat[0]["lossPts"]
+                                elif stageFormatID == 3 or stageFormatID == 4:
+                                    query = "SELECT * from roundFormat WHERE stageID = :stageID"
+                                    inputs = {'stageID': templateStageID}
+                                    getRoundFormat = conn.execute(text(query), inputs)
+                                    fetchRoundFormat = getRoundFormat.fetchall()
+                                    roundFormat = [row._asdict() for row in fetchRoundFormat]
 
-                                query = "SELECT * from tiebreaker WHERE roundRobinID = :roundRobinID"
-                                inputs = {'roundRobinID': roundRobinID}
-                                getTieBreaker = conn.execute(text(query), inputs)
-                                fetchTieBreaker = getTieBreaker.fetchall()
-                                tieBreakerlist = [row._asdict() for row in fetchTieBreaker]
+                                    roundRobinID = roundFormat[0]["roundRobinID"]
+                                    winPts = roundFormat[0]["winPts"]
+                                    drawPts = roundFormat[0]["drawPts"]
+                                    lossPts = roundFormat[0]["lossPts"]
 
-                                roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
-                                roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
-                                conn.execute(text(roundFormatQuery), roundInputs)
-                                IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
-                                roundRobinID = IDfetch.scalar()
+                                    query = "SELECT * from tiebreaker WHERE roundRobinID = :roundRobinID"
+                                    inputs = {'roundRobinID': roundRobinID}
+                                    getTieBreaker = conn.execute(text(query), inputs)
+                                    fetchTieBreaker = getTieBreaker.fetchall()
+                                    tieBreakerlist = [row._asdict() for row in fetchTieBreaker]
 
-                                for tieBreaker in tieBreakerlist:
-                                    # tieBreakerID = tieBreaker["tieBreakerID"]
-                                    tbTypeID = tieBreaker["tbTypeID"]
-                                    sequence = tieBreaker["sequence"]
+                                    roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
+                                    roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
+                                    conn.execute(text(roundFormatQuery), roundInputs)
+                                    IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                    roundRobinID = IDfetch.scalar()
 
-                                    tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
-                                    tiebreakerInput = {'tbTypeID': tbTypeID, 'sequence': sequence, 'roundRobinID': roundRobinID}
-                                    createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+                                    for tieBreaker in tieBreakerlist:
+                                        # tieBreakerID = tieBreaker["tieBreakerID"]
+                                        tbTypeID = tieBreaker["tbTypeID"]
+                                        sequence = tieBreaker["sequence"]
 
-                            else:
-                                print("stageFormatID is invalid!")
-                                
-                            #for navbar
-                            tournamentlist = updateNavTournaments(projID)
-                            projectName = retrieveProjectNavName(projID)
+                                        tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
+                                        tiebreakerInput = {'tbTypeID': tbTypeID, 'sequence': sequence, 'roundRobinID': roundRobinID}
+                                        createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+
+                                else:
+                                    print("stageFormatID is invalid!")
+                                    
+                                #for navbar
+                                tournamentlist = updateNavTournaments(projID)
+                                projectName = retrieveProjectNavName(projID)
 
                         flash('Tournament Created with Template!', 'success')
                         return redirect(url_for('loadCreateTour', projID=projID))
