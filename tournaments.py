@@ -122,9 +122,10 @@ class Tournaments:
             endDate = request.form.get("endDate")
             gender = request.form.get("gender")
             sport = request.form.get("sport")
-            format = request.form.get("format")
+            # format = request.form.get("format")
             tourImage = request.files.get("tourImage")
             bannerImage = request.files.get("bannerImage")
+            templateID = request.form.get("template")
             userID = session["id"]
             status = 4
 
@@ -135,78 +136,283 @@ class Tournaments:
 
                 sportsOptions = [row._asdict() for row in rows]
 
+                query = "SELECT * from template WHERE userID = :userID"
+                inputs = {'userID': session["id"]}
+                getTemplates = conn.execute(text(query), inputs)
+                fetchTemplates = getTemplates.fetchall()
+                templatelist = [row._asdict() for row in fetchTemplates]
+
             if not sport:
                 flash('Please select a sport!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=sport, format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=sport, sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             elif not tourName:
                 flash('Please fill in a tournament name!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             elif len(tourName) > 100:
                 flash('Please keep tournament name less than 100 characters!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             elif not tourSize:
                 flash('Please Enter a minimum participation size!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             elif int(tourSize) > 10000:
                 flash('Please enter participant size from 1-10,000!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             elif int(tourSize) < 0:
                 flash('Please enter participant size from 1-10,000!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             elif not format:
                 flash('That is not a valid format for the sport!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             elif not endDate or not startDate:
                 flash('Start or End Dates are not filled!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             elif endDate < startDate:
                 flash('End Date cannot be earlier than Start Date!', 'error')
-                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projID=projID)
+                return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projID=projID, templatelist=templatelist)
             # elif len(generalInfo) > 500:
             #     flash('Please keep general info less than 500 characters!', 'error')
             #     return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, generalInfo=generalInfo, sportlist=sportsOptions)
             
             else:
-                #convertion to correct types placed here after checking no empty strings
-                sport = int(sport)
-                tourSize = int(tourSize)
-                startDate = datetime.strptime(startDate, "%Y-%m-%d")
-                endDate = datetime.strptime(endDate, "%Y-%m-%d")
+                if int(templateID) > 0:
+                    print('Template Detected!')
+                    sport = int(sport)
+                    tourSize = int(tourSize)
+                    startDate = datetime.strptime(startDate, "%Y-%m-%d")
+                    endDate = datetime.strptime(endDate, "%Y-%m-%d")
 
-                try:
-                    with dbConnect.engine.connect() as conn:
-                        query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
-                        inputs = {'sport': sport, 'format': format}
-                        getsfID = conn.execute(text(query), inputs)
-                        rows = getsfID.fetchall()
-                        formatID = rows[0][2]
+                    try:
+                        with dbConnect.engine.connect() as conn:
+                            query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
+                            createNewGeneralInfo = conn.execute(text(query))
+                            getID = createNewGeneralInfo.lastrowid
 
+                            query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, 0, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
+                            file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
+                            inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
+                            createTournament = conn.execute(text(query), inputs)
+                            newtourID = createTournament.lastrowid
 
-                        query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
-                        createNewGeneralInfo = conn.execute(text(query))
-                        getID = createNewGeneralInfo.lastrowid
+                            #get Template Tournament ID
+                            query = "SELECT tourID from template WHERE templateID = :templateID"
+                            inputs = {'templateID': templateID}
+                            getTemplateTourID = conn.execute(text(query), inputs)
+                            fetchTemplateTourID = getTemplateTourID.fetchone()
+                            templateTourID = fetchTemplateTourID[0]
 
-                        query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
-                        file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
-                        inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
-                        createTournament = conn.execute(text(query), inputs)
+                            #Copy Structure Codes
+                            
+                            query = "SELECT * from stages WHERE tourID = :tourID"
+                            inputs = {'tourID': templateTourID}
+                            getStageFields = conn.execute(text(query), inputs)
+                            fetchStageFields = getStageFields.fetchall()
+                            stageFields = [row._asdict() for row in fetchStageFields]
+
+                            templateStageID = stageFields[0]["stageID"]
+                            stageName = stageFields[0]["stageName"]
+                            stageSequence = stageFields[0]["stageSequence"]
+                            stageFormatID = stageFields[0]["stageFormatID"]
+                            stageStatusID = 1
+                            numberOfParticipants = stageFields[0]["numberOfParticipants"]
+                            numberOfGroups = stageFields[0]["numberOfGroups"]
+                            matchFormatID = stageFields[0]["matchFormatID"]
+                            maxGames = stageFields[0]["maxGames"]
+
+                            stageQuery = """
+                                INSERT INTO stages (stageName, stageSequence, stageFormatID, stageStatusID, tourID, numberOfParticipants, numberOfGroups, matchFormatID, maxGames)
+                                VALUES (:stageName, :stageSequence, :stageFormatID, :stageStatusID, :tourID, :numberOfParticipants, :numberOfGroups, :matchFormatID, :maxGames)
+                                """
+                            stageInputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': newtourID, 
+                                   'numberOfParticipants': numberOfParticipants, 'numberOfGroups': numberOfGroups, 'matchFormatID': matchFormatID, 'maxGames': maxGames}
+                            conn.execute(text(stageQuery), stageInputs)
+                            IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                            stageID = IDfetch.scalar()
+                            
+                            print('Stage Created with Template!')
+                            if stageFormatID == 1 or stageFormatID == 2:
+                                query = "SELECT * from elimFormat WHERE stageID = :stageID"
+                                inputs = {'stageID': templateStageID}
+                                getElimFormat = conn.execute(text(query), inputs)
+                                fetchElimFormat = getElimFormat.fetchall()
+                                elimFormat = [row._asdict() for row in fetchElimFormat]
+
+                                # elimID = elimFormat[0]["elimID"]
+                                tfMatch = elimFormat[0]["tfMatch"]
+
+                                elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
+                                elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
+                                conn.execute(text(elimFormatQuery), elimInputs)
+
+                                 # noOfMatch = numberOfParticipants - 1
+                                noOfRound = int(math.log2(int(numberOfParticipants)))
+                                currentMatchArray = []
+                                childMatchArray = []
+                                print(noOfRound)
+
+                                for currentRoundNo in range(int(noOfRound)):
+                                    print(currentRoundNo)
+                                    noOfRoundMatch = int(int(numberOfParticipants) / (math.pow(2, currentRoundNo + 1)))
+                                    print(noOfRoundMatch)
+                                    for m in range(noOfRoundMatch):
+                                        matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence, matchStatus) 
+                                        VALUES (:stageID, :bracketSequence, matchStatus)
+                                        """
+                                        matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1, 'matchStatus': 0}
+                                        conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                        IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                        matchID = IDfetch.scalar()
+                                        currentMatchArray.append(matchID)
+                                        print(currentMatchArray)
+
+                                        for n in range(2):
+                                            matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID) 
+                                            VALUES (:matchID)
+                                            """
+                                            matchParticipantCreateInputs = {'matchID': matchID}
+                                            conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                        
+                                        for n in range(int(maxGames)):
+                                            gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
+                                            VALUES (:matchID, :gameNo)
+                                            """
+                                            matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
+                                            conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                            IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                            gameID = IDfetch.scalar()
+
+                                            for n in range(2):
+                                                gameParticipantCreateQuery = """INSERT INTO gameParticipant (gameID) 
+                                                VALUES (:gameID)
+                                                """
+                                                gameParticipantCreateInputs = {'gameID': gameID}
+                                                conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
+                                    
+                                    if currentRoundNo != 0:
+                                        for currentMatchID in currentMatchArray:
+                                            print("The currentMatchID is " + str(currentMatchID))
+                                            counter = 0
+                                            childMatchArrayCopy = childMatchArray.copy()
+                                            print("The childMatchArrayCopy is: ")
+                                            print(childMatchArrayCopy)
+                                            
+                                            for childMatchID in childMatchArrayCopy:
+                                                if counter < 2:
+                                                    print("The childMatchID is " + str(childMatchID))
+                                                    counter += 1
+                                                    print("The counter now is " + str(counter))
+                                                    parentMatchIDQuery = "UPDATE matches SET parentMatchID = :parentMatchID WHERE matchID = :matchID"
+                                                    parentMatchIDInputs = {'parentMatchID': currentMatchID, 'matchID': childMatchID}
+                                                    conn.execute(text(parentMatchIDQuery), parentMatchIDInputs)
+                                                    childMatchArray.remove(childMatchID)
+                                                    print("The childMatchArray is: ")
+                                                    print(childMatchArray)
+                                                else:
+                                                    break
+
+                                    childMatchArray = currentMatchArray.copy()
+                                    print("The childMatchArray is: ")
+                                    print(childMatchArray)
+                                    currentMatchArray = []
+                                    print("The currentMatchArray is: ")
+                                    print(currentMatchArray)
+                                    print('Match/Rounds Created with Template!')
+
+                            elif stageFormatID == 3 or stageFormatID == 4:
+                                query = "SELECT * from roundFormat WHERE stageID = :stageID"
+                                inputs = {'stageID': templateStageID}
+                                getRoundFormat = conn.execute(text(query), inputs)
+                                fetchRoundFormat = getRoundFormat.fetchall()
+                                roundFormat = [row._asdict() for row in fetchRoundFormat]
+
+                                roundRobinID = roundFormat[0]["roundRobinID"]
+                                winPts = roundFormat[0]["winPts"]
+                                drawPts = roundFormat[0]["drawPts"]
+                                lossPts = roundFormat[0]["lossPts"]
+
+                                query = "SELECT * from tiebreaker WHERE roundRobinID = :roundRobinID"
+                                inputs = {'roundRobinID': roundRobinID}
+                                getTieBreaker = conn.execute(text(query), inputs)
+                                fetchTieBreaker = getTieBreaker.fetchall()
+                                tieBreakerlist = [row._asdict() for row in fetchTieBreaker]
+
+                                roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
+                                roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
+                                conn.execute(text(roundFormatQuery), roundInputs)
+                                IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                roundRobinID = IDfetch.scalar()
+
+                                for tieBreaker in tieBreakerlist:
+                                    # tieBreakerID = tieBreaker["tieBreakerID"]
+                                    tbTypeID = tieBreaker["tbTypeID"]
+                                    sequence = tieBreaker["sequence"]
+
+                                    tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
+                                    tiebreakerInput = {'tbTypeID': tbTypeID, 'sequence': sequence, 'roundRobinID': roundRobinID}
+                                    createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+
+                            else:
+                                print("stageFormatID is invalid!")
+                                
+                            #for navbar
+                            tournamentlist = updateNavTournaments(projID)
+                            projectName = retrieveProjectNavName(projID)
+
+                        flash('Tournament Created with Template!', 'success')
+                        return redirect(url_for('loadCreateTour', projID=projID))
+                        # return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName, projID=projID, templatelist=templatelist)
+        
+                    except Exception as e:
+                        flash('Oops, an error has occured while trying to create tournament with template.', 'error')
+                        print(f"Error details: {e}")
 
                         #for navbar
                         tournamentlist = updateNavTournaments(projID)
                         projectName = retrieveProjectNavName(projID)
+                        return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID, templatelist=templatelist)
 
-                    flash('Tournament Created!', 'success')
+                else:
+                    #no template when creating tournament
 
-                    return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName, projID=projID)
-      
-                except Exception as e:
-                    flash('Oops, an error has occured.', 'error')
-                    print(f"Error details: {e}")
+                    #convertion to correct types placed here after checking no empty strings
+                    sport = int(sport)
+                    tourSize = int(tourSize)
+                    startDate = datetime.strptime(startDate, "%Y-%m-%d")
+                    endDate = datetime.strptime(endDate, "%Y-%m-%d")
 
-                    #for navbar
-                    tournamentlist = updateNavTournaments(projID)
-                    projectName = retrieveProjectNavName(projID)
-                    return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID)
+                    try:
+                        with dbConnect.engine.connect() as conn:
+                            # query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
+                            # inputs = {'sport': sport, 'format': format}
+                            # getsfID = conn.execute(text(query), inputs)
+                            # rows = getsfID.fetchall()
+                            # formatID = rows[0][2]
+
+
+                            query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
+                            createNewGeneralInfo = conn.execute(text(query))
+                            getID = createNewGeneralInfo.lastrowid
+
+                            query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
+                            file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
+                            inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
+                            createTournament = conn.execute(text(query), inputs)
+
+                            #for navbar
+                            tournamentlist = updateNavTournaments(projID)
+                            projectName = retrieveProjectNavName(projID)
+
+                        flash('Tournament Created!', 'success')
+                        return redirect(url_for('loadCreateTour', projID=projID))
+                        # return render_template('createTour.html', sportlist=sportsOptions, tournamentlist=tournamentlist, navtype=navtype, projectName=projectName, projID=projID, templatelist=templatelist)
+        
+                    except Exception as e:
+                        flash('Oops, an error has occured.', 'error')
+                        print(f"Error details: {e}")
+
+                        #for navbar
+                        tournamentlist = updateNavTournaments(projID)
+                        projectName = retrieveProjectNavName(projID)
+                        return render_template('createTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), sportlist=sportsOptions, projectName=projectName, tournamentlist=tournamentlist, projID=projID, templatelist=templatelist)
                 
         else:
             with dbConnect.engine.connect() as conn:
@@ -216,10 +422,16 @@ class Tournaments:
 
                 sportsOptions = [row._asdict() for row in rows]
 
+                query = "SELECT * from template WHERE userID = :userID"
+                inputs = {'userID': session["id"]}
+                getTemplates = conn.execute(text(query), inputs)
+                fetchTemplates = getTemplates.fetchall()
+                templatelist = [row._asdict() for row in fetchTemplates]
+
                 #for navbar
                 tournamentlist = updateNavTournaments(projID)
                 projectName = retrieveProjectNavName(projID)
-            return render_template('createTour.html', sportlist=sportsOptions, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID)
+            return render_template('createTour.html', sportlist=sportsOptions, navtype=navtype, tournamentlist=tournamentlist, templatelist=templatelist, projectName=projectName, projID=projID)
 
     #Get Format for Create Tournaament
     def getformat():
@@ -1408,3 +1620,124 @@ class Tournaments:
         flash('File uploaded successfully', 'success')
         return redirect(url_for('createTour'))
     
+
+    def createTemplate(projID):
+        navtype = 'tournament'
+
+        if request.method == "POST":
+            templateName = request.form.get("templateName")
+            tourID = request.form.get("tournament")
+            
+            if templateName is None or templateName == '':
+                flash('Template Name cannot be empty!', 'error')
+                return redirect(url_for('loadCreateTemplate', projID=projID))
+            else:
+                with dbConnect.engine.connect() as conn:
+                    try:
+                        query = "INSERT INTO template (templateName, tourID, userID) VALUES (:templateName, :tourID, :userID)"
+                        inputs = {'templateName': templateName,'tourID': tourID, 'userID': session["id"]}
+                        insertTemplate = conn.execute(text(query), inputs)
+                        flash('Template Created!', 'success')
+                        return redirect(url_for('loadCreateTour', projID=projID))
+
+                    except Exception as e:
+                        flash('Oops, an error has occured while creating template.', 'error')
+                        print(f"Error details: {e}")
+                        return redirect(url_for('loadCreateTemplate', projID=projID))
+                    
+        else:
+
+            # projID = session["currentProj"]
+            tournamentlist = updateNavTournaments(projID)
+            projectName = retrieveProjectNavName(projID)
+
+            with dbConnect.engine.connect() as conn:
+                query = "SELECT DISTINCT tournaments.*, stages.tourID FROM tournaments JOIN stages ON tournaments.tourID = stages.tourID;"
+                # inputs = {'projID': projID, 'userID': session["id"]}
+                getTour = conn.execute(text(query))
+                gettournaments = getTour.fetchall()
+                tourlist = [row._asdict() for row in gettournaments]
+
+            return render_template('createTemplate.html', tourlist=tourlist, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName)
+        
+    def editTemplate(projID):
+        navtype = 'tournament'
+
+        if request.method == "POST":
+            action = request.form.get('delete_template')
+            templateID = request.form.get("template")
+            tourID = request.form.get("tournament")
+            
+            
+            if action == 'delete':
+                try:
+                    with dbConnect.engine.connect() as conn:
+                        query = "DELETE from template WHERE templateID = :templateID"
+                        inputs = {'templateID': templateID}
+                        deleteTemplate = conn.execute(text(query), inputs)
+                        flash('Template Deleted!', 'success')
+                        return redirect(url_for('loadEditTemplate', projID=projID))
+                except Exception as e:
+                    flash('Oops, an error has occured while trying to delete template.', 'error')
+                    print(f"Error details: {e}")
+                    return redirect(url_for('loadEditTemplate', projID=projID))
+            else:
+                with dbConnect.engine.connect() as conn:
+                    try:
+                        query = "UPDATE template SET tourID = :tourID WHERE templateID = :templateID"
+                        inputs = {'tourID': tourID, 'templateID': templateID}
+                        updateTemplate = conn.execute(text(query), inputs)
+                        flash('Template Updated!', 'success')
+                        return redirect(url_for('loadEditTemplate', projID=projID))
+
+                    except Exception as e:
+                        flash('Oops, an error has occured while trying to update template.', 'error')
+                        print(f"Error details: {e}")
+                        return redirect(url_for('loadEditTemplate', projID=projID))
+                    
+        else:
+
+            # projID = session["currentProj"]
+            tournamentlist = updateNavTournaments(projID)
+            projectName = retrieveProjectNavName(projID)
+
+            with dbConnect.engine.connect() as conn:
+                query = "SELECT DISTINCT tournaments.*, stages.tourID FROM tournaments JOIN stages ON tournaments.tourID = stages.tourID;"
+                # inputs = {'projID': projID, 'userID': session["id"]}
+                getTour = conn.execute(text(query))
+                gettournaments = getTour.fetchall()
+                tourlist = [row._asdict() for row in gettournaments]
+
+                query = "SELECT * from template WHERE userID = :userID"
+                inputs = {'userID': session["id"]}
+                getTemplates = conn.execute(text(query), inputs)
+                fetchTemplates = getTemplates.fetchall()
+                templatelist = [row._asdict() for row in fetchTemplates]
+
+            return render_template('editTemplate.html', tourlist=tourlist, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, templatelist=templatelist)
+    
+    def getTemplateInfo(tourID):
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT stageName, stageSequence, numberOfParticipants, numberOfGroups, stageFormatID FROM stages WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            getStageInfo = conn.execute(text(query), inputs)
+            stageInfo = getStageInfo.fetchall()
+            stageInfoList = [row._asdict() for row in stageInfo]
+
+        return jsonify(stageInfoList)
+    
+    def getCurrentTemplateTourInfo(tempID):
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT tourID FROM template WHERE templateID = :templateID"
+            inputs = {'templateID': tempID}
+            getCurrentTourInfo = conn.execute(text(query), inputs)
+            currentTour = getCurrentTourInfo.fetchone()
+            currentTourID = currentTour[0]
+        
+            query = "SELECT DISTINCT tournaments.*, stages.tourID FROM tournaments JOIN stages ON tournaments.tourID = stages.tourID;"
+            # inputs = {'projID': projID, 'userID': session["id"]}
+            getTour = conn.execute(text(query))
+            gettournaments = getTour.fetchall()
+            tourlist = [row._asdict() for row in gettournaments]
+
+        return jsonify(currentTourID, tourlist)
