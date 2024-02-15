@@ -59,9 +59,7 @@
                     <h6 class="mb-4 ">Participant Size : {{ total_participants }}</h6>
                     <h6 class="mb-4 ">Team Name : 
                         {% for participant in participants %}
-                        <tr>
-                            <td>{{ participant.participantName }}</td>
-                        </tr>
+                            {{ participant.participantName }}
                         {% endfor %}
                     </h6>
                 </div>
