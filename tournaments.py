@@ -169,6 +169,9 @@ class Tournaments:
             format = request.form.get("format")
             tourImage = request.files.get("tourImage")
             bannerImage = request.files.get("bannerImage")
+            print("2 Images")
+            print(tourImage)
+            print(bannerImage)
             userID = session["id"]
             status = 4
 
@@ -574,7 +577,7 @@ class Tournaments:
         if request.method == "POST":
             identifier = request.form.get("formIdentifier")
             action = request.form.get('action')
-
+            
             if action == 'delete':
                 print('action form delete triggered!')
                 return redirect(url_for('loadSuspendTour', projID=projID, tourID=tourID))
@@ -590,6 +593,7 @@ class Tournaments:
 
                 # if identifier == "general":
                 tourName = request.form.get("tourName")
+                print("tourName:", tourName)
                 tourSize = request.form.get("tourSize")
                 startDate = request.form.get("startDate")
                 endDate = request.form.get("endDate")
@@ -597,10 +601,10 @@ class Tournaments:
                 sport = request.form.get("sport")
                 format = request.form.get("format")
                 getstatus = request.form.get("status")
-                tour_image = request.files.get("tour_image")
-                tour_image_2 = request.files.get("tour_image_2")
-                print("tour_image:", tour_image)
-                print("tour_image_2:", tour_image_2)
+                tourImage = request.files.get("tourImage")
+                tourImage2 = request.files.get("tourImage2")
+                print("tourImage:", tourImage)
+                print("tourImage2:", tourImage2)
                 status = int(getstatus)
 
                 if not tourName:
@@ -638,7 +642,7 @@ class Tournaments:
                             formatID = rows[0][2]
 
                             query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = :formatID, tourImageID = :tourImageID, tourBannerID = :tourBannerID, statusID = :statusID WHERE tourID = :tourID"
-                            pic_id = upload_to_google_drive_2(tour_image, tour_image_2)
+                            pic_id = upload_to_google_drive_2(tourImage, tourImage2)
                             print(f"File ID from Google Drive: {pic_id}") # This line is for debugging
                             inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'sportID':sport, 'formatID':formatID, 'tourImageID': pic_id[0], 'tourBannerID': pic_id[1], 'statusID':status, 'tourID':tourID}
                             updateGeneralInfo = conn.execute(text(query), inputs)
