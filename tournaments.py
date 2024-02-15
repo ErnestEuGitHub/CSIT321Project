@@ -87,6 +87,13 @@ class Tournaments:
     
     #Tournament Overview Page
     def TourOverviewDetails(projID, tourID):
+        
+        #for navbar
+        navtype = 'tournament'
+        tournamentlist = updateNavTournaments(projID)
+        # projID = session["currentProj"]
+        projectName = retrieveProjectNavName(projID)
+        
         with dbConnect.engine.connect() as conn:
             query = "SELECT tourName, startDate, endDate, gender, sports.sportName, tourBannerID FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
@@ -98,15 +105,33 @@ class Tournaments:
             endDate = rows[0][2]
             gender = rows[0][3]
             sportName = rows[0][4]
-            tourBannerID = rows[0][5]
-            
-            #for navbar
-            navtype = 'tournament'
-            tournamentlist = updateNavTournaments(projID)
-            # projID = session["currentProj"]
-            projectName = retrieveProjectNavName(projID)
-    
-        return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID, tourBannerID=tourBannerID)
+            tourBannerID = rows[0][5]        
+             
+        # Query the 'participants' table and 'players' tables
+            queryOne ="""
+            SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+            FROM participants LEFT JOIN players
+            ON participants.participantID = players.participantID
+            WHERE participants.tourID = :tourID
+            GROUP BY participants.participantID, participantEmail, participantName"""
+            inputOne = {'tourID': tourID}
+            getparticipants = conn.execute(text(queryOne),inputOne)
+            participants = getparticipants.fetchall()
+
+            # Get the total number of participants
+            total_participants = len(participants)
+
+            # Query the 'tournaments' table
+            queryThree = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+            inputThree = {'tourID': tourID}
+            getTournamentSize = conn.execute(text(queryThree),inputThree)
+            tournamentSize = getTournamentSize.scalar() #scalar only extract the value
+
+            # Get the size of tournament
+            tournamentSize = tournamentSize
+
+            # Render the HTML template with the participant data and total number    
+            return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID, tourBannerID=tourBannerID, participants=participants, total_participants=total_participants, tournamentSize = tournamentSize)
     
     @staticmethod
     #Create Tournament
@@ -459,40 +484,33 @@ class Tournaments:
         moderatorPermissionList = gettingModeratorPermissions(tourID)
         isOwner = verifyOwner(tourID)
         
-        try:
-            with dbConnect.engine.connect() as conn:            
-                # Query the 'participants' table and 'players' tables
-                queryOne ="""
-                SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
-                FROM participants LEFT JOIN players
-                ON participants.participantID = players.participantID
-                WHERE participants.tourID = :tourID
-                GROUP BY participants.participantID, participantEmail, participantName"""
-                inputOne = {'tourID': tourID}
-                getparticipants = conn.execute(text(queryOne),inputOne)
-                participants = getparticipants.fetchall()
+        with dbConnect.engine.connect() as conn:            
+            # Query the 'participants' table and 'players' tables
+            queryOne ="""
+            SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+            FROM participants LEFT JOIN players
+            ON participants.participantID = players.participantID
+            WHERE participants.tourID = :tourID
+            GROUP BY participants.participantID, participantEmail, participantName"""
+            inputOne = {'tourID': tourID}
+            getparticipants = conn.execute(text(queryOne),inputOne)
+            participants = getparticipants.fetchall()
 
-                # Get the total number of participants
-                total_participants = len(participants)
+            # Get the total number of participants
+            total_participants = len(participants)
 
-                # Query the 'tournaments' table
-                queryThree = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
-                inputThree = {'tourID': tourID}
-                getTournamentSize = conn.execute(text(queryThree),inputThree)
-                tournamentSize = getTournamentSize.scalar() #scalar only extract the value
+            # Query the 'tournaments' table
+            queryThree = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+            inputThree = {'tourID': tourID}
+            getTournamentSize = conn.execute(text(queryThree),inputThree)
+            tournamentSize = getTournamentSize.scalar() #scalar only extract the value
 
-                # Get the size of tournament
-                tournamentSize = tournamentSize
+            # Get the size of tournament
+            tournamentSize = tournamentSize
 
-                # Render the HTML template with the participant data and total number
-                return render_template('dashboard.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
-
-        except Exception as e:
-            # Handle exceptions (e.g., database connection error)
-            print(f"Error: {e}")
-            flash("An error occurred while retrieving participant data.", "error")
-            return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
-         
+            # Render the HTML template with the participant data and total number
+            return render_template('dashboard.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+        
     #Structure
     def structure(projID, tourID):
         #for navbar
@@ -1417,8 +1435,6 @@ class Tournaments:
         tournamentName = retrieveDashboardNavName(tourID)
         moderatorPermissionList = gettingModeratorPermissions(tourID)
         isOwner = verifyOwner(tourID)
-        
-        print("Edit Moderator1:", request.form)
 
         if request.method == "POST":
             moderatorEmail = request.form.get("moderatorEmail")
@@ -1486,14 +1502,10 @@ class Tournaments:
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 moderators = editModerator.fetchall()
                 
-                print("Moderators: ",moderators)  
-                
                 # Check if the moderators exists
                 if moderators:                    
                     moderatorEmail = moderators[0][0]  # Assuming moderatorEmail is the first column
                     permissionList = [row[1] for row in moderators if row[1] is not None] # Assuming permissionList is the second column
-                    print("Moderator Email: ", moderatorEmail)
-                    print("Permission List: ", permissionList)
                 else:
                     # Handle the case when the participant does not exist
                     flash('Moderator not found!', 'error')

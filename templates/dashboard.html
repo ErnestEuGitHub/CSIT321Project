@@ -6,54 +6,91 @@
       <header>
          <label class="fs-4 fw-bold my-4 ps-10">Dashboard</label>
       </header>
-      <div class="d-flex flex-row flex-wrap justify-content-center">
-               <a href="#" class="boxlink">
-                  <div class="col-6 m-3 box">
-                     <h2>Status</h2>
-                     <p>Current Status:</p>
-                  </div>
-               </a>
+      <div class="d-flex flex-row flex-wrap justify-content-center">         
+         {% if isOwner %}
+            <a href="#" class="boxlink">
+               <div class="col-6 m-3 box">
+                  <h2>Status</h2>
+                  <p>Current Status:</p>
+               </div>
+            </a>
+            <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 box">
+                  <h2>Participant</h2>
+               </div>
+            </a>
+            <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 box">
+                  <h2>Structure</h2>
+                  <p></p>
+               </div>
+            </a>  
+            <a href="#" class="boxlink">
+               <div class="col-6 m-3 box">
+                  <h2>Registration</h2>
+                  <p></p>
+               </div>
+            </a>
+            <a href="/placement/{{projID}}/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 box">
+                  <h2>Placement</h2>
+                  <p></p>
+               </div>
+            </a>
+            <a href="/match/{{projID}}/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 box">
+                  <h2>Matches</h2>
+                  <p></p>
+               </div>
+            </a>         
+         {% else %}
+            <a href="#" class="boxlink">
+               <div class="col-6 m-3 box">
+                  <h2>Status</h2>
+                  <p>Current Status:</p>
+               </div>
+            </a>            
+            {% if "Manage Participant" in moderatorPermissionList %}
                <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
                   <div class="col-6 m-3 box">
                      <h2>Participant</h2>
-                     <div class="text-start">
-                        <h4>Participant Size : {{ total_participants }}</h4>       
-                        <h5>Team Name : </h6>
-                        {% for participant in participants %}
-                        <tr>
-                           <td>{{ participant.participantName }}</td>
-                        </tr>
-                        {% endfor %}
-                     </div>
+                     <p></p>
                   </div>
                </a>
+            {% endif %}
+            {% if "Setup Structure" in moderatorPermissionList %}
                <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
                   <div class="col-6 m-3 box">
                      <h2>Structure</h2>
                      <p></p>
                   </div>
                </a>  
+            {% endif %}
+            {% if "Manage Registration" in moderatorPermissionList %}
                <a href="#" class="boxlink">
                   <div class="col-6 m-3 box">
                      <h2>Registration</h2>
                      <p></p>
                   </div>
                </a>
-
+            {% endif %}
+            {% if "Place Participant" in moderatorPermissionList %}
                <a href="/placement/{{projID}}/{{tourID}}" class="boxlink">
-
                   <div class="col-6 m-3 box">
                      <h2>Placement</h2>
                      <p></p>
                   </div>
                </a>
+            {% endif %}
+            {% if "Start Match" in moderatorPermissionList %}
                <a href="/match/{{projID}}/{{tourID}}" class="boxlink">
                   <div class="col-6 m-3 box">
                      <h2>Matches</h2>
                      <p></p>
                   </div>
-               </a>
-         </div>
+               </a>  
+            {% endif %}
+         {% endif %}
       </div>
    </div>
 
