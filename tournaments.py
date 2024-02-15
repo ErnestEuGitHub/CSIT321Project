@@ -245,8 +245,40 @@ class Tournaments:
         moderatorPermissionList = gettingModeratorPermissions(tourID)
         isOwner = verifyOwner(tourID)
         
-        return render_template('dashboard.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
-    
+        try:
+            with dbConnect.engine.connect() as conn:            
+                # Query the 'participants' table and 'players' tables
+                queryOne ="""
+                SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+                FROM participants LEFT JOIN players
+                ON participants.participantID = players.participantID
+                WHERE participants.tourID = :tourID
+                GROUP BY participants.participantID, participantEmail, participantName"""
+                inputOne = {'tourID': tourID}
+                getparticipants = conn.execute(text(queryOne),inputOne)
+                participants = getparticipants.fetchall()
+
+                # Get the total number of participants
+                total_participants = len(participants)
+
+                # Query the 'tournaments' table
+                queryThree = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+                inputThree = {'tourID': tourID}
+                getTournamentSize = conn.execute(text(queryThree),inputThree)
+                tournamentSize = getTournamentSize.scalar() #scalar only extract the value
+
+                # Get the size of tournament
+                tournamentSize = tournamentSize
+
+                # Render the HTML template with the participant data and total number
+                return render_template('dashboard.html', participants=participants, total_participants=total_participants, tournamentSize = tournamentSize, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+
+        except Exception as e:
+            # Handle exceptions (e.g., database connection error)
+            print(f"Error: {e}")
+            flash("An error occurred while retrieving participant data.", "error")
+            return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
+         
     #Structure
     def structure(projID, tourID):
         #for navbar
@@ -307,8 +339,6 @@ class Tournaments:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
                 return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
-        
-    
 
     #CreateStage
     @staticmethod
@@ -834,7 +864,7 @@ class Tournaments:
             print(f"Error: {e}")
             flash("An error occurred while retrieving participant data.", "error")
             return render_template('dashboard.html')  # Create an 'error.html' template for error handling 
-       
+        
     #Create Participant and Players
     def createParticipant(projID, tourID):
         #for navbar
