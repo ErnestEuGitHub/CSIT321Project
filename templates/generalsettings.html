@@ -46,7 +46,6 @@
 								<form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off">
 									<div class="tab-content">
 										<div class="tab-pane fade show active" id="General" role="tabpanel" aria-labelledby="GeneralTab">
-											<!-- <form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off"> -->
 												
 												<div class="row mb-3 justify-content-sm-center">
 													<div class="mb-4">
@@ -115,11 +114,13 @@
 												
 												<p>Current Image of Tournament</p>
 
-												<div class="image-container">
-													<!-- Image placeholder for Tournament Image-->
-													<img src="https://via.placeholder.com/150/F9F9F9?text=Please+Upload+Image" alt="">
-												</div>
-
+												{% if tourImageID %}
+                    							<img src="https://drive.google.com/thumbnail?id={{tourImageID}}&sz=s400" alt="" height="150px">
+                    							{% else %}
+                        						<!-- Image placeholder -->
+                        						<img src="https://via.placeholder.com/320/F9F9F9?text=Please+Upload+Image" alt="">
+                    							{% endif %}
+                    							
 												<br><br>
 												
 												<p>Current Banner of Tournament</p>
@@ -129,17 +130,17 @@
 												<!-- Image placeholder -->
 												<img src="https://via.placeholder.com/600x350/F9F9F9?text=Please+Upload+Banner+Image" alt="" height="350px">
 												{% endif %}
-												</div> 
+												
 												<br>
 
 												<div class="mb-4">
-													<label class="mb-2 text-muted" for="tourImage">Tournament Image</label>
-													<input id="tourImage" type="file" class="form-control" name="tourImage" accept="image/*" required>
+													<label class="mb-2 text-muted" for="tour_image">Tournament Image</label>
+													<input id="tour_image" type="file" class="form-control" name="tour_image" accept="image/*" required>
 												</div>
 
 												<div class="mb-4">
-													<label class="mb-2 text-muted" for="bannerImage">Tournament Banner Image</label>
-													<input id="bannerImage" type="file" class="form-control" name="bannerImage" accept="image/*" required>
+													<label class="mb-2 text-muted" for="tour_image_2">Tournament Banner Image</label>
+													<input id="tour_image_2" type="file" class="form-control" name="tour_image_2" accept="image/*" required>
 												</div>
 
 												<div class="d-flex align-items-center">
@@ -150,7 +151,7 @@
 											<!-- </form> -->
 										</div>
 										<div class="tab-pane fade" id="Details" role="tabpanel" aria-labelledby="DetailsTab">
-											<!-- <form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off"> -->
+												<!--<form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off"> -->
 												<div class="mb-4">
 													<label class="mb-2 text-muted" for="generalDesc">General Description</label>
 													<textarea id="generalDesc" type="text" class="form-control" name="generalDesc" rows="5" required autofocus style="resize: none;">{{ generalDesc }}</textarea>

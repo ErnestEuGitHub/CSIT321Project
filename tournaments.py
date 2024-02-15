@@ -12,8 +12,8 @@ import math
 #Google Drive API credentials
 SCOPES = ['https://www.googleapis.com/auth/drive']
 SERVICE_ACCOUNT_FILE = 'service_account.json'
-PARENT_FOLDER_ID = "1Gjt43kVhn6yAmRT88w11KQSbO2IQvTNZ"
-PARENT_FOLDER_ID_2 = "1UOe9hiR1xh__jy-ZbWjs4NidcBjtEfp7" ### This is part of the parent folder 2 ###
+PARENT_FOLDER_ID = "1Gjt43kVhn6yAmRT88w11KQSbO2IQvTNZ" # This is Tour Image Folder
+PARENT_FOLDER_ID_2 = "1UOe9hiR1xh__jy-ZbWjs4NidcBjtEfp7" # This is Banner Folder
 
 def authenticate():
     # Authentication
@@ -24,8 +24,6 @@ def get_drive_service():
     # Create and return a Google Drive service instance using the authenticated credentials
     creds = authenticate()
     return build('drive', 'v3', credentials=creds)
-
-### This part slowly code in the meta data 2 and parent folder 2
 
 def upload_to_google_drive(image, image_2, tour_name):
     try:
@@ -67,6 +65,52 @@ def upload_to_google_drive(image, image_2, tour_name):
             print("No file2 provided. Skipping upload.")
         
         return file_id, file_id_2
+    
+    except Exception as e:
+        print(f"Error uploading to Google Drive: {e}")
+        return None
+
+# This one is for updating in general setting
+def upload_to_google_drive_2(tour_image, tour_image_2):
+    try:
+        drive_service = get_drive_service()
+
+        google_drive_folder_id = PARENT_FOLDER_ID
+        google_drive_folder_id_2 = PARENT_FOLDER_ID_2
+        
+        ### Upload the first file
+        if tour_image:
+            # Prepare metadata
+            pic_metadata = {'parents': [google_drive_folder_id]}
+            pic_bytes = tour_image.read()
+            pic_like_object = BytesIO(pic_bytes)
+            media_3 = MediaIoBaseUpload(pic_like_object, mimetype='application/octet-stream', resumable=True)
+            pic = drive_service.files().create(body=pic_metadata, media_body=media_3, fields='id').execute()
+            # Get the pic ID
+            pic_id = pic.get('id')
+            print(f"Pic 1 ID: {pic_id}")
+
+        else:
+            pic_id = None
+            print("No pic1 provided. Skipping upload.")
+
+        # Upload the second file
+        
+        if tour_image_2:
+            # Prepare metadata_2
+            pic_metadata_2 = {'parents': [google_drive_folder_id_2]}
+            pic_bytes_2 = tour_image_2.read()
+            pic_like_object_2 = BytesIO(pic_bytes_2)
+            media_4 = MediaIoBaseUpload(pic_like_object_2, mimetype='application/octet-stream', resumable=True)
+            pic_2 = drive_service.files().create(body=pic_metadata_2, media_body=media_4, fields='id').execute()
+            # Get the pic_2 ID
+            pic_id_2 = pic_2.get('id')
+            print(f"File 2 ID: {pic_id_2}")
+        else:
+            pic_id_2 = None
+            print("No pic2 provided. Skipping upload.")
+        
+        return pic_id, pic_id_2
     
     except Exception as e:
         print(f"Error uploading to Google Drive: {e}")
@@ -545,7 +589,6 @@ class Tournaments:
                     sportsOptions = [row._asdict() for row in rows]
 
                 # if identifier == "general":
-
                 tourName = request.form.get("tourName")
                 tourSize = request.form.get("tourSize")
                 startDate = request.form.get("startDate")
@@ -554,6 +597,10 @@ class Tournaments:
                 sport = request.form.get("sport")
                 format = request.form.get("format")
                 getstatus = request.form.get("status")
+                tour_image = request.files.get("tour_image")
+                tour_image_2 = request.files.get("tour_image_2")
+                print("tour_image:", tour_image)
+                print("tour_image_2:", tour_image_2)
                 status = int(getstatus)
 
                 if not tourName:
@@ -590,8 +637,10 @@ class Tournaments:
                             rows = getsfID.fetchall()
                             formatID = rows[0][2]
 
-                            query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = :formatID, statusID = :statusID WHERE tourID = :tourID"
-                            inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'tourID':tourID}
+                            query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = :formatID, tourImageID = :tourImageID, tourBannerID = :tourBannerID, statusID = :statusID WHERE tourID = :tourID"
+                            pic_id = upload_to_google_drive_2(tour_image, tour_image_2)
+                            print(f"File ID from Google Drive: {pic_id}") # This line is for debugging
+                            inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'sportID':sport, 'formatID':formatID, 'tourImageID': pic_id[0], 'tourBannerID': pic_id[1], 'statusID':status, 'tourID':tourID}
                             updateGeneralInfo = conn.execute(text(query), inputs)
                     
                         # flash('General Information Updated!', 'success')
@@ -656,7 +705,7 @@ class Tournaments:
 
                 sportsOptions = [row._asdict() for row in rows]
                 
-                query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.generalInfoID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
+                query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.generalInfoID, tournaments.tourImageID, tournaments.tourBannerID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
                 inputs = {'tourID': tourID}
                 result = conn.execute(text(query), inputs)
                 rows = result.fetchall()
@@ -670,6 +719,8 @@ class Tournaments:
                 format = rows[0][6]
                 status = rows[0][7]
                 generalInfoID = rows[0][8]
+                tourImageID = rows[0][9]
+                tourBannerID = rows[0][10]
 
                 if status == 5:
                     return redirect(url_for('loadSuspendTour', projID=projID, tourID=tourID))
@@ -691,7 +742,7 @@ class Tournaments:
                     prize = ""
                     contact = ""
       
-            return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+            return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, tourImageID=tourImageID, tourBannerID=tourBannerID, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
     #End Tournament
     def SuspendTour(projID, tourID):
