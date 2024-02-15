@@ -112,6 +112,14 @@ def seeding(projID, tourID, stageID):
 
                         placementGrpArray = chunk_list(placements, teamsPerGrp)
 
+                        #Seeding List > Groups
+                        # groupArray = [ [23, 45, 32, 15], [18, 24, 35, 79] ]
+                        #For each group, 
+                        #   select the matches where stageID := stageID AND stageGroup = groupArrayNumber + 1 
+                        #   e.g. StageID 55, stageGroup 1, MatchID 301 to 306
+                        #   update matchparticipant set participantID =: groupArray[i][k] WHERE matchID = m [match] AND participantID = :tempTeamID (negative number)
+                        # tempTeamID will be (index + 1) * -1 
+
                         count = 0
                         matchcounter = 0
                         #Generate different combinations required for match participants and store in matchParticipants
