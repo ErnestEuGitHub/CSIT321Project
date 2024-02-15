@@ -17,15 +17,6 @@
             <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
                <div class="col-6 m-3 box">
                   <h2>Participant</h2>
-                  <div class="text-start">
-                     <h4>Participant Size : {{ total_participants }}</h4>       
-                     <h5>Team Name</h5>
-                     {% for participant in participants %}
-                     <tr>
-                        <td>{{ participant.participantName }}</td>
-                     </tr>
-                     {% endfor %}
-                  </div>
                </div>
             </a>
             <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
@@ -63,15 +54,7 @@
                <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
                   <div class="col-6 m-3 box">
                      <h2>Participant</h2>
-                     <div class="text-start">
-                        <h4>Participant Size : {{ total_participants }}</h4>       
-                        <h5>Team Name</h5>
-                        {% for participant in participants %}
-                        <tr>
-                           <td>{{ participant.participantName }}</td>
-                        </tr>
-                        {% endfor %}
-                     </div>
+                     <p></p>
                   </div>
                </a>
             {% endif %}

@@ -1435,8 +1435,6 @@ class Tournaments:
         tournamentName = retrieveDashboardNavName(tourID)
         moderatorPermissionList = gettingModeratorPermissions(tourID)
         isOwner = verifyOwner(tourID)
-        
-        print("Edit Moderator1:", request.form)
 
         if request.method == "POST":
             moderatorEmail = request.form.get("moderatorEmail")
@@ -1504,14 +1502,10 @@ class Tournaments:
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 moderators = editModerator.fetchall()
                 
-                print("Moderators: ",moderators)  
-                
                 # Check if the moderators exists
                 if moderators:                    
                     moderatorEmail = moderators[0][0]  # Assuming moderatorEmail is the first column
                     permissionList = [row[1] for row in moderators if row[1] is not None] # Assuming permissionList is the second column
-                    print("Moderator Email: ", moderatorEmail)
-                    print("Permission List: ", permissionList)
                 else:
                     # Handle the case when the participant does not exist
                     flash('Moderator not found!', 'error')
