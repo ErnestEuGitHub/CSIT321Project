@@ -137,8 +137,9 @@ def getformatspy():
 def getvenuepy():
     matchstart = request.form.get('matchstart')
     matchend = request.form.get('matchend')
+    matchID = request.form.get('matchID')
 
-    loadgetvenue = updateVenue(matchstart, matchend)
+    loadgetvenue = updateVenue(matchstart, matchend, matchID)
     return loadgetvenue
 
 @app.route('/tournamentOverviewPage/<projID>/<tourID>')
@@ -673,6 +674,39 @@ def loadUserAdminSetting(userID):
 
 #end of sysAdmin routing
     
+@app.route('/createTemplate/<projID>', methods=["POST", "GET"])
+def loadCreateTemplate(projID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        page = Tournaments.createTemplate(projID)
+        return page
+    
+@app.route('/editTemplate/<projID>', methods=["POST", "GET"])
+def loadEditTemplate(projID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        page = Tournaments.editTemplate(projID)
+        return page
+
+@app.route('/getTempInfo', methods=["POST"])
+def getTempInfoPy():
+    tourID = request.form.get('tourID')
+    # tourID = int(tourID)
+    # print('TourID is:',tourID)
+    page = Tournaments.getTemplateInfo(tourID)
+    return page
+
+@app.route('/getcurrentTempTourInfo', methods=["POST"])
+def getcurrentTempTourInfoPy():
+    tempID = request.form.get('tempID')
+    # tourID = int(tourID)
+    # print('TourID is:',tourID)
+    page = Tournaments.getCurrentTemplateTourInfo(tempID)
+    return page
+
+
 @app.errorhandler(404)
 def loadnotfound(error):
     return render_template('notfound.html', error=error)
