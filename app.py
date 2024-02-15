@@ -177,7 +177,7 @@ def loadParticipantTourOverviewWithID(projID, tourID):
             if rows[0][9] == 5:
                 return redirect(url_for('loadtournaments', projID=projID))
             elif rows[0][10] == session['id']:
-                page = Tournaments.TourOverviewDetails(projID, tourID)
+                page = Tournaments.ParticipantTourOverviewDetails(projID, tourID)
                 return page            
             else:
                 return render_template('notfound.html')

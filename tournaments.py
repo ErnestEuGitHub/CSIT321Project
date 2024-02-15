@@ -106,7 +106,20 @@ class Tournaments:
             gender = rows[0][3]
             sportName = rows[0][4]
             tourBannerID = rows[0][5]        
-             
+
+            # Render the HTML template with the participant data and total number    
+            return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID, tourBannerID=tourBannerID)
+        
+    #Tournament Overview Page
+    def ParticipantTourOverviewDetails(projID, tourID):
+        
+        #for navbar
+        navtype = 'tournament'
+        tournamentlist = updateNavTournaments(projID)
+        # projID = session["currentProj"]
+        projectName = retrieveProjectNavName(projID)
+        
+        with dbConnect.engine.connect() as conn:             
         # Query the 'participants' table and 'players' tables
             queryOne ="""
             SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
@@ -122,16 +135,16 @@ class Tournaments:
             total_participants = len(participants)
 
             # Query the 'tournaments' table
-            queryThree = "SELECT tourSize FROM tournaments WHERE tourID = :tourID"
+            queryThree = "SELECT tourName, tourSize FROM tournaments WHERE tourID = :tourID"
             inputThree = {'tourID': tourID}
             getTournamentSize = conn.execute(text(queryThree),inputThree)
-            tournamentSize = getTournamentSize.scalar() #scalar only extract the value
-
-            # Get the size of tournament
-            tournamentSize = tournamentSize
+            tournamentSize = getTournamentSize.fetchall() #scalar only extract the value
+            
+            tourName = tournamentSize[0][0]
+            tourSize = tournamentSize[0][1]
 
             # Render the HTML template with the participant data and total number    
-            return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID, tourBannerID=tourBannerID, participants=participants, total_participants=total_participants, tournamentSize = tournamentSize)
+            return render_template('participantTournamentOverviewPage.html', participants=participants, total_participants=total_participants, tourName=tourName, tourSize=tourSize, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID)
     
     @staticmethod
     #Create Tournament
