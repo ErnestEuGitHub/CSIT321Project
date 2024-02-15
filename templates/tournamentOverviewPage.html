@@ -56,7 +56,14 @@
                     <h6 class="mb-4 ">overviewTabContent</h6>
                 </div>
                 <div id="participantsTabContent" hidden>
-                    <h6 class="mb-4 ">participantsTabContent</h6>
+                    <h6 class="mb-4 ">Participant Size : {{ total_participants }}</h6>
+                    <h6 class="mb-4 ">Team Name : 
+                        {% for participant in participants %}
+                        <tr>
+                            <td>{{ participant.participantName }}</td>
+                        </tr>
+                        {% endfor %}
+                    </h6>
                 </div>
                 <div id="matchesTabContent" hidden>
                     <h6 class="mb-4 ">matchesTabContent</h6>
@@ -121,10 +128,8 @@
         contactTab.addEventListener("click", function(){tabFn(contactTab);});
 
         function tabFn(tabClicked) {
-            const tabs = [overviewTab, participantsTab, matchesTab, statsTab, mediaTab,];
-            const overviewTab = [detailsTab, ruleTab, prizeTab, contactTab]
-            const tabsContent = [overviewTabContent, participantsTabContent, matchesTabContent, statsTabContent, mediaTabContent];
-            const overviewTabContent = [detailsTabContent, ruleTabContent, prizeTabContent, contactTabContent]
+            const tabs = [overviewTab, participantsTab, matchesTab, statsTab, mediaTab, detailsTab, ruleTab, prizeTab, contactTab]
+            const tabsContent = [overviewTabContent, participantsTabContent, matchesTabContent, statsTabContent, mediaTabContent, detailsTabContent, ruleTabContent, prizeTabContent, contactTabContent]
 
             for (tab of tabs){
                 if (tabClicked === tab){
