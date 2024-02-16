@@ -10,20 +10,20 @@
                 </div>
                 <div class="row justify-content-center mb-4">
                     <ul class="nav nav-pills">
-                        <li class="nav-item">
-                          <a class="nav-link active" aria-current="page" href="#">Overview</a>
+                        <li class="nav-item" id="overviewTab">
+                            <a class="nav-link active" aria-disabled="false">Overview</a>
                         </li>
-                        <li class="nav-item">
-                          <a class="nav-link disabled" aria-disabled="true" href="#">Participants</a>
+                        <li class="nav-item" id="participantsTab">
+                            <a href="/participantTournamentOverviewPage/{{projID}}/{{tourID}}" class="nav-link" aria-disabled="false">Participants</a>
                         </li>
-                        <li class="nav-item">
-                          <a class="nav-link disabled" aria-disabled="true" href="#">Matches</a>
+                        <li class="nav-item" id="matchesTab">
+                            <a class="nav-link" aria-disabled="false">Matches</a>
                         </li>
-                        <li class="nav-item">
-                          <a class="nav-link disabled" aria-disabled="true" href="#">Stats</a>
+                        <li class="nav-item" id="statsTab">
+                            <a class="nav-link" aria-disabled="false">Stats</a>
                         </li>
-                         <li class="nav-item">
-                          <a class="nav-link disabled" aria-disabled="true" href="#">Media</a>
+                         <li class="nav-item" id="mediaTab">
+                            <a class="nav-link" aria-disabled="false">Media</a>
                         </li>
                       </ul>
                 </div>
@@ -51,7 +51,6 @@
                         </li>
                     </ul>
                 </div>
-
                 <div id="detailsTabContent" block>
                     <h6 class="mb-4 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</h6>
                     <h6 class="mb-4 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</h6>
@@ -79,19 +78,20 @@
         let ruleTab = document.getElementById("ruleTab");
         let prizeTab = document.getElementById("prizeTab");
         let contactTab = document.getElementById("contactTab");
+
         let detailsTabContent = document.getElementById("detailsTabContent");
         let ruleTabContent = document.getElementById("ruleTabContent");
         let prizeTabContent = document.getElementById("prizeTabContent");
         let contactTabContent = document.getElementById("contactTabContent");
-        
+           
         detailsTab.addEventListener("click", function(){tabFn(detailsTab);});
         ruleTab.addEventListener("click", function(){tabFn(ruleTab);});
         prizeTab.addEventListener("click", function(){tabFn(prizeTab);});
         contactTab.addEventListener("click", function(){tabFn(contactTab);});
 
         function tabFn(tabClicked) {
-            const tabs = [detailsTab, ruleTab, prizeTab, contactTab];
-            const tabsContent = [detailsTabContent, ruleTabContent, prizeTabContent, contactTabContent];
+            const tabs = [detailsTab, ruleTab, prizeTab, contactTab]
+            const tabsContent = [detailsTabContent, ruleTabContent, prizeTabContent, contactTabContent]
 
             for (tab of tabs){
                 if (tabClicked === tab){
