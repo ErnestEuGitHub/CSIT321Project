@@ -37,8 +37,8 @@ def logout():
 
 @app.route('/register', methods=["POST", "GET"])
 def loadregister():
-    if "id" not in session:
-        return redirect(url_for('loadLogin'))
+    if "id" in session:
+        return redirect(url_for('loadhome'))
     page = User.register()
     return page
 
