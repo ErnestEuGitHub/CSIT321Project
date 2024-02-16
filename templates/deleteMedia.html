@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100 navbarcontentpadding">
+    {% for message in get_flashed_messages(category_filter=["error"]) %}
+    {% if message %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for message in get_flashed_messages(category_filter=["success"]) %}
+    {% if message %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <form action="/deleteMedia/{{projID}}/{{tourID}}/{{newsID}}" method="POST">
+        <header class="d d-flex justify-content-between">
+            <label class="fs-4 fw-bold my-4">Delete Media</label>
+            <div>
+                <button type="submit" class="btn btn-danger my-4" role="button" aria-disabled="true">Delete Media</button>
+                <a href="/media/{{projID}}/{{tourID}}" class="btn btn-secondary my-4" role="button" aria-disabled="true">Back</a>
+            </div>
+        </header>
+        <div class="mb-3">
+            <label for="exampleTitle" class="form-label">Title</label>
+            <input type="text" class="form-control" id="disabledTextInput" name="newsTitle" value="{{ newsTitle }}" disabled>
+        </div>
+        <div class="mb-3">
+            <label for="exampleDesc" class="form-label">Description</label>
+            <textarea class="form-control" id="disabledTextInput" name="newsDesc" rows="5" disabled>{{ newsDesc }}</textarea>
+        </div>
+    </form>
+</div>
+{% endblock %}
