@@ -715,6 +715,15 @@ def getcurrentTempTourInfoPy():
     page = Tournaments.getCurrentTemplateTourInfo(tempID)
     return page
 
+@app.route('/tournamentsPublic', methods=["POST", "GET"])
+def loadTournamentsPublic():
+    page = Tournaments.tournamentsPublic()
+    return page
+
+@app.route('/tournamentOverviewPublic/<tourID>', methods=["POST", "GET"])
+def loadTournamentOverviewPublic(tourID):
+    page = Tournaments.tournamentOverviewPublic(tourID)
+    return page
 
 @app.errorhandler(404)
 def loadnotfound(error):

@@ -29,7 +29,7 @@
                 </div>
                 <div class="row justify-content-center mb-4">
                     {% if tourBannerID %}
-                    <img src="https://drive.google.com/uc?export=view&id={{tourBannerID}}" alt="" height="350px">
+                    <img src="https://drive.google.com/thumbnail?id={{tourBannerID}}" alt="" height="350px">
                     {% else %}
                     <!-- Image placeholder -->
                     <img src="https://via.placeholder.com/600x350/F9F9F9?text=Please+Upload+Banner+Image" alt="" height="350px">
@@ -58,15 +58,17 @@
                     <h6 class="mb-4 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</h6>
                     <h6 class="mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h6>
 
+                    <h6 class="mb-4 ">Description:</h6>
+                    <p>{{generalInfoDesc}}</p>
                 </div>
                 <div id="ruleTabContent" hidden>
-                    <h6 class="mb-4 ">Rule 1: Cannot Tackle</h6>
+                    <h6 class="mb-4 ">{{rules}}</h6>
                 </div>
                 <div id="prizeTabContent" hidden>
-                    <h6 class="mb-4 ">Prize Pool: $1 Billion USD</h6>
+                    <h6 class="mb-4 ">{{prize}}</h6>
                 </div>
                 <div id="contactTabContent" hidden>
-                    <h6 class="mb-4 ">Official Email: contact@gamesphere.com</h6>
+                    <h6 class="mb-4 ">{{contact}}</h6>
                 </div>
 			</div>
 		</div>

@@ -179,14 +179,15 @@ def seeding(projID, tourID, stageID):
                         numberOfGroups = rows[0][1]
 
                         teamsPerGrp = numberOfParticipants // numberOfGroups
-                        print('teamsPerGrp array is:', teamsPerGrp)
+                        # print('teamsPerGrp array is:', teamsPerGrp)
 
                         placementGrpArray = chunk_list(placements, teamsPerGrp)
-                        print('placement grp array is:', placementGrpArray)
+                        # print('placement grp array is:', placementGrpArray)
 
                         placementGrpCounter = 0
 
-                        #converting all names to IDs
+                        #converting all names to IDs and insert into ranking table
+                        rankingStgGrpCounter = 0
                         for grp in placementGrpArray:
                             for idx, team in enumerate(grp):
                                 query = "SELECT participantID FROM participants WHERE participantName = :participantName"
@@ -197,7 +198,14 @@ def seeding(projID, tourID, stageID):
                                 if fetchPartID:
                                     grp[idx] = fetchPartID[0]  # Replace team name with participant ID
 
-                        print('New placementGrpArray with ID is:', placementGrpArray)
+                        for group in placementGrpArray:
+                            rankingStgGrpCounter += 1
+                            for team in group:
+                                query = "INSERT INTO ranking (participantID, stageGroup, stageID) VALUES (:participantID, :stageGroup, :stageID)"
+                                inputs = {'participantID': team, 'stageGroup': rankingStgGrpCounter, 'stageID': stageID}
+                                result = conn.execute(text(query), inputs)
+
+                        # Update matchParticipant
                         for grp in placementGrpArray:
                             placementGrpCounter += 1
                             query = "SELECT * FROM matches WHERE stageID = :stageID AND stageGroup = :stageGroup"
