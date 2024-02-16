@@ -168,20 +168,26 @@ class Tournaments:
         projectName = retrieveProjectNavName(projID)
         
         with dbConnect.engine.connect() as conn:
-            query = "SELECT tourName, startDate, endDate, gender, sports.sportName, tourBannerID FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID WHERE tourID = :tourID"
+            query = "SELECT tournaments.*, sports.sportName, generalInfo.* FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID JOIN generalInfo ON tournaments.generalInfoID = generalInfo.generalInfoID WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
             result = conn.execute(text(query), inputs)
             rows = result.fetchall()
+            tourInfo = [row._asdict() for row in rows]
 
-            tourName = rows[0][0]
-            startDate = rows[0][1]
-            endDate = rows[0][2]
-            gender = rows[0][3]
-            sportName = rows[0][4]
-            tourBannerID = rows[0][5]        
+            tourName = tourInfo[0]['tourName']
+            startDate = tourInfo[0]['startDate']
+            endDate = tourInfo[0]['endDate']
+            gender = tourInfo[0]['gender']
+            sportName = tourInfo[0]['sportName']
+            tourBannerID = tourInfo[0]['tourBannerID']
+
+            generalInfoDesc = tourInfo[0]['generalInfoDesc']
+            rules = tourInfo[0]['rules']
+            prize = tourInfo[0]['prize']
+            contact = tourInfo[0]['contact']     
 
             # Render the HTML template with the participant data and total number    
-            return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID, tourBannerID=tourBannerID)
+            return render_template('tournamentOverviewPage.html', sportName=sportName, tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, tourID=tourID, projID=projID, tourBannerID=tourBannerID, generalInfoDesc=generalInfoDesc, rules=rules, prize=prize, contact=contact)
         
     #Tournament Overview Page
     def ParticipantTourOverviewDetails(projID, tourID):
@@ -2076,5 +2082,37 @@ def upload():
             gettournaments = getTour.fetchall()
             tourlist = [row._asdict() for row in gettournaments]
 
-
         return jsonify(currentTourID, tourlist)
+    
+    def tournamentsPublic():
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments"
+            getTourList = conn.execute(text(query))
+            fetchTourList = getTourList.fetchall()
+            tournamentlist = [row._asdict() for row in fetchTourList]
+
+        return render_template('tournamentPublicPage.html', tournamentlist=tournamentlist)
+
+    def tournamentOverviewPublic(tourID):
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT tournaments.*, sports.sportName, generalInfo.* FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID JOIN generalInfo ON tournaments.generalInfoID = generalInfo.generalInfoID WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            getTourInfo = conn.execute(text(query), inputs)
+            fetchTourInfo = getTourInfo.fetchall()
+            tourInfo = [row._asdict() for row in fetchTourInfo]
+
+            tourName = tourInfo[0]['tourName']
+            startDate = tourInfo[0]['startDate']
+            endDate = tourInfo[0]['endDate']
+            gender = tourInfo[0]['gender']
+            sportName = tourInfo[0]['sportName']
+            tourBannerID = tourInfo[0]['tourBannerID']
+
+            generalInfoDesc = tourInfo[0]['generalInfoDesc']
+            rules = tourInfo[0]['rules']
+            prize = tourInfo[0]['prize']
+            contact = tourInfo[0]['contact']
+
+
+        return render_template('tournamentOverviewPublic.html', tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, sportName=sportName, tourBannerID=tourBannerID, tourID=tourID, generalInfoDesc=generalInfoDesc, rules=rules, prize=prize, contact=contact)
+

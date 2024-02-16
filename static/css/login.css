@@ -142,6 +142,6 @@
         text-decoration: none; }
 
 .loginNavPadding {
-  padding-top: 5rem;
+  padding-top: 5rem !important;
 }
     
