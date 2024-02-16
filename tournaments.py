@@ -9,11 +9,15 @@ from googleapiclient.http import MediaIoBaseUpload
 from io import BytesIO
 import math
 
+import mimetypes
+
+
 #Google Drive API credentials
 SCOPES = ['https://www.googleapis.com/auth/drive']
 SERVICE_ACCOUNT_FILE = 'service_account.json'
 PARENT_FOLDER_ID = "1Gjt43kVhn6yAmRT88w11KQSbO2IQvTNZ"
 PARENT_FOLDER_ID_2 = "1UOe9hiR1xh__jy-ZbWjs4NidcBjtEfp7" ### This is part of the parent folder 2 ###
+PARENT_FOLDER_ID_3 = "1RqGSH2e3ISRwE_AahdqsqPHL5eW9JUTg" ### Media pics
 
 def authenticate():
     # Authentication
@@ -65,11 +69,34 @@ def upload_to_google_drive(image, image_2, tour_name):
         else:
             file_id_2 = None
             print("No file2 provided. Skipping upload.")
-        
+
         return file_id, file_id_2
     
     except Exception as e:
         print(f"Error uploading to Google Drive: {e}")
+        return None
+    
+def upload_to_google_drive2(newsMedia):
+    try:
+        drive_service = get_drive_service()
+
+        google_drive_folder_id_3 = PARENT_FOLDER_ID_3
+
+        if newsMedia:
+            file_metadata = {'parents': [google_drive_folder_id_3]}
+            file_bytes = newsMedia.read()
+            file_like_object = BytesIO(file_bytes)
+            media = MediaIoBaseUpload(file_like_object, mimetype='application/octet-stream', resumable=True)
+            file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+            #Get the file_3 ID
+            file_id = file.get('id')
+
+        else:
+            file_id = None
+
+        return file_id
+    
+    except Exception as e:
         return None
 
 app = Flask(__name__)
@@ -1634,22 +1661,215 @@ class Tournaments:
             # Render the HTML template with the moderator data
             return render_template('moderatorsTournament.html', moderatorsTournament=moderatorsTournament)
    
-    #Placement
+    
+    
+    def publicMedia(projID, tourID):
+        # For navbar
+        navtype = 'tournament'
+        tournamentlist = updateNavTournaments(projID)
+        projectName = retrieveProjectNavName(projID)
+
+        with dbConnect.engine.connect() as conn:
+            # Fetch news titles
+            query = "SELECT newsID, newsTitle FROM news WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            result = conn.execute(text(query), inputs)
+            rows = result.fetchall()
+            newsBlock = [row._asdict() for row in rows]
+
+            # Fetch tour name
+            query_tour_name = "SELECT tourName FROM tournaments WHERE tourID = :tourID"
+            result_tour_name = conn.execute(text(query_tour_name), {'tourID': tourID})
+            tourName_row = result_tour_name.fetchone()
+            tourName = tourName_row[0] if tourName_row else None
+
+            # Fetch news details including media files
+            queryNews = """
+                SELECT news.newsID, newsDesc, type, newsMediaCode
+                FROM news LEFT JOIN newsMedia
+                ON news.newsID = newsMedia.newsID
+                WHERE news.tourID = :tourID
+            """
+            result = conn.execute(text(queryNews), {'tourID': tourID})
+            newsDetails = {}
+            for row in result:
+                newsID = row[0]
+                if newsID not in newsDetails:
+                    newsDetails[newsID] = {
+                        'newsDesc': row[1],
+                        'mediaFiles': []
+                    }
+                if row[3]:
+                    newsDetails[newsID]['mediaFiles'].append({
+                        'type': row[2],
+                        'newsMediaCode': row[3]
+                    })
+
+        return render_template('publicMedia.html', newsBlock=newsBlock, newsDetails=newsDetails, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID, tourID=tourID, tourName=tourName)
+
+
+#Placement
     def get_updated_content():
         #for navbar
         tourID = session["placementTour"]
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
-
+        
         # Logic to read and return updated content from seeding.html
         with open('templates\seeding.html', 'r') as file:   
             updated_content = file.read()
         return updated_content
-       
-    def upload():
-        if 'tourImage' not in request.files:
-            flash('No file part', 'error')
-            return redirect(url_for('createTour'))
+
+    def media(projID, tourID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT newsID, newsTitle FROM news WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            result = conn.execute(text(query), inputs)
+            rows = result.fetchall()
+
+            newsBlock = [row._asdict() for row in rows]
+    
+        return render_template('media.html', newsBlock=newsBlock, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+    
+    def createMedia(projID, tourID, userID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "POST":
+            newsTitle = request.form.get("newsTitle")
+            newsDesc = request.form.get("newsDesc")
+            mediaImage = request.files.getlist("mediaImage")
+            userID = session["id"]
+
+            with dbConnect.engine.connect() as conn:
+                queryNews = "INSERT INTO news (newsTitle, newsDesc, tourID, userID) VALUES (:newsTitle, :newsDesc, :tourID, :userID)"
+                inputNews = {'newsTitle':newsTitle, 'newsDesc':newsDesc, 'tourID':tourID, 'userID':userID}
+                createNews = conn.execute(text(queryNews), inputNews)
+
+                newsID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+            
+                for file in mediaImage:
+                    content_type, encoding = mimetypes.guess_type(file.filename)
+                    file_type = 0  # Default value
+                    
+                    # Check the content type or file extension
+                    
+                    if content_type:
+                        if content_type.startswith('image'):
+                            file_type = 1
+                        elif content_type.startswith('video'):
+                            file_type = 2
+                        elif content_type.startswith('audio'):
+                            file_type = 3
+                        else:
+                            print(f'{file.filename} has an unknown format')
+                
+                    queryMedia = "INSERT INTO newsMedia(type, newsMediaCode, newsID) VALUES (:type, :newsMediaCode, :newsID)"
+                    file_id = upload_to_google_drive2(file)
+                    inputMedia = {'type': file_type, 'newsMediaCode': file_id, 'newsID': newsID}
+                    createMedia = conn.execute(text(queryMedia), inputMedia)
+
+            flash('Media Created!', 'success')
+            return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
+        else:
+            return render_template('createMedia.html', tournamentName=tournamentName, navtype=navtype, projID=projID, tourID=tourID, userID=userID)
+    
+    def editMedia(projID, tourID, newsID):
+        # for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "POST":
+            newsTitle = request.form.get("newsTitle")
+            newsDesc = request.form.get("newsDesc")
+            mediaImage = request.files.getlist("mediaImage")
+            newsMediaID = request.form.get("newsMediaID")
+
+            with dbConnect.engine.connect() as conn:
+                queryUpdate = "UPDATE news SET newsTitle = :newsTitle, newsDesc = :newsDesc WHERE newsID = :newsID"
+                inputUpdate = {'newsTitle': newsTitle, 'newsDesc': newsDesc, 'newsID': newsID}
+                conn.execute(text(queryUpdate), inputUpdate)
+
+                if all(file.filename != '' for file in mediaImage):
+            
+                    for file in mediaImage:
+                        content_type, encoding = mimetypes.guess_type(file.filename)
+                        file_type = 0  # Default value
+                
+                        # Check the content type or file extension
+                    
+                        if content_type:
+                            if content_type.startswith('image'):
+                                file_type = 1
+                            elif content_type.startswith('video'):
+                                file_type = 2
+                            elif content_type.startswith('audio'):
+                                file_type = 3
+                            else:
+                                print(f'{file.filename} has an unknown format')
+
+                        queryEditMedia = "INSERT INTO newsMedia(type, newsMediaCode, newsID) VALUES (:type, :newsMediaCode, :newsID)"
+                        file_id = upload_to_google_drive2(file)
+                        inputEditMedia = {'type':file_type, 'newsMediaCode': file_id, 'newsID':newsID }
+                        editMedia = conn.execute(text(queryEditMedia), inputEditMedia)
+
+                flash('Media Updated!', 'success')
+
+            return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
+        else:
+            with dbConnect.engine.connect() as conn:
+                queryOne = """SELECT newsTitle, newsDesc, type, newsMediaCode
+                FROM news LEFT JOIN newsMedia
+                ON news.newsID = newsMedia.newsID
+                WHERE news.tourID = :tourID AND newsMedia.newsID = :newsID"""
+                inputOne = {'tourID': tourID, 'newsID': newsID}
+                editNews = conn.execute(text(queryOne), inputOne)
+                news = editNews.fetchall()
+
+                mediaFiles = [row._asdict() for row in news]
+
+                if news:
+                    newsTitle = news[0][0]
+                    newsDesc = news[0][1]
+                    type = news[0][2]
+                    newsMediaCode = news[0][3]
+
+                else:
+                    flash('Media not found!', 'error')
+
+            return render_template('editMedia.html', mediaFiles=mediaFiles, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, newsID=newsID, newsTitle=newsTitle, newsDesc=newsDesc, type=type, newsMediaCode=newsMediaCode)
+        
+    def deleteMedia(projID, tourID, newsID):
+        #for navbar
+        navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+
+        if request.method == "GET":
+
+            try:
+                with dbConnect.engine.connect() as conn:
+                    queryDelete = "DELETE FROM news WHERE newsID = :newsID"
+                    inputDelete = {'newsID': newsID}
+                    conn.execute(text(queryDelete), inputDelete)
+            
+            except Exception as e:
+                flash('Oops, an error has occured.', 'error')
+                print(f"Error details: {e}")
+
+                return redirect(url_for("loadMedia", tourID=tourID, projID=projID))
+            else:
+                return redirect(url_for("loadMedia", tourID=tourID, projID=projID))
+
+              
+              
+def upload():
+    if 'tourImage' not in request.files:
+        flash('No file part', 'error')
+        return redirect(url_for('createTour'))
 
         tourImage = request.files['tourImage']
 
@@ -1796,5 +2016,6 @@ class Tournaments:
             getTour = conn.execute(text(query))
             gettournaments = getTour.fetchall()
             tourlist = [row._asdict() for row in gettournaments]
+
 
         return jsonify(currentTourID, tourlist)
