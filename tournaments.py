@@ -1021,19 +1021,49 @@ class Tournaments:
             return render_template('createModerator.html', tourID=tourID, navtype=navtype, tournamentName=tournamentName, projID=projID)
     
     def publicMedia(projID, tourID):
-        #for navbar
-        navtype = 'dashboard'
-        tournamentName = retrieveDashboardNavName(tourID)
+        # For navbar
+        navtype = 'tournament'
+        tournamentlist = updateNavTournaments(projID)
+        projectName = retrieveProjectNavName(projID)
 
         with dbConnect.engine.connect() as conn:
+            # Fetch news titles
             query = "SELECT newsID, newsTitle FROM news WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
             result = conn.execute(text(query), inputs)
             rows = result.fetchall()
-
             newsBlock = [row._asdict() for row in rows]
-    
-        return render_template('publicMedia.html', newsBlock=newsBlock, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+
+            # Fetch tour name
+            query_tour_name = "SELECT tourName FROM tournaments WHERE tourID = :tourID"
+            result_tour_name = conn.execute(text(query_tour_name), {'tourID': tourID})
+            tourName_row = result_tour_name.fetchone()
+            tourName = tourName_row[0] if tourName_row else None
+
+            # Fetch news details including media files
+            queryNews = """
+                SELECT news.newsID, newsDesc, type, newsMediaCode
+                FROM news LEFT JOIN newsMedia
+                ON news.newsID = newsMedia.newsID
+                WHERE news.tourID = :tourID
+            """
+            result = conn.execute(text(queryNews), {'tourID': tourID})
+            newsDetails = {}
+            for row in result:
+                newsID = row[0]
+                if newsID not in newsDetails:
+                    newsDetails[newsID] = {
+                        'newsDesc': row[1],
+                        'mediaFiles': []
+                    }
+                if row[3]:
+                    newsDetails[newsID]['mediaFiles'].append({
+                        'type': row[2],
+                        'newsMediaCode': row[3]
+                    })
+
+        return render_template('publicMedia.html', newsBlock=newsBlock, newsDetails=newsDetails, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID, tourID=tourID, tourName=tourName)
+
     
     def media(projID, tourID):
         #for navbar

@@ -151,11 +151,8 @@
                     {% if mediaFile['type'] == 1 %}
                     <img src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}" alt="Image">
                     {% elif mediaFile['type'] == 2 %}
-                    <video controls>
-                        <source src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}"
-                            type="{{ mediaFile['type'] }}">
-                        Your browser does not support the video tag.
-                    </video>
+                    <iframe src="https://drive.google.com/file/d/{{ mediaFile['newsMediaCode'] }}/preview" width="320"
+                        height="180" frameborder="0" allowfullscreen></iframe>
                     {% elif mediaFile['type'] == 3 %}
                     <audio controls>
                         <source src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}"
@@ -258,14 +255,5 @@
             $(this).parent().parent().remove();
         });
     }
-
-    $(document).ready(function () {
-        $('.delete-media-btn').on('click', function () {
-            if (confirm('Are you sure you want to delete this file?')) {
-                var form = $(this).closest('.delete-media-form');
-                form.submit();
-            }
-        });
-    });
 </script>
 {% endblock %}

@@ -175,8 +175,23 @@
 
                     var reader = new FileReader();
                     reader.onload = function (e) {
-                        var html = "<div class='upload__img-box'><div style='background-image: url(" + e.target.result + ")' data-number='" + $(".upload__img-close").length + "' data-file='" + f.name + "' class='img-bg'><div class='upload__img-close'></div></div></div>";
-                        imgWrap.append(html);
+                        if (f.type.startsWith('image')) {
+                            // For images
+                            var html = "<div class='upload__img-box'><div style='background-image: url(" + e.target.result + ")' data-number='" + $(".upload__img-close").length + "' data-file='" + f.name + "' class='img-bg'></div><div class='upload__img-close'>Close</div></div>";
+                            imgWrap.append(html);
+                        } else if (f.type.startsWith('video')) {
+                            // For videos
+                            var video = document.createElement('video');
+                            video.controls = true;
+                            video.src = URL.createObjectURL(f);
+                            // Apply CSS to resize the video
+                            video.style.width = '30%'; // Adjust as needed
+                            video.style.height = 'auto'; // Maintain aspect ratio
+                            var html = "<div class='upload__video-box'><div class='video-container'>" + video.outerHTML + "</div><div class='upload__img-close'>Close</div></div>";
+                            imgWrap.append(html);
+                        } else {
+                            console.error('Unsupported file type:', f.type);
+                        }
                     };
                     reader.readAsDataURL(f);
                 }
@@ -185,12 +200,25 @@
 
         $('body').on('click', ".upload__img-close", function (e) {
             var file = $(this).parent().data("file");
-            for (var i = 0; i < imgArray.length; i++) {
-                if (imgArray[i].name === file) {
-                    imgArray.splice(i, 1);
-                    break;
+            var mediaType = $(this).parent().hasClass("img-bg") ? "image" : "video";
+
+            // Remove the file from the appropriate array
+            if (mediaType === "image") {
+                for (var i = 0; i < imgArray.length; i++) {
+                    if (imgArray[i].name === file) {
+                        imgArray.splice(i, 1);
+                        break;
+                    }
+                }
+            } else if (mediaType === "video") {
+                for (var i = 0; i < videoArray.length; i++) {
+                    if (videoArray[i].name === file) {
+                        videoArray.splice(i, 1);
+                        break;
+                    }
                 }
             }
+
             $(this).parent().parent().remove();
         });
     }

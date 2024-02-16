@@ -172,11 +172,11 @@ def placement(projID, tourID):
 def loadPublicMedia(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadlogin'))
+    else:
+        page = Tournaments.publicMedia(projID, tourID)
+        return page
     
-    page = Tournaments.publicMedia(projID, tourID)
-    return page
-
-@app.route('/media/<projID>/<tourID>' ,methods=["POST", "GET"])
+@app.route('/media/<projID>/<tourID>', methods=["POST", "GET"])
 def loadMedia(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadlogin'))
