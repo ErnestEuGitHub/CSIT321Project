@@ -1,0 +1,27 @@
+{% extends "publicNav.html" %}
+
+{% block content %}
+
+<div class="content loginNavPadding">
+    <div class="search-container">
+        <label for="search-input">Tournaments</label>
+        <input type="text" placeholder="Search...">
+    </div>
+    
+    {% for t in tournamentlist %}
+        <a href="/tournamentOverviewPublic/{{t['tourID']}}" class="boxlink">
+            <div class="box">
+                {% if t['tourImageID'] %}
+                <img src="https://drive.google.com/uc?export=view&id={{t['tourImageID']}}" class="tourImage">
+                {% else %}
+                    <!-- Image placeholder -->
+                    <img src="https://via.placeholder.com/320/F9F9F9?text=Please+Upload+Image" alt="">
+                {% endif %}
+                <p>{{t['tourName']}}</p>
+            </div>
+        </a>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
