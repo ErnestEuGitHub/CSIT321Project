@@ -5,13 +5,16 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="/static/css/navbar.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <head>
     <title>
         {% if navtype == 'tournament' %}
-           Tournaments
+            Tournaments
         {% elif navtype == 'project' %}
             Projects
+        {% elif navtype == 'sysAdmin' %}
+            System Admin
         {% endif %}
     </title>
 </head>
@@ -21,7 +24,9 @@
         <button class="navbar-toggler" type="button" onclick="toggleNavBar()">
             <i class="bi bi-list"></i>
         </button>
-        <a href="/home">GameSphere</a>
+
+            <a href="/home">GameSphere</a>
+
         <div class="toprightnav">
             <div class="firstname">Welcome {{ session["fname"] }}</div>
             <div class="dropdown">
@@ -51,12 +56,13 @@
     <div class="leftnav">
         {% if navtype == 'tournament' %}
             <a href="/home"><i class="bi bi-arrow-left"></i></a>
-            <h2>{{projectName}}</h2>
+            <h2>{{projectName}}</h2>            
             {% for t in tournamentlist %}
                 <a href="/tournamentOverviewPage/{{projID}}/{{t['tourID']}}">{{t['tourName']}}</a>
             {% endfor %}
         {% elif navtype == 'project' %}
             <h2>Projects</h2>
+                <a href="/moderatorsTournament/{{session["id"]}}" class="btn btn-secondary" role="button" aria-disabled="true">Moderator Mode</a>
             {% for p in projects %}
                 <div class="dropdown project-dropdown">
                     <a href="/projects/{{p['projID']}}">{{p['projName']}}</a>
@@ -73,26 +79,67 @@
 
             <a href="/tournamentOverviewPage/{{projID}}/{{tourID}}"><i class="bi bi-arrow-left"></i></a>
             <h2>{{tournamentName}}</h2>
-
             <a href="/dashboard/{{projID}}/{{tourID}}">Dashboard</a>
-            <div class="dropdown" id="settingDropdown">
-                <a class="dropdown-toggle" style="cursor: pointer;">
-                    Setting
-                </a>
-                <ul id="dashboardSettingsNav" style="display:none">
-                    <li><a href="/settings/general/{{projID}}/{{tourID}}">General</a></li>
-                    <li><a href="/moderator/{{projID}}/{{tourID}}">Permission</a></li>
-                    <li><a href="#">Custom Field</a></li>
-                </ul>
-            </div>
-            <a href="/structure/{{projID}}/{{tourID}}">Structure</a>
-            <a href="#">Registration</a>
-            <a href="/participant/{{projID}}/{{tourID}}">Participant</a>
-            <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
-            <a href="#">Match</a>
-            <a href="#">Final Standing</a>
-            <a href="#">Public Page</a>
-            <a href="/media/{{projID}}/{{tourID}}">Media</a>
+
+            {% if isOwner %}
+                <div class="dropdown" id="settingDropdown">
+                    <a class="dropdown-toggle" style="cursor: pointer;">
+                        Setting
+                    </a>
+                    <ul id="dashboardSettingsNav" style="display:none">
+                        <li><a href="/settings/general/{{projID}}/{{tourID}}">General</a></li>
+                        <li><a href="/moderator/{{projID}}/{{tourID}}">Permission</a></li>
+                        <li><a href="#">Custom Field</a></li>
+                    </ul>
+                </div>
+                <a href="/structure/{{projID}}/{{tourID}}">Structure</a>
+                <a href="#">Registration</a>  
+                <a href="/participant/{{projID}}/{{tourID}}">Participant</a>
+                <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
+                <a href="/match/{{projID}}/{{tourID}}">Match</a>
+                <a href="#">Final Standing</a>
+                <a href="#">Public Page</a>
+                <a href="#">Media</a>
+
+            {% else %}
+                {% if "Setup Structure" in moderatorPermissionList %}
+                    <a href="/structure/{{projID}}/{{tourID}}">Structure</a>
+                {% endif %}
+                {% if "Manage Registration" in moderatorPermissionList %}
+                    <a href="#">Registration</a>  
+                {% endif %}
+                {% if "Manage Participant" in moderatorPermissionList %}
+                    <a href="/participant/{{projID}}/{{tourID}}">Participant</a>
+                {% endif %}
+                {% if "Place Participant" in moderatorPermissionList %}
+                    <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
+                {% endif %}
+                {% if "Start Match" in moderatorPermissionList %}
+                    <a href="/match/{{projID}}/{{tourID}}">Match</a>
+                {% endif %}
+                {% if "Manage Final Standing" in moderatorPermissionList %}
+                    <a href="#">Final Standing</a>
+                {% endif %}
+                {% if "Manage Public Page" in moderatorPermissionList %}
+                    <a href="#">Public Page</a>
+                {% endif %}
+                {% if "Manage Media" in moderatorPermissionList %}
+                    <a href="#">Media</a>
+                {% endif %}
+
+            {% endif %}
+
+                
+
+        {% elif navtype == 'sysAdmin' %}
+
+            <h2>System Admin</h2>
+
+            <a href="/projAdmin">Projects</a>
+            <a href="/tourAdmin">Tournaments</a>
+            <a href="/venueAdmin">Venues</a>
+            <a href="/usersAdmin">Users</a>
+    
         {% endif %}
     </div>
 

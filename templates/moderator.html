@@ -19,13 +19,17 @@
             <tbody>
                 {% for moderator in moderators %}
                     <tr>
-                        <td>{{ moderator.email }}</td>
+                        <td>{{ moderator.moderatorEmail }}</td>
                         <td>{{ moderator.permissionName }}</td>
                         <td>
-                            <a href="/editModerator/{{projID}}/{{tourID}}/{{moderatorID}}"><i class="bi bi-pen"></i></a>
+                            <a href="/editModerator/{{projID}}/{{tourID}}/{{moderator.moderatorID}}">
+                                <i class="bi bi-pen"></i>
+                            </a>
                         </td>
                         <td>
-                            <i class="bi bi-person-dash"></i>
+                            <a href="/deleteModerator/{{projID}}/{{tourID}}/{{moderator.moderatorID}}">
+                                <i class="bi bi-person-dash"></i>
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
