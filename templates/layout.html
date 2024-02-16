@@ -99,7 +99,7 @@
                 <a href="/match/{{projID}}/{{tourID}}">Match</a>
                 <a href="#">Final Standing</a>
                 <a href="#">Public Page</a>
-                <a href="#">Media</a>
+                <a href="/media/{{projID}}/{{tourID}}">Media</a>
 
             {% else %}
                 {% if "Setup Structure" in moderatorPermissionList %}
@@ -124,7 +124,7 @@
                     <a href="#">Public Page</a>
                 {% endif %}
                 {% if "Manage Media" in moderatorPermissionList %}
-                    <a href="#">Media</a>
+                    <a href="/media/{{projID}}/{{tourID}}">Media</a>
                 {% endif %}
 
             {% endif %}
