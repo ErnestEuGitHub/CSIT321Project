@@ -431,6 +431,7 @@ class Tournaments:
                             print(currentMatchArray)
                                 
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
+                        
                         print("stageFormatID is "+ stageFormatID)
                         roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
                         roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}

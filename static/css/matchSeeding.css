@@ -6,14 +6,14 @@
     box-sizing: border-box;
 } */
 
-/* .content {
+.content {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     margin-top: 20px;
     margin-left: 20px;
     max-width: 1600px;
     overflow-x: auto;
-} */
+}
 
 /* Styles for panel 1 */
 /* .panel {
@@ -73,6 +73,10 @@
     white-space: nowrap;
     font-size: 5;
     margin-bottom: 2rem;
+    max-width: 950px;
+    min-width: 950px;
+    overflow-x: auto;
+    overflow-y: auto;
   }
   .bracket .round {
     display: inline-block;
