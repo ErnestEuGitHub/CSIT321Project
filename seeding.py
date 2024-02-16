@@ -97,8 +97,11 @@ def seeding(projID, tourID, stageID):
                     inputs = {'matchID': fetchmatches[0][0]}
                     result = conn.execute(text(query), inputs)
                     checkMatchPart = result.fetchall()
+                    checkMatchPartArray = [row._asdict() for row in checkMatchPart]
+                    
+                    firstMatchPart = checkMatchPartArray[0]['participantID']
 
-                    if len(checkMatchPart) > 0:
+                    if firstMatchPart > 0:
                         #Split Placements List of Participantns into different group
                         query = "SELECT numberOfParticipants, numberOfGroups FROM stages WHERE stageID = :stageID"
                         inputs = {'stageID': stageID}
@@ -109,57 +112,61 @@ def seeding(projID, tourID, stageID):
                         numberOfGroups = rows[0][1]
 
                         teamsPerGrp = numberOfParticipants // numberOfGroups
+                        print('teamsPerGrp array is:', teamsPerGrp)
 
                         placementGrpArray = chunk_list(placements, teamsPerGrp)
+                        print('placement grp array is:', placementGrpArray)
 
-                        count = 0
-                        matchcounter = 0
-                        #Generate different combinations required for match participants and store in matchParticipants
-                        for group in placementGrpArray:
-                            def round_robin_teams(teams):
-                                return list(combinations(teams, 2))
+                        # count = 0
+                        # matchcounter = 0
+                        # #Generate different combinations required for match participants and store in matchParticipants
+                        # for group in placementGrpArray:
+                        #     def round_robin_teams(teams):
+                        #         return list(combinations(teams, 2))
                             
-                            pairings = round_robin_teams(group)
+                        #     pairings = round_robin_teams(group)
+                        #     print('parings is:', pairings)
 
-                            #For each match, Insert pairings into matchParticipants
-                            for matchpair in pairings:
-                                # print(f"{match[0]} vs {match[1]}")
-                                matchID = fetchmatches[matchcounter][0]
+                        #     #For each match, Insert pairings into matchParticipants
+                        #     for matchpair in pairings:
+                        #         # print(f"{match[0]} vs {match[1]}")
+                        #         matchID = fetchmatches[matchcounter][0]
 
-                                query = "SELECT participantID FROM participants WHERE participantName = :participantName"
-                                inputs = {'participantName': matchpair[0]}
-                                result = conn.execute(text(query), inputs)
-                                rows = result.fetchone()
+                        #         query = "SELECT participantID FROM participants WHERE participantName = :participantName"
+                        #         inputs = {'participantName': matchpair[0]}
+                        #         result = conn.execute(text(query), inputs)
+                        #         rows = result.fetchone()
 
-                                if rows is None:
-                                    firstteam = 0
-                                else:
-                                    firstteam = rows[0]
+                        #         if rows is None:
+                        #             firstteam = 0
+                        #         else:
+                        #             firstteam = rows[0]
 
-                                inputs = {'participantName': matchpair[1]}
-                                result = conn.execute(text(query), inputs)
-                                rows = result.fetchone()
+                        #         inputs = {'participantName': matchpair[1]}
+                        #         result = conn.execute(text(query), inputs)
+                        #         rows = result.fetchone()
 
-                                if rows is None:
-                                    secondteam = 0
-                                else:
-                                    secondteam = rows[0]
+                        #         if rows is None:
+                        #             secondteam = 0
+                        #         else:
+                        #             secondteam = rows[0]
                                 
-                                query = "SELECT * FROM matchParticipant WHERE matchID = :matchID"
-                                inputs = {'matchID': matchID}
-                                result = conn.execute(text(query), inputs)
-                                getcurrentPartIDs = result.fetchall()
+                        #         query = "SELECT * FROM matchParticipant WHERE matchID = :matchID"
+                        #         inputs = {'matchID': matchID}
+                        #         result = conn.execute(text(query), inputs)
+                        #         getcurrentPartIDs = result.fetchall()
 
-                                query = "UPDATE matchParticipant set participantID = :participantID WHERE matchParticipantID = :matchParticipantID"
-                                inputs = {'participantID': firstteam, 'matchParticipantID': getcurrentPartIDs[0][0]}
-                                result = conn.execute(text(query), inputs)
+                        #         query = "UPDATE matchParticipant set participantID = :participantID WHERE matchParticipantID = :matchParticipantID"
+                        #         inputs = {'participantID': firstteam, 'matchParticipantID': getcurrentPartIDs[0][0]}
+                        #         result = conn.execute(text(query), inputs)
 
-                                query = "UPDATE matchParticipant set participantID = :participantID WHERE matchParticipantID = :matchParticipantID"
-                                inputs = {'participantID': secondteam, 'matchParticipantID': getcurrentPartIDs[1][0]}
-                                result = conn.execute(text(query), inputs)
+                        #         query = "UPDATE matchParticipant set participantID = :participantID WHERE matchParticipantID = :matchParticipantID"
+                        #         inputs = {'participantID': secondteam, 'matchParticipantID': getcurrentPartIDs[1][0]}
+                        #         result = conn.execute(text(query), inputs)
 
-                                matchcounter = matchcounter + 1
-
+                        #         matchcounter = matchcounter + 1
+                        flash('Seeding has previously been updated, unable to set seeding again!', 'error')
+                        return jsonify({'message': 'Seeding has previously been updated!', 'category': 'success', 'redirect': url_for("loadSeeding", projID=projID, tourID=tourID, stageID=stageID)})
 
                     else:
                         #Split Placements List of Participantns into different group
@@ -172,48 +179,85 @@ def seeding(projID, tourID, stageID):
                         numberOfGroups = rows[0][1]
 
                         teamsPerGrp = numberOfParticipants // numberOfGroups
+                        print('teamsPerGrp array is:', teamsPerGrp)
 
                         placementGrpArray = chunk_list(placements, teamsPerGrp)
+                        print('placement grp array is:', placementGrpArray)
 
-                        count = 0
-                        #Generate different combinations required for match participants and store in matchParticipants
-                        for group in placementGrpArray:
-                            def round_robin_teams(teams):
-                                return list(combinations(teams, 2))
-                            
-                            pairings = round_robin_teams(group)
+                        placementGrpCounter = 0
 
-                            #For each match, Insert pairings into matchParticipants
-                            for matchpair in pairings:
-                                # print(f"{match[0]} vs {match[1]}")
-
+                        #converting all names to IDs
+                        for grp in placementGrpArray:
+                            for idx, team in enumerate(grp):
                                 query = "SELECT participantID FROM participants WHERE participantName = :participantName"
-                                inputs = {'participantName': matchpair[0]}
+                                inputs = {'participantName': team}
                                 result = conn.execute(text(query), inputs)
-                                rows = result.fetchone()
+                                fetchPartID = result.fetchone()
 
-                                if rows is None:
-                                    firstteam = 0
-                                else:
-                                    firstteam = rows[0]
+                                if fetchPartID:
+                                    grp[idx] = fetchPartID[0]  # Replace team name with participant ID
 
-                                inputs = {'participantName': matchpair[1]}
-                                result = conn.execute(text(query), inputs)
-                                rows = result.fetchone()
+                        print('New placementGrpArray with ID is:', placementGrpArray)
+                        for grp in placementGrpArray:
+                            placementGrpCounter += 1
+                            query = "SELECT * FROM matches WHERE stageID = :stageID AND stageGroup = :stageGroup"
+                            inputs = {'stageID': stageID, 'stageGroup': placementGrpCounter}
+                            result = conn.execute(text(query), inputs)
+                            fetchMatchList = result.fetchall()
+                            MatchList = [row._asdict() for row in fetchMatchList]
 
-                                if rows is None:
-                                    secondteam = 0
-                                else:
-                                    secondteam = rows[0]
+                            for match in MatchList:
+                                teamsInGrpCounter = 0
+                                for teams in grp:
+                                    query = "UPDATE matchParticipant SET participantID = :participant WHERE matchID = :matchID AND participantID = :tempNum"
+                                    inputs = {'participant': teams, 'matchID': match['matchID'], 'tempNum': (teamsInGrpCounter+1) * -1}
+                                    result = conn.execute(text(query), inputs)
+
+                                    query = "UPDATE matchParticipant SET participantID = :participant WHERE matchID = :matchID AND participantID = :tempNum"
+
+                                    teamsInGrpCounter+=1
+
+
+                        # count = 0
+                        # #Generate different combinations required for match participants and store in matchParticipants
+                        # for group in placementGrpArray:
+                        #     def round_robin_teams(teams):
+                        #         return list(combinations(teams, 2))
+                            
+                        #     pairings = round_robin_teams(group)
+                        #     print('parings is:', pairings)
+
+                        #     #For each match, Insert pairings into matchParticipants
+                        #     for matchpair in pairings:
+                        #         # print(f"{match[0]} vs {match[1]}")
+
+                        #         query = "SELECT participantID FROM participants WHERE participantName = :participantName"
+                        #         inputs = {'participantName': matchpair[0]}
+                        #         result = conn.execute(text(query), inputs)
+                        #         rows = result.fetchone()
+
+                        #         if rows is None:
+                        #             firstteam = 0
+                        #         else:
+                        #             firstteam = rows[0]
+
+                        #         inputs = {'participantName': matchpair[1]}
+                        #         result = conn.execute(text(query), inputs)
+                        #         rows = result.fetchone()
+
+                        #         if rows is None:
+                        #             secondteam = 0
+                        #         else:
+                        #             secondteam = rows[0]
                                 
-                                query = "INSERT INTO matchParticipant (participantID, matchID) VALUES (:participantID, :matchID)"
-                                inputs = {'participantID': firstteam, 'matchID':fetchmatches[count][0]}
-                                result = conn.execute(text(query), inputs)
+                        #         query = "INSERT INTO matchParticipant (participantID, matchID) VALUES (:participantID, :matchID)"
+                        #         inputs = {'participantID': firstteam, 'matchID':fetchmatches[count][0]}
+                        #         result = conn.execute(text(query), inputs)
 
-                                inputs = {'participantID': secondteam, 'matchID':fetchmatches[count][0]}
-                                result = conn.execute(text(query), inputs)
+                        #         inputs = {'participantID': secondteam, 'matchID':fetchmatches[count][0]}
+                        #         result = conn.execute(text(query), inputs)
 
-                                count = count + 1
+                        #         count = count + 1
 
                     #Game Participant Code
                     matchesarray = [row._asdict() for row in fetchmatches]

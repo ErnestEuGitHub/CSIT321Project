@@ -85,32 +85,44 @@
                         <li><a href="#">Custom Field</a></li>
                     </ul>
                 </div>
+                <a href="/structure/{{projID}}/{{tourID}}">Structure</a>
+                <a href="#">Registration</a>  
+                <a href="/participant/{{projID}}/{{tourID}}">Participant</a>
+                <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
+                <a href="/match/{{projID}}/{{tourID}}">Match</a>
+                <a href="#">Final Standing</a>
+                <a href="#">Public Page</a>
+                <a href="#">Media</a>
+
+            {% else %}
+                {% if "Setup Structure" in moderatorPermissionList %}
+                    <a href="/structure/{{projID}}/{{tourID}}">Structure</a>
+                {% endif %}
+                {% if "Manage Registration" in moderatorPermissionList %}
+                    <a href="#">Registration</a>  
+                {% endif %}
+                {% if "Manage Participant" in moderatorPermissionList %}
+                    <a href="/participant/{{projID}}/{{tourID}}">Participant</a>
+                {% endif %}
+                {% if "Place Participant" in moderatorPermissionList %}
+                    <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
+                {% endif %}
+                {% if "Start Match" in moderatorPermissionList %}
+                    <a href="/match/{{projID}}/{{tourID}}">Match</a>
+                {% endif %}
+                {% if "Manage Final Standing" in moderatorPermissionList %}
+                    <a href="#">Final Standing</a>
+                {% endif %}
+                {% if "Manage Public Page" in moderatorPermissionList %}
+                    <a href="#">Public Page</a>
+                {% endif %}
+                {% if "Manage Media" in moderatorPermissionList %}
+                    <a href="#">Media</a>
+                {% endif %}
+
             {% endif %}
 
-            {% if "Setup Structure" in moderatorPermissionList %}
-                <a href="/structure/{{projID}}/{{tourID}}">Structure</a>
-            {% endif %}
-            {% if "Manage Registration" in moderatorPermissionList %}
-                <a href="#">Registration</a>  
-            {% endif %}
-            {% if "Manage Participant" in moderatorPermissionList %}
-                <a href="/participant/{{projID}}/{{tourID}}">Participant</a>
-            {% endif %}
-            {% if "Place Participant" in moderatorPermissionList %}
-                <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
-            {% endif %}
-            {% if "Start Match" in moderatorPermissionList %}
-                <a href="/match/{{projID}}/{{tourID}}">Match</a>
-            {% endif %}
-            {% if "Manage Final Standing" in moderatorPermissionList %}
-                <a href="#">Final Standing</a>
-            {% endif %}
-            {% if "Manage Public Page" in moderatorPermissionList %}
-                <a href="#">Public Page</a>
-            {% endif %}
-            {% if "Manage Media" in moderatorPermissionList %}
-                <a href="#">Media</a>
-            {% endif %}
+                
 
         {% elif navtype == 'sysAdmin' %}
 

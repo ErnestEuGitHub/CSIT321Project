@@ -25,7 +25,13 @@
 					<div class="row justify-content-center h-100">
 						<div class="col-xxl-10 col-xl-8 col-lg-8 col-md-9 col-sm-10">
 							<div class="card-body p-5">
-								<h1 class="fs-4 card-title fw-bold mb-4">Create Tournament</h1>
+								<div class="card-body pt-5 d-flex justify-content-between align-items-center">
+									<h1 class="fs-4 card-title fw-bold">Create Tournament</h1>
+									<div class="d-flex">
+										<a href="/createTemplate/{{projID}}" class="btn btn-success" target="_blank">Create Template</a>
+										<a href="/editTemplate/{{projID}}" class="btn btn-success ms-2" target="_blank">Edit Template</a>
+									</div>
+								</div>
 
 								<form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">
 	
@@ -70,9 +76,12 @@
 										</div>
 
 										<div class="mb-4 col-xl-4">
-											<label class="mb-2 text-muted" for="format">Format<span class="text-danger">*</span></label>
-											<select id="format" class="form-select" name="format" required autofocus>
-												
+											<label class="mb-2 text-muted" for="template">Template for Stages<span class="text-danger">*</span></label>
+											<select id="template" class="form-select" name="template" required autofocus>
+												<option value="0" selected>No Template</option>
+												{% for temp in templatelist %}
+                                                    <option value="{{temp['templateID']}}"> {{temp['templateName']}}</option>
+                                                {% endfor %}
 											</select>
 										</div>
 
@@ -116,33 +125,35 @@
 	
 	<script>
 		$(document).ready(function () {
-			function populateFormatDropdown(selectedSport) {
-				$.ajax({
-					type: "POST",
-					url: "/get_formats",  // Update the route to handle format retrieval
-					data: { sport_id: selectedSport },
-					success: function (response) {
-						// Populate format dropdown with the received data
-						$("#format").html(response.options);
+			// function populateFormatDropdown(selectedSport) {
+			// 	$.ajax({
+			// 		type: "POST",
+			// 		url: "/get_formats",  // Update the route to handle format retrieval
+			// 		data: { sport_id: selectedSport },
+			// 		success: function (response) {
+			// 			// Populate format dropdown with the received data
+			// 			$("#format").html(response.options);
 
-						var selectedFormat = "{{ format }}";  // Replace with the actual variable from Flask
-						$("#format").val(selectedFormat);
-					},
-					error: function (error) {
-						console.error("Error:", error);
-					}
-				});
-			}
+			// 			var selectedFormat = "{{ format }}";  // Replace with the actual variable from Flask
+			// 			$("#format").val(selectedFormat);
+			// 		},
+			// 		error: function (error) {
+			// 			console.error("Error:", error);
+			// 		}
+			// 	});
+			// }
 			
-			// Initial population on page load
-			var selectedSport = $("#sport").val();
-			populateFormatDropdown(selectedSport);
+			// // Initial population on page load
+			// var selectedSport = $("#sport").val();
+			// populateFormatDropdown(selectedSport);
 
-			// Change event for the sport dropdown
-			$("#sport").change(function () {
-				var selectedSport = $(this).val();
-				populateFormatDropdown(selectedSport);
-			});
+			// // Change event for the sport dropdown
+			// $("#sport").change(function () {
+			// 	var selectedSport = $(this).val();
+			// 	populateFormatDropdown(selectedSport);
+			// });
+
+
     	});
 	</script>
 
