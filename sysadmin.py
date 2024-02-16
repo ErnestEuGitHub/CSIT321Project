@@ -12,6 +12,102 @@ from io import BytesIO
 
 import re, bcrypt
 
+# This is for the Sys admin Project Side
+#Google Drive API credentials
+SCOPES = ['https://www.googleapis.com/auth/drive']
+SERVICE_ACCOUNT_FILE = 'service_account.json'
+PARENT_FOLDER_ID = "1pXEfSCViy_yQTXJyS27_dH-un0fJoBdm"
+PARENT_FOLDER_ID_2 = "1Gjt43kVhn6yAmRT88w11KQSbO2IQvTNZ"
+PARENT_FOLDER_ID_3 = "1UOe9hiR1xh__jy-ZbWjs4NidcBjtEfp7"
+
+def authenticate():
+    # Authentication
+    creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    return creds
+
+def get_drive_service():
+    # Create and return a Google Drive service instance using the authenticated credentials
+    creds = authenticate()
+    return build('drive', 'v3', credentials=creds)
+
+def upload_to_google_drive(image, proj_name):
+    try: 
+        drive_service = get_drive_service()
+
+        google_drive_folder_id = PARENT_FOLDER_ID
+
+        if image:
+            # Prepare metadata
+            file_metadata = {'name': f'{proj_name}', 'parents': [google_drive_folder_id]}
+
+            file_bytes = image.read()
+
+            file_like_object = BytesIO(file_bytes)
+
+            media = MediaIoBaseUpload(file_like_object, mimetype='application/octet-stream', resumable=True)
+
+            file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
+            # Get the file ID
+            file_id = file.get('id')
+
+            return file_id
+        else:
+            # skip upload if no upload provided
+            return None
+
+    except Exception as e:
+        print(f"Error uploading to Google Drive: {e}")
+        return None
+# End of Sys Admin Project Side
+    
+# Start of Sys Admin Tour side
+def upload_to_google_drive_2(tour_image, tour_image_2, tour_name):
+    try:
+        drive_service = get_drive_service()
+
+        google_drive_folder_id_2 = PARENT_FOLDER_ID_2
+        google_drive_folder_id_3 = PARENT_FOLDER_ID_3
+        
+        ### Upload the first file
+        if tour_image:
+            # Prepare metadata
+            file_metadata_2 = {'name': f'{tour_name}', 'parents': [google_drive_folder_id_2]}
+            file_bytes_2 = tour_image.read()
+            file_like_object_2 = BytesIO(file_bytes_2)
+            media_2 = MediaIoBaseUpload(file_like_object_2, mimetype='application/octet-stream', resumable=True)
+            file_2 = drive_service.files().create(body=file_metadata_2, media_body=media_2, fields='id').execute()
+            # Get the file ID
+            file_id_2 = file_2.get('id')
+            print(f"File 1 ID: {file_id_2}")
+
+        else:
+            file_id_2 = None
+            print("No file1 provided. Skipping upload.")
+
+        # Upload the second file
+        
+        if tour_image_2:
+            # Prepare metadata_2
+            file_metadata_3 = {'name': f'{tour_name}', 'parents': [google_drive_folder_id_3]}
+            file_bytes_3 = tour_image_2.read()
+            file_like_object_3 = BytesIO(file_bytes_3)
+            media_3 = MediaIoBaseUpload(file_like_object_3, mimetype='application/octet-stream', resumable=True)
+            file_3 = drive_service.files().create(body=file_metadata_3, media_body=media_3, fields='id').execute()
+            # Get the file_2 ID
+            file_id_3 = file_3.get('id')
+            print(f"File 3 ID: {file_id_3}")
+        else:
+            file_id_3 = None
+            print("No file3 provided. Skipping upload.")
+        
+        return file_id_2, file_id_3
+    
+    except Exception as e:
+        print(f"Error uploading to Google Drive: {e}")
+        return None
+# End of Sys Admin Tour side
+
 def sysAdminHome():
     navtype = 'sysAdmin'
             
@@ -64,8 +160,8 @@ def createProjAdmin():
             try:
                 with dbConnect.engine.connect() as conn:
                     query = "INSERT INTO projects (projName, projStartDate, projEndDate, userID, statusID, projImageID) VALUES (:projName, :projStartDate, :projEndDate, :userID, :statusID, :projImageID)"
-                    # file_id = upload_to_google_drive(projImage, projName)
-                    inputs = {'projName': projName, 'projStartDate': startDate, 'projEndDate': endDate, 'userID': owner, 'statusID':status, 'projImageID': None}
+                    file_id = upload_to_google_drive(projImage, projName)
+                    inputs = {'projName': projName, 'projStartDate': startDate, 'projEndDate': endDate, 'userID': owner, 'statusID':status, 'projImageID': file_id}
                     createProject = conn.execute(text(query), inputs)
 
                 # userID = session["id"]
@@ -131,11 +227,14 @@ def ProjSettingsAdmin(projID):
                 try:
                     with dbConnect.engine.connect() as conn:
                         query = "UPDATE projects SET projName = :projName,  projStartDate = :projStartDate, projEndDate = :projEndDate, userID = :userID, projImageID = :projImageID, statusID = :statusID WHERE projID = :projID"
-                        inputs = {'projName':projName, 'projStartDate':startDate, 'projEndDate':endDate, 'userID': owner, 'statusID':status, 'projImageID': None, 'projID':projID}
+                        # add the file ID thingy = upload_to_google_drive(blah,blah) HERE
+                        file_id = upload_to_google_drive(projImage, projName)
+                        print(f"File ID from Google Drive: {file_id}")  # This line is for debugging
+                        inputs = {'projName':projName, 'projStartDate':startDate, 'projEndDate':endDate, 'userID': owner, 'statusID':status, 'projImageID': file_id, 'projID':projID}
                         updateProject = conn.execute(text(query), inputs)
                         flash('Project Updated!', 'success')
 
-                        return redirect(url_for('loadProjSettingsAdmin', projID=projID))
+                        return redirect(url_for('loadProjAdminSetting', projID=projID))
 
                 except Exception as e:
                     flash('Oops, an error has occured.', 'error')
@@ -255,8 +354,8 @@ def createTourAdmin():
                     getID = createNewGeneralInfo.lastrowid
 
                     query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
-                    # file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
-                    inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':owner, 'generalInfoID':getID, 'tourImageID': None, 'tourBannerID': None}
+                    file_id_2 = upload_to_google_drive_2(tourImage, bannerImage, tourName)
+                    inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':owner, 'generalInfoID':getID, 'tourImageID': file_id_2[0], 'tourBannerID': file_id_2[1]}
                     createTournament = conn.execute(text(query), inputs)
                 
                 flash('Tournament Created!', 'success')
@@ -430,7 +529,7 @@ def TourSettingsAdmin(tourID):
             projectslist = [row._asdict() for row in rows]
             
             #getting general tab information
-            query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.projID, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.userID, tournaments.generalInfoID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
+            query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.projID, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.userID, tournaments.generalInfoID, tournaments.tourImageID, tournaments.tourBannerID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
             inputs = {'tourID': tourID}
             result = conn.execute(text(query), inputs)
             rows = result.fetchall()
@@ -445,6 +544,8 @@ def TourSettingsAdmin(tourID):
             format = tourDetails[0]['formatName']
             status = tourDetails[0]['statusID']
             generalInfoID = tourDetails[0]['generalInfoID']
+            tourImageID = tourDetails[0]['tourImageID']
+            tourBannerID = tourDetails[0]['tourBannerID']
             projID = tourDetails[0]['projID']
             owner = tourDetails[0]['userID']
 
@@ -485,7 +586,7 @@ def TourSettingsAdmin(tourID):
                 prize = ""
                 contact = ""
 
-        return render_template('sysAdminTourSettings.html', navtype=navtype, sportlist=sportsOptions, organiserlist=organiserlist, projectslist=projectslist, tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, owner=owner, project=projID, tourID=tourID)
+        return render_template('sysAdminTourSettings.html', navtype=navtype, sportlist=sportsOptions, organiserlist=organiserlist, projectslist=projectslist, tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), format=format, status=status, tourImageID=tourImageID, tourBannerID=tourBannerID, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, owner=owner, project=projID, tourID=tourID)
 
 def venueAdmin():
     navtype = 'sysAdmin'

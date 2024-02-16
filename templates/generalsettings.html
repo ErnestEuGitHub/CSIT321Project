@@ -43,81 +43,108 @@
 									</li>
 								</ul>
 								
-								<form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off">
+								<form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off" enctype="multipart/form-data">
 									<div class="tab-content">
 										<div class="tab-pane fade show active" id="General" role="tabpanel" aria-labelledby="GeneralTab">
-											<!-- <form action="" method="POST" class="needs-validation" novalidate="" autocomplete="off"> -->
+											<div class="row mb-3 justify-content-sm-center">
+												<div class="mb-4">
+													<label class="mb-2 text-muted" for="tourName">Tournament Name<span class="text-danger">*</span></label>
+													<input id="tourName" type="text" class="form-control" name="tourName" value="{{ tourName }}" placeholder="Eg. Men's Singles Badminton" style="#tourName::placeholder {color: #888;}" required autofocus>
+												</div>
 												
-												<div class="row mb-3 justify-content-sm-center">
+												<div class="mb-4 col-xl-4">
+													<label class="mb-2 text-muted" for="tourSize">Size of Participants<span class="text-danger">*</span></label>
+													<input id="tourSize" type="number" class="form-control" name="tourSize" value="{{ tourSize }}" min="0" required autofocus>
+												</div>
+
+												<div class="mb-4 col-xl-4">
+													<label class="mb-2 text-muted" for="startDate">Start Date<span class="text-danger">*</span></label>
+													<input id="startDate" type="date" class="form-control" name="startDate" value="{{ startDate }}" required autofocus>
+												</div>
+
+												<div class="mb-4 col-xl-4">
+													<label class="mb-2 text-muted" for="endDate">End Date<span class="text-danger">*</span></label>
+													<input id="endDate" type="date" class="form-control" name="endDate" value="{{ endDate }}" required autofocus>
+												</div>
+
+												<div class="mb-4 col-xl-4">
+													<label class="mb-2 text-muted" for="gender">Gender</label>
+													<select id="gender" class="form-select" name="gender" required autofocus>
+														<option value="Male" {% if gender == 'Male' %} selected {% endif %}>Male</option>
+														<option value="Female" {% if gender == 'Female' %} selected {% endif %}>Female</option>
+														<option value="Mixed" {% if gender == 'Mixed' %} selected {% endif %}>Mixed</option>
+													</select>
+												</div>
+
+												<div class="mb-4 col-xl-4">
+													<label class="mb-2 text-muted" for="sport">Sport<span class="text-danger">*</span></label>
+													<select id="sport" class="form-select" name="sport" required autofocus>
+														<!-- <option value="">Please select a sport first</option> -->
+														{%for s in sportlist %}
+															<option value="{{s['sportID']}}" {% if sport == s['sportID'] %} selected {% endif %}>{{s['sportName']}}</option>
+														{% endfor %}
+													</select>
+												</div>
+
+												<div class="mb-4 col-xl-4">
+													<label class="mb-2 text-muted" for="format">Format<span class="text-danger">*</span></label>
+													<select id="format" class="form-select" name="format" required autofocus>
+														
+													</select>
+												</div>
+
+												<div class="mb-4 col-xl-12">
+													<label class="mb-2 text-muted" for="endDate">Status<span class="text-danger">*</span></label>
+													<select id="status" class="form-select" name="status" required autofocus>
+														<option value="1" {% if status == 1 %} selected {% endif %}>Registration</option>
+														<option value="2" {% if status == 2 %} selected {% endif %}>Ongoing</option>
+														<option value="3" {% if status == 3 %} selected {% endif %}>Ended</option>
+														<option value="4" {% if status == 4 %} selected {% endif %}>Pending</option>
+														<option value="6" {% if status == 6 %} selected {% endif %}>Published</option>
+													</select>
+												</div>
+
+												<div>
+													<p>Current Image of Tournament</p>
+
+													{% if tourImageID %}
+													<img src="https://drive.google.com/thumbnail?id={{tourImageID}}&sz=s400" alt="" height="150px">
+													{% else %}
+													<!-- Image placeholder -->
+													<img src="https://via.placeholder.com/320/F9F9F9?text=Please+Upload+Image" alt="">
+													{% endif %}
+												
+													<p>Current Banner of Tournament</p>
+													{% if tourBannerID %}
+													<img src="https://drive.google.com/thumbnail?id={{tourBannerID}}&sz=s4000" alt="" height="350px">
+													{% else %}
+													<!-- Image placeholder -->
+													<img src="https://via.placeholder.com/600x350/F9F9F9?text=Please+Upload+Banner+Image" alt="" height="350px">
+													{% endif %}
+												
 													<div class="mb-4">
-														<label class="mb-2 text-muted" for="tourName">Tournament Name<span class="text-danger">*</span></label>
-														<input id="tourName" type="text" class="form-control" name="tourName" value="{{ tourName }}" placeholder="Eg. Men's Singles Badminton" style="#tourName::placeholder {color: #888;}" required autofocus>
+														<label class="mb-2 text-muted" for="tourImage">Tournament Image</label>
+														<input id="tour_image" type="file" class="form-control" name="tourImage" accept="image/*" required>
 													</div>
-													
-													<div class="mb-4 col-xl-4">
-														<label class="mb-2 text-muted" for="tourSize">Size of Participants<span class="text-danger">*</span></label>
-														<input id="tourSize" type="number" class="form-control" name="tourSize" value="{{ tourSize }}" min="0" required autofocus>
+	
+													<div class="mb-4">
+														<label class="mb-2 text-muted" for="tourImage2">Tournament Banner Image</label>
+														<input id="tour_image_2" type="file" class="form-control" name="tourImage2" accept="image/*" required>
 													</div>
-
-													<div class="mb-4 col-xl-4">
-														<label class="mb-2 text-muted" for="startDate">Start Date<span class="text-danger">*</span></label>
-														<input id="startDate" type="date" class="form-control" name="startDate" value="{{ startDate }}" required autofocus>
+	
+													<div class="d-flex align-items-center">
+														<button type="submit" class="btn btn-primary ms-auto">
+															Update All Tabs
+														</button>
 													</div>
-
-													<div class="mb-4 col-xl-4">
-														<label class="mb-2 text-muted" for="endDate">End Date<span class="text-danger">*</span></label>
-														<input id="endDate" type="date" class="form-control" name="endDate" value="{{ endDate }}" required autofocus>
-													</div>
-
-													<div class="mb-4 col-xl-4">
-														<label class="mb-2 text-muted" for="gender">Gender</label>
-														<select id="gender" class="form-select" name="gender" required autofocus>
-															<option value="Male" {% if gender == 'Male' %} selected {% endif %}>Male</option>
-															<option value="Female" {% if gender == 'Female' %} selected {% endif %}>Female</option>
-															<option value="Mixed" {% if gender == 'Mixed' %} selected {% endif %}>Mixed</option>
-														</select>
-													</div>
-
-													<div class="mb-4 col-xl-4">
-														<label class="mb-2 text-muted" for="sport">Sport<span class="text-danger">*</span></label>
-														<select id="sport" class="form-select" name="sport" required autofocus>
-															<!-- <option value="">Please select a sport first</option> -->
-															{%for s in sportlist %}
-																<option value="{{s['sportID']}}" {% if sport == s['sportID'] %} selected {% endif %}>{{s['sportName']}}</option>
-															{% endfor %}
-														</select>
-													</div>
-
-													<div class="mb-4 col-xl-4">
-														<label class="mb-2 text-muted" for="format">Format<span class="text-danger">*</span></label>
-														<select id="format" class="form-select" name="format" required autofocus>
-															
-														</select>
-													</div>
-
-													<div class="mb-4 col-xl-12">
-														<label class="mb-2 text-muted" for="endDate">Status<span class="text-danger">*</span></label>
-														<select id="status" class="form-select" name="status" required autofocus>
-															<option value="1" {% if status == 1 %} selected {% endif %}>Registration</option>
-															<option value="2" {% if status == 2 %} selected {% endif %}>Ongoing</option>
-															<option value="3" {% if status == 3 %} selected {% endif %}>Ended</option>
-															<option value="4" {% if status == 4 %} selected {% endif %}>Pending</option>
-															<option value="6" {% if status == 6 %} selected {% endif %}>Published</option>
-														</select>
-													</div>
-
-													<input type="hidden" name="formIdentifier" value="general">
-													<!-- <div class="mb-4">
-														<label class="mb-2 text-muted" for="generalInfo">General Info</label>
-														<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" rows="5" required autofocus style="resize: none;">{{ generalInfo }}</textarea>
-													</div> -->
 												</div>
 
-												<div class="d-flex align-items-center">
-													<button type="submit" class="btn btn-primary ms-auto">
-														Update All Tabs
-													</button>
-												</div>
+												<!-- <input type="hidden" name="formIdentifier" value="general"> -->
+												<!-- <div class="mb-4">
+													<label class="mb-2 text-muted" for="generalInfo">General Info</label>
+													<textarea id="generalInfo" type="text" class="form-control" name="generalInfo" rows="5" required autofocus style="resize: none;">{{ generalInfo }}</textarea>
+												</div> -->
+											</div>
 											<!-- </form> -->
 										</div>
 										<div class="tab-pane fade" id="Details" role="tabpanel" aria-labelledby="DetailsTab">
@@ -137,7 +164,7 @@
 													<textarea id="prize" type="text" class="form-control" name="prize" rows="5" required autofocus style="resize: none;">{{ prize }}</textarea>
 												</div>
 												
-												<input type="hidden" name="formIdentifier" value="details">
+												<!-- <input type="hidden" name="formIdentifier" value="details"> -->
 
 												<div class="d-flex align-items-center">
 													<button type="submit" class="btn btn-primary ms-auto">
@@ -154,7 +181,7 @@
 													<textarea id="contact" type="text" class="form-control" name="contact" rows="5" required autofocus style="resize: none;">{{ contact }}</textarea>
 												</div>
 
-												<input type="hidden" name="formIdentifier" value="contact">
+												<!-- <input type="hidden" name="formIdentifier" value="contact"> -->
 
 												<div class="d-flex align-items-center">
 													<button type="submit" class="btn btn-primary ms-auto">
