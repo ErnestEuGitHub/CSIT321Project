@@ -158,10 +158,14 @@
 
 /* Styles specific to Dashboard */
 
-.dashboard .box {
-    width:600px;
-    height:500px;
-    margin: 20px;
+.dashboard.box {
+    width: 200px;
+    height: 200px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
 }
 
 /* Minor styling for settings nav bar */
