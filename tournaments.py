@@ -616,6 +616,7 @@ class Tournaments:
         isOwner = verifyOwner(tourID)
         
         navtype = 'dashboard'
+
         try:
             with dbConnect.engine.connect() as conn:
                     
@@ -623,9 +624,9 @@ class Tournaments:
                 inputs = {'tourID': tourID}
                 result = conn.execute(text(structureQuery), inputs)
                 rows = result.fetchall()
-                print(rows)
+                # print(rows)
                 stages = [row._asdict() for row in rows]
-                print(stages)
+                # print(stages)
 
                 stageList = ''
                 
@@ -652,7 +653,7 @@ class Tournaments:
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li><a class="dropdown-item" href="/configureStage/{projID}/{tourID}/{stage["stageID"]}">Configure</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="deleteStage({tourID}, {stage["stageID"]})">Delete</a></li>
+                                                    <li><a class="dropdown-item" href="#" onclick="deleteStage({projID}, {tourID}, {stage["stageID"]})">Delete</a></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -660,15 +661,14 @@ class Tournaments:
                                 '''
                     
                     stageList += stage_html
-                
-                    
+
             return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageList=stageList, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
         except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
                 return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
-
+              
     #CreateStage
     @staticmethod
     def createStage(projID, tourID):
@@ -730,7 +730,7 @@ class Tournaments:
                             print(noOfRoundMatch)
                             for m in range(noOfRoundMatch):
                                 matchCreateQuery = """INSERT INTO matches (stageID, bracketSequence, matchStatus) 
-                                VALUES (:stageID, :bracketSequence, matchStatus)
+                                VALUES (:stageID, :bracketSequence, :matchStatus)
                                 """
                                 matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1, 'matchStatus': 0}
                                 conn.execute(text(matchCreateQuery), matchCreateInputs)
@@ -792,6 +792,7 @@ class Tournaments:
                             print(currentMatchArray)
                                 
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
+                        
                         print("stageFormatID is "+ stageFormatID)
                         roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
                         roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
@@ -806,6 +807,116 @@ class Tournaments:
                             tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
                             tiebreakerInput = {'tbTypeID': tieBreakers[i], 'sequence': sequence, 'roundRobinID': roundRobinID}
                             createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+                        
+                        noPerGroup = int(int(numberOfParticipants) // int(numberOfGroups))
+                        print("This is noPerGroup")
+                        print(noPerGroup)
+                        print()
+
+                        for grpIdx in range(1, int(numberOfGroups) + 1):
+                            print("This is grpIdx")
+                            print(grpIdx)
+                            print()
+
+                            if noPerGroup % 2 == 1:
+                                tempNoPerGroup = noPerGroup + 1 # If odd number of teams, add a dummy team for a bye round
+                                isOdd = True
+                            else:
+                                tempNoPerGroup = noPerGroup
+                                isOdd = False
+
+                            print("This is tempNoPerGroup")
+                            print(tempNoPerGroup)
+                            print()
+                            
+                            teams = list(range(1, tempNoPerGroup + 1))  # Assign each team a unique number
+                            print(teams)
+                            rounds = []
+                            
+                            for _ in range(tempNoPerGroup - 1):  # Iterate for n-1 rounds
+                                round_pairs = []
+                                for i in range(tempNoPerGroup // 2):
+                                    if i == 0:
+                                        # Pair the first team with the last team
+                                        round_pairs.append((teams[i], teams[-1]))
+                                    else:
+                                        # Pair the remaining teams by selecting one from the beginning and one from the end
+                                        round_pairs.append((teams[i], teams[-(i + 1)]))
+                                rounds.append(round_pairs)
+                                # Rotate the teams by one position for the next round
+                                teams = [teams[0]] + [teams[-1]] + teams[1:-1]
+
+                            for index, pairs in enumerate(rounds, start=1):
+                                print("This is Round")
+                                print(index)
+                                for pair in pairs:
+                                    if isOdd == True and (pair[0] == tempNoPerGroup or pair[1] == tempNoPerGroup):
+                                        continue
+                                    print("executing sql matches")
+                                    matchCreateQuery = "INSERT INTO matches (stageID, bracketSequence, matchStatus, stageGroup) VALUES (:stageID, :bracketSequence, :matchStatus, :stageGroup)"
+                                    matchCreateInputs = {'stageID': stageID, 'bracketSequence': index, 'matchStatus': 0, 'stageGroup': grpIdx}
+                                    conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                    IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                    matchID = IDfetch.scalar()
+
+                                    for p in pair:
+                                        matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID, participantID) 
+                                        VALUES (:matchID, :participantID)
+                                        """
+                                        matchParticipantCreateInputs = {'matchID': matchID, 'participantID': p * -1}
+                                        conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                    
+                                    for n in range(int(maxGames)):
+                                        gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
+                                        VALUES (:matchID, :gameNo)
+                                        """
+                                        matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
+                                        conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                        IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                        gameID = IDfetch.scalar()
+
+                                        for p in pair:
+                                            gameParticipantCreateQuery = """INSERT INTO gameParticipant (gameID, participantID) 
+                                            VALUES (:gameID, :participantID)
+                                            """
+                                            gameParticipantCreateInputs = {'gameID': gameID, 'participantID': p * -1}
+                                            conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
+                            if (int(stageFormatID) == 4):
+                                for index, pairs in enumerate(rounds, start=1):
+                                    print("This is Round")
+                                    print(index)
+                                    for pair in pairs:
+                                        if isOdd == True and (pair[0] == tempNoPerGroup or pair[1] == tempNoPerGroup):
+                                            continue
+                                        print("executing sql matches")
+                                        matchCreateQuery = "INSERT INTO matches (stageID, bracketSequence, matchStatus, stageGroup) VALUES (:stageID, :bracketSequence, :matchStatus, :stageGroup)"
+                                        matchCreateInputs = {'stageID': stageID, 'bracketSequence': index + tempNoPerGroup - 1, 'matchStatus': 0, 'stageGroup': grpIdx}
+                                        conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                        IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                        matchID = IDfetch.scalar()
+
+                                        for p in pair:
+                                            matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID, participantID) 
+                                            VALUES (:matchID, :participantID)
+                                            """
+                                            matchParticipantCreateInputs = {'matchID': matchID, 'participantID': p * -1}
+                                            conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                        
+                                        for n in range(int(maxGames)):
+                                            gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
+                                            VALUES (:matchID, :gameNo)
+                                            """
+                                            matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
+                                            conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                            IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                            gameID = IDfetch.scalar()
+
+                                            for p in pair:
+                                                gameParticipantCreateQuery = """INSERT INTO gameParticipant (gameID, participantID) 
+                                                VALUES (:gameID, :participantID)
+                                                """
+                                                gameParticipantCreateInputs = {'gameID': gameID, 'participantID': p * -1}
+                                                conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)   
                     else:
                         print("stageFormatID is invalid!")
                 
@@ -1488,11 +1599,9 @@ class Tournaments:
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
                 request.form.get("SetupStructure"),
-                request.form.get("ManageRegistration"),
                 request.form.get("ManageParticipant"),
                 request.form.get("PlaceParticipant"),
                 request.form.get("StartMatch"),
-                request.form.get("ManageFinalStanding"),
                 request.form.get("ManagePublicPage"),
                 request.form.get("ManageMedia"),
             ]
@@ -1545,15 +1654,12 @@ class Tournaments:
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
                 request.form.get("Setup Structure"),
-                request.form.get("Manage Registration"),
                 request.form.get("Manage Participant"),
                 request.form.get("Place Participant"),
                 request.form.get("Start Match"),
-                request.form.get("Manage Final Standing"),
                 request.form.get("Manage Public Page"),
                 request.form.get("Manage Media"),
             ]
-            print("Edit Moderator2  :", request.form)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
@@ -1629,17 +1735,15 @@ class Tournaments:
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
                 request.form.get("Setup Structure"),
-                request.form.get("Manage Registration"),
                 request.form.get("Manage Participant"),
                 request.form.get("Place Participant"),
                 request.form.get("Start Match"),
-                request.form.get("Manage Final Standing"),
                 request.form.get("Manage Public Page"),
                 request.form.get("Manage Media"),
             ]
             
-            print("Moderator Email: ", moderatorEmail)
-            print("selectedPermissions: ", selectedPermissions) 
+            # print("Moderator Email: ", moderatorEmail)
+            # print("selectedPermissions: ", selectedPermissions) 
             #Moderator Email:  anothertest@gmail.com
             #selectedPermissions:  [None, None, None, None, None, None, None, None]
 
@@ -1650,7 +1754,7 @@ class Tournaments:
                     {'moderatorEmail': moderatorEmail, 'tourID': tourID}
                 ).fetchone()
 
-                print("existingModerator", existingModerator)
+                # print("existingModerator", existingModerator)
                 
                 if existingModerator:
                     # Moderator already exists, use their moderatorID
@@ -1690,7 +1794,7 @@ class Tournaments:
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 moderators = editModerator.fetchall()
                 
-                print("Moderators: ",moderators)  
+                # print("Moderators: ",moderators)  
                 
                 # Check if the moderators exists
                 if moderators:                    
