@@ -653,7 +653,7 @@ class Tournaments:
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li><a class="dropdown-item" href="/configureStage/{projID}/{tourID}/{stage["stageID"]}">Configure</a></li>
-                                                    <li><a class="dropdown-item" href="#" onclick="deleteStage({tourID}, {stage["stageID"]})">Delete</a></li>
+                                                    <li><a class="dropdown-item" href="#" onclick="deleteStage({projID}, {tourID}, {stage["stageID"]})">Delete</a></li>
                                                 </ul>
                                             </div>
                                         </div>
