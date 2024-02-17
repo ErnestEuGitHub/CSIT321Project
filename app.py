@@ -797,6 +797,7 @@ def getcurrentTempTourInfoPy():
     page = Tournaments.getCurrentTemplateTourInfo(tempID)
     return page
 
+#Public Page Routings
 @app.route('/tournamentsPublic', methods=["POST", "GET"])
 def loadTournamentsPublic():
     page = Tournaments.tournamentsPublic()
@@ -806,6 +807,17 @@ def loadTournamentsPublic():
 def loadTournamentOverviewPublic(tourID):
     page = Tournaments.tournamentOverviewPublic(tourID)
     return page
+
+@app.route('/participantTournamentOverviewPagePublic/<tourID>', methods=["POST", "GET"])
+def loadTournamentOverviewParticipantPublic(tourID):
+    page = Tournaments.tournamentOverviewParticipantPublic(tourID)
+    return page
+
+@app.route('/matchesPublic/<tourID>', methods=["POST", "GET"])
+def loadMatchesPublic(tourID):
+    page = Tournaments.matchesPublic(tourID)
+    return page
+
 
 @app.errorhandler(404)
 def loadnotfound(error):

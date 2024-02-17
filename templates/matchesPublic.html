@@ -1,0 +1,38 @@
+{% extends "publicNav.html" %}
+
+{% block content %}
+<div class="container h-100 loginNavPadding">
+    <div>
+        <div class="d-flex justify-content-between">
+            <h1 class="fs-4 fw-bold my-4">{% if not tourName %}No Tournament Name{% else %}{{tourName}}{% endif %}</h1>
+        </div>
+        <div class="row justify-content-center mb-4">
+            <ul class="nav nav-pills">
+                <li class="nav-item" id="overviewTab">
+                    <a href="/tournamentOverviewPublic/{{tourID}}" class="nav-link" aria-disabled="false">Overview</a>
+                </li>
+                <li class="nav-item" id="participantsTab">
+                    <a href="/participantTournamentOverviewPagePublic/{{tourID}}" class="nav-link" aria-disabled="false">Participants</a>
+                </li>
+                <li class="nav-item" id="matchesTab">
+                    <a href="/matchesPublic/{{tourID}}" class="nav-link active" aria-disabled="false">Matches</a>
+                </li>
+                <!-- <li class="nav-item" id="statsTab">
+                    <a class="nav-link" aria-disabled="false">Stats</a>
+                </li> -->
+                 <li class="nav-item" id="mediaTab">
+                    <a class="nav-link" aria-disabled="false">Media</a>
+                </li>
+              </ul>
+        </div>
+    </div>
+    <div class="dropdown">
+        <div class="d-flex justify-content-between">
+            <label class="fs-4 fw-bold my-4">Match</label>
+        </div>
+        <div>
+            {{matchstageList | safe}}
+        </div>
+    </div>
+</div>
+{% endblock %}

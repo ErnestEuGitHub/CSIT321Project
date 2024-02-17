@@ -1,0 +1,84 @@
+{% extends "publicNav.html" %}
+
+{% block content %}
+
+		<div class="container h-100 loginNavPadding">
+			<div>
+				<div class="d-flex justify-content-between">
+                    <h1 class="fs-4 fw-bold my-4">{% if not tourName %}No Tournament Name{% else %}{{tourName}}{% endif %}</h1>
+                </div>
+                <div class="row justify-content-center mb-4">
+                    <ul class="nav nav-pills">
+                        <li class="nav-item" id="overviewTab">
+                            <a href="/tournamentOverviewPublic/{{tourID}}" class="nav-link" aria-disabled="false">Overview</a>
+                        </li>
+                        <li class="nav-item" id="participantsTab">
+                            <a href="/participantTournamentOverviewPagePublic/{{tourID}}" class="nav-link active" aria-disabled="false">Participants</a>
+                        </li>
+                        <li class="nav-item" id="matchesTab">
+                            <a href="/matchesPublic/{{tourID}}" class="nav-link" aria-disabled="false">Matches</a>
+                        </li>
+                        <!-- <li class="nav-item" id="statsTab">
+                            <a class="nav-link" aria-disabled="false">Stats</a>
+                        </li> -->
+                         <li class="nav-item" id="mediaTab">
+                            <a class="nav-link" aria-disabled="false">Media</a>
+                        </li>
+                      </ul>
+                </div>
+                <div id="participantsTabContent">
+                    <h4>Participants: </h4>
+                    {% for participant in participants %}             
+                        <div class="card w-25 p-3 m-3 d-inline-block text-center">                                         
+                            <div class="card-body fs-3">    
+                                {{ participant.participantName }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+			</div>
+		</div>
+	</section>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let overviewTab = document.getElementById("overviewTab");
+        let participantsTab = document.getElementById("participantsTab");
+        let matchesTab = document.getElementById("matchesTab");
+        let statsTab = document.getElementById("statsTab");
+        let mediaTab = document.getElementById("mediaTab");
+
+        let overviewTabContent = document.getElementById("overviewTabContent");
+        let participantsTabContent = document.getElementById("participantsTabContent");
+        let matchesTabContent = document.getElementById("matchesTabContent");
+        let statsTabContent = document.getElementById("statsTabContent");
+        let mediaTabContent = document.getElementById("mediaTabContent");
+        
+        overviewTab.addEventListener("click", function(){tabFn(overviewTab);});
+        participantsTab.addEventListener("click", function(){tabFn(participantsTab);});
+        matchesTab.addEventListener("click", function(){tabFn(matchesTab);});
+        statsTab.addEventListener("click", function(){tabFn(statsTab);});
+        mediaTab.addEventListener("click", function(){tabFn(mediaTab);});
+
+        function tabFn(tabClicked) {
+            const tabs = [overviewTab, participantsTab, matchesTab, statsTab, mediaTab]
+            const tabsContent = [overviewTabContent, participantsTabContent, matchesTabContent, statsTabContent, mediaTabContent]
+
+            for (tab of tabs){
+                if (tabClicked === tab){
+                    tab.firstElementChild.classList.add("active");
+                    for(tabC of tabsContent){
+                        if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)){
+                            tabC.hidden = false;
+                        } else {
+                            tabC.hidden = true;
+                        }
+                    }
+                } else {
+                    tab.firstElementChild.classList.remove("active");
+                }
+            }
+        }
+    </script>
+	
+{% endblock %}
