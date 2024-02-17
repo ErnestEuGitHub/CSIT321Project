@@ -309,9 +309,9 @@ class Tournaments:
                             createNewGeneralInfo = conn.execute(text(query))
                             getID = createNewGeneralInfo.lastrowid
 
-                            query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, 0, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
+                            query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
                             file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
-                            inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
+                            inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID': 0 ,'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
                             createTournament = conn.execute(text(query), inputs)
                             newtourID = createTournament.lastrowid
 
@@ -1733,6 +1733,7 @@ class Tournaments:
         navtype = 'tournament'
         tournamentlist = updateNavTournaments(projID)
         projectName = retrieveProjectNavName(projID)
+        currentURL = request.url
 
         with dbConnect.engine.connect() as conn:
             # Fetch news titles
@@ -1770,7 +1771,7 @@ class Tournaments:
                         'newsMediaCode': row[3]
                     })
 
-        return render_template('publicMediaPreview.html', newsBlock=newsBlock, newsDetails=newsDetails, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID, tourID=tourID, tourName=tourName)
+        return render_template('publicMediaPreview.html', newsBlock=newsBlock, newsDetails=newsDetails, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID, tourID=tourID, tourName=tourName, currentURL=currentURL)
 
 
 #Placement
@@ -1931,6 +1932,7 @@ class Tournaments:
             
 
     def publicMedia(tourID):
+        currentURL = request.url
         # For navbar
         with dbConnect.engine.connect() as conn:
             # Fetch news titles
@@ -1968,7 +1970,7 @@ class Tournaments:
                         'newsMediaCode': row[3]
                     })
 
-        return render_template('publicMedia.html', newsBlock=newsBlock, newsDetails=newsDetails, tourID=tourID, tourName=tourName)
+        return render_template('publicMedia.html', newsBlock=newsBlock, newsDetails=newsDetails, tourID=tourID, tourName=tourName, currentURL=currentURL)
               
     
     def matchesPublicPreview(projID, tourID):
