@@ -168,7 +168,7 @@ class Tournaments:
         projectName = retrieveProjectNavName(projID)
         
         with dbConnect.engine.connect() as conn:
-            query = "SELECT tournaments.*, sports.sportName, generalInfo.* FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID JOIN generalInfo ON tournaments.generalInfoID = generalInfo.generalInfoID WHERE tourID = :tourID"
+            query = "SELECT tournaments.*, sports.sportName, generalInfo.* FROM tournaments LEFT JOIN sports ON tournaments.sportID = sports.sportID LEFT JOIN generalInfo ON tournaments.generalInfoID = generalInfo.generalInfoID WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
             result = conn.execute(text(query), inputs)
             rows = result.fetchall()
@@ -1605,7 +1605,7 @@ class Tournaments:
                 request.form.get("ManagePublicPage"),
                 request.form.get("ManageMedia"),
             ]
-            # print(selectedPermissions)
+            print(selectedPermissions)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
