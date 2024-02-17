@@ -62,6 +62,11 @@
                 <h6 class="mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h6>
                 <h6 class="mb-4 ">Description: {% if not generalInfoDesc %}No Description{% else %}{{generalInfoDesc}}{% endif %}</h6>
                 <p>{{generalInfoDesc}}</p>
+                <div class="d-flex align-items-center">
+                    <p class="mb-0">Share on:</p>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=gamesphere.onrender.com/tournamentOverviewPublic/{{tourID}}&quote={{ tourName }}" class="fa fa-facebook ms-2"></a>
+                    <a href="https://twitter.com/intent/tweet?text={{ tourName }}&url=gamesphere.onrender.com/tournamentOverviewPublic/{{tourID}}"  class="fa fa-twitter ms-2"></a>
+                </div>
             </div>
             <div id="ruleTabContent" hidden>
                 <h6 class="mb-4 ">{{rules}}</h6>
