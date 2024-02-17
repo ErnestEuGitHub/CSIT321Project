@@ -1553,7 +1553,6 @@ class Tournaments:
                 request.form.get("Manage Public Page"),
                 request.form.get("Manage Media"),
             ]
-            print("Edit Moderator2  :", request.form)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
@@ -1638,8 +1637,8 @@ class Tournaments:
                 request.form.get("Manage Media"),
             ]
             
-            print("Moderator Email: ", moderatorEmail)
-            print("selectedPermissions: ", selectedPermissions) 
+            # print("Moderator Email: ", moderatorEmail)
+            # print("selectedPermissions: ", selectedPermissions) 
             #Moderator Email:  anothertest@gmail.com
             #selectedPermissions:  [None, None, None, None, None, None, None, None]
 
@@ -1650,7 +1649,7 @@ class Tournaments:
                     {'moderatorEmail': moderatorEmail, 'tourID': tourID}
                 ).fetchone()
 
-                print("existingModerator", existingModerator)
+                # print("existingModerator", existingModerator)
                 
                 if existingModerator:
                     # Moderator already exists, use their moderatorID
@@ -1690,7 +1689,7 @@ class Tournaments:
                 editModerator = conn.execute(text(queryRetrieveModerator),inputRetrieveModerator)
                 moderators = editModerator.fetchall()
                 
-                print("Moderators: ",moderators)  
+                # print("Moderators: ",moderators)  
                 
                 # Check if the moderators exists
                 if moderators:                    
