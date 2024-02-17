@@ -294,6 +294,8 @@
     var projID = {{projID|tojson|safe}};
     var tourID = {{tourID|tojson|safe}};
     var stageID = {{stageID|tojson|safe}};
+    var rankingArray = {{rankingArray|tojson|safe}};
+        
     console.log(stageMatchArray);
     console.log(stageFormatID);
 
@@ -359,11 +361,11 @@
                 }
             }
         });
-    } else if (stageFormatID == 3 || stageFormatID == 4) {
-        console.log(numberOfGroups);
+    } else if (stageFormatID == 3 || stageFormatID == 4){
 
-        var rankingArray = {{rankingArray|tojson|safe}};
         console.log(rankingArray);
+    
+        console.log(numberOfGroups);
 
         document.addEventListener("DOMContentLoaded", function () {
             for (let i = 0; i < numberOfGroups; i++) {
