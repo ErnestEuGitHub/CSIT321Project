@@ -84,7 +84,7 @@ class User:
                     print(type(hashedpw))
                     # print(hashedpw.decode('utf-8'))
                     with dbConnect.engine.connect() as conn:
-                        query = "INSERT INTO users (email, password, profileID, fname, lname) VALUES (:email, :password, 1, :fname, :lname)"
+                        query = "INSERT INTO users (email, password, profileID, fname, lname, statusID) VALUES (:email, :password, 1, :fname, :lname, 1)"
                         inputs = {'email': email, 'password': hashedpw, 'fname': fname, 'lname': lname}
                         addUser = conn.execute(text(query), inputs)
 
