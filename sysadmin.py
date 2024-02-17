@@ -529,7 +529,7 @@ def TourSettingsAdmin(tourID):
             projectslist = [row._asdict() for row in rows]
             
             #getting general tab information
-            query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.projID, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.userID, tournaments.generalInfoID, tournaments.tourImageID, tournaments.tourBannerID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
+            query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.projID, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.userID, tournaments.generalInfoID, tournaments.tourImageID, tournaments.tourBannerID FROM tournaments LEFT JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
             inputs = {'tourID': tourID}
             result = conn.execute(text(query), inputs)
             rows = result.fetchall()
