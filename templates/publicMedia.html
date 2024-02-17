@@ -45,6 +45,11 @@
                     <div class="mb-3">
                         <p class="news-title" style="font-weight: bold; font-size: 1.2em;">Title: {{ n['newsTitle'] }}
                         </p>
+                        <div class="d-flex align-items-center">
+                            <p class="mb-0">Share on:</p>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ currentURL }}&quote={{ n['newsTitle'] }}" class="fa fa-facebook ms-2"></a>
+                            <a href="https://twitter.com/intent/tweet?text={{ n['newsTitle'] }}&url={{ currentURL }}"></a>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <textarea class="form-control" name="newsDesc" rows="5"

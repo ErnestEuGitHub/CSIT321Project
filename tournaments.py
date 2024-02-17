@@ -1733,6 +1733,7 @@ class Tournaments:
         navtype = 'tournament'
         tournamentlist = updateNavTournaments(projID)
         projectName = retrieveProjectNavName(projID)
+        currentURL = request.url
 
         with dbConnect.engine.connect() as conn:
             # Fetch news titles
@@ -1770,7 +1771,7 @@ class Tournaments:
                         'newsMediaCode': row[3]
                     })
 
-        return render_template('publicMediaPreview.html', newsBlock=newsBlock, newsDetails=newsDetails, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID, tourID=tourID, tourName=tourName)
+        return render_template('publicMediaPreview.html', newsBlock=newsBlock, newsDetails=newsDetails, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID, tourID=tourID, tourName=tourName, currentURL=currentURL)
 
 
 #Placement
