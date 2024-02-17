@@ -241,7 +241,7 @@ def loadSeeding(projID, tourID, stageID):
 @app.route('/publicMediaPreview/<projID>/<tourID>')
 def loadPublicMediaPreview(projID, tourID):
     if "id" not in session:
-        return redirect(url_for('loadlogin'))
+        return redirect(url_for('loadLogin'))
     else:
         page = Tournaments.publicMediaPreview(projID, tourID)
         return page
@@ -249,7 +249,7 @@ def loadPublicMediaPreview(projID, tourID):
 @app.route('/matchesPublicPreview/<projID>/<tourID>')
 def loadMatchesPublicPreview(projID, tourID):
     if "id" not in session:
-        return redirect(url_for('loadlogin'))
+        return redirect(url_for('loadLogin'))
     else:
         page = Tournaments.matchesPublicPreview(projID, tourID)
         return page
@@ -258,7 +258,7 @@ def loadMatchesPublicPreview(projID, tourID):
 @app.route('/participantsPublicPreview/<projID>/<tourID>')
 def loadParticipantsPublicPreview(projID, tourID):
     if "id" not in session:
-        return redirect(url_for('loadlogin'))
+        return redirect(url_for('loadLogin'))
     else:
         page = Tournaments.participantsPublicPreview(projID, tourID)
         return page
@@ -267,7 +267,7 @@ def loadParticipantsPublicPreview(projID, tourID):
 @app.route('/media/<projID>/<tourID>', methods=["POST", "GET"])
 def loadMedia(projID, tourID):
     if "id" not in session:
-        return redirect(url_for('loadlogin'))
+        return redirect(url_for('loadLogin'))
     
     page = Tournaments.media(projID, tourID)
     return page
