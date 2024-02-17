@@ -2113,7 +2113,7 @@ class Tournaments:
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
                                                 <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
-                                                <a href="/loadmatch/{projID}/{tourID}/{matchstage["stageID"]}">
+                                                <a href="/loadmatchpreview/{projID}/{tourID}/{matchstage["stageID"]}">
                                                     <button class="btn btn-primary" type="button" aria-expanded="true">
                                                         View
                                                     </button>
@@ -2416,7 +2416,7 @@ class Tournaments:
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
                                                 <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
-                                                <a href="/loadmatchPublic/{tourID}/{matchstage["stageID"]}">
+                                                <a href="/loadmatchpublic/{tourID}/{matchstage["stageID"]}">
                                                     <button class="btn btn-primary" type="button" aria-expanded="true">
                                                         View
                                                     </button>
