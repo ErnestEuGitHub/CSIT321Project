@@ -4,55 +4,37 @@
 
    <div class="container h-100 navbarcontentpadding">
       <header>
-         <label class="fs-4 fw-bold my-4 ps-10">Dashboard</label>
+         <label class="fs-4 fw-bold my-4 ps-5">Dashboard</label>
       </header>
       <div class="d-flex flex-row flex-wrap justify-content-center">         
          {% if isOwner %}
-            <a href="#" class="boxlink">
-               <div class="col-6 m-3 box">
-                  <h2>Status</h2>
-                  <p>Current Status:</p>
-               </div>
-            </a>
             <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
-               <div class="col-6 m-3 box">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                   <h2>Participant</h2>
                </div>
             </a>
             <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
-               <div class="col-6 m-3 box">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                   <h2>Structure</h2>
                   <p></p>
                </div>
             </a>  
-            <a href="#" class="boxlink">
-               <div class="col-6 m-3 box">
-                  <h2>Registration</h2>
-                  <p></p>
-               </div>
-            </a>
             <a href="/placement/{{projID}}/{{tourID}}" class="boxlink">
-               <div class="col-6 m-3 box">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                   <h2>Placement</h2>
                   <p></p>
                </div>
             </a>
             <a href="/match/{{projID}}/{{tourID}}" class="boxlink">
-               <div class="col-6 m-3 box">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                   <h2>Matches</h2>
                   <p></p>
                </div>
             </a>         
-         {% else %}
-            <a href="#" class="boxlink">
-               <div class="col-6 m-3 box">
-                  <h2>Status</h2>
-                  <p>Current Status:</p>
-               </div>
-            </a>            
+         {% else %}          
             {% if "Manage Participant" in moderatorPermissionList %}
                <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box">
+                  <div class="col-6 m-3 box text-center d-flex align-items-center justify-content-center">
                      <h2>Participant</h2>
                      <p></p>
                   </div>
@@ -60,7 +42,7 @@
             {% endif %}
             {% if "Setup Structure" in moderatorPermissionList %}
                <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box">
+                  <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
                      <h2>Structure</h2>
                      <p></p>
                   </div>
@@ -68,7 +50,7 @@
             {% endif %}
             {% if "Manage Registration" in moderatorPermissionList %}
                <a href="#" class="boxlink">
-                  <div class="col-6 m-3 box">
+                  <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
                      <h2>Registration</h2>
                      <p></p>
                   </div>
@@ -76,7 +58,7 @@
             {% endif %}
             {% if "Place Participant" in moderatorPermissionList %}
                <a href="/placement/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box">
+                  <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
                      <h2>Placement</h2>
                      <p></p>
                   </div>
@@ -84,7 +66,7 @@
             {% endif %}
             {% if "Start Match" in moderatorPermissionList %}
                <a href="/match/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box">
+                  <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
                      <h2>Matches</h2>
                      <p></p>
                   </div>
