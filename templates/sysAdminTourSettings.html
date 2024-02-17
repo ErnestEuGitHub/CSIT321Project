@@ -118,6 +118,7 @@
                                                     </select>
                                                 </div>
 
+
                                                 <div class="mb-4 col-xl-4">
                                                     <label class="mb-2 text-muted" for="endDate">Project<span class="text-danger">*</span></label>
                                                     <select id="project" class="form-select" name="project" required autofocus>
@@ -125,6 +126,29 @@
                                                             <option value="{{p['projID']}}" {% if project == p['projID'] %} selected {% endif %}>{{p['projName']}}</option>
                                                         {% endfor %}
                                                     </select>
+                                                </div>
+
+                                                <div>
+                                                <p>Current Image of Tournament</p>
+
+												{% if tourImageID %}
+                    							<img src="https://drive.google.com/thumbnail?id={{tourImageID}}&sz=s400" alt="" height="150px">
+                    							{% else %}
+                        						<!-- Image placeholder -->
+                        						<img src="https://via.placeholder.com/320/F9F9F9?text=Please+Upload+Image" alt="">
+                    							{% endif %}
+                    							
+												<br><br>
+												
+												<p>Current Banner of Tournament</p>
+												{% if tourBannerID %}
+												<img src="https://drive.google.com/thumbnail?id={{tourBannerID}}&sz=s4000" alt="" height="350px">
+												{% else %}
+												<!-- Image placeholder -->
+												<img src="https://via.placeholder.com/600x350/F9F9F9?text=Please+Upload+Banner+Image" alt="" height="350px">
+												{% endif %}
+												
+												<br>
                                                 </div>
 
                                                 <div class="mb-4">

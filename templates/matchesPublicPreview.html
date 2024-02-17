@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container h-100 navbarcontentpadding">
+    <div>
+        <div class="d-flex justify-content-between">
+            <h1 class="fs-4 fw-bold my-4">{% if not tourName %}No Tournament Name{% else %}{{tourName}}{% endif %}</h1>
+            <a href="/dashboard/{{projID}}/{{tourID}}" class="btn btn-primary my-4" role="button"
+                aria-disabled="true">Manage</a>
+        </div>
+        <div class="row justify-content-center mb-4">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="/tournamentOverviewPage/{{projID}}/{{tourID}}">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-disabled="true" href="/participantsPublicPreview/{{projID}}/{{tourID}}">Participants</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-disabled="true" href="/matchesPublicPreview/{{projID}}/{{tourID}}">Matches</a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" aria-disabled="true" href="">Stats</a>
+                </li> -->
+                <li class="nav-item">
+                    <a class="nav-link" aria-disabled="false" href="/publicMediaPreview/{{projID}}/{{tourID}}">Media</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="dropdown">
+        <div class="d-flex justify-content-between">
+            <label class="fs-4 fw-bold my-4">Match</label>
+        </div>
+        <div>
+            {{matchstageList | safe}}
+        </div>
+    </div>
+</div>
+{% endblock %}

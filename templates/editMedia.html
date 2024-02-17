@@ -1,0 +1,259 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    html * {
+        box-sizing: border-box;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    .upload__box {
+        padding: 20px;
+    }
+
+    .upload__inputfile {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .upload__btn {
+        display: inline-block;
+        font-weight: 600;
+        color: #fff;
+        text-align: center;
+        min-width: 116px;
+        padding: 5px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid;
+        background-color: #4045ba;
+        border-color: #4045ba;
+        border-radius: 10px;
+        line-height: 26px;
+        font-size: 14px;
+    }
+
+    .upload__btn:hover {
+        background-color: unset;
+        color: #4045ba;
+        transition: all 0.3s ease;
+    }
+
+    .upload__btn-box {
+        margin-bottom: 10px;
+    }
+
+    .upload__img-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -10px;
+    }
+
+    .upload__img-box {
+        width: 200px;
+        padding: 0 10px;
+        margin-bottom: 12px;
+    }
+
+    .upload__img-container {
+        display: flex;
+        flex-wrap: wrap;
+        /* Allow items to wrap to the next line */
+    }
+
+    .upload__img-box2 {
+        flex: 0 0 auto;
+        /* Prevent items from growing or shrinking */
+        margin-right: 10px;
+        /* Adjust margin between images */
+    }
+
+    .upload__img-close {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.5);
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        text-align: center;
+        line-height: 24px;
+        z-index: 1;
+        cursor: pointer;
+    }
+
+    .upload__img-close:after {
+        content: "\2716";
+        font-size: 14px;
+        color: white;
+    }
+
+    .img-bg {
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        position: relative;
+        padding-bottom: 100%;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="container h-100 navbarcontentpadding">
+    {% for message in get_flashed_messages(category_filter=["error"]) %}
+    {% if message %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for message in get_flashed_messages(category_filter=["success"]) %}
+    {% if message %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <h2 class="my-3">Edit Media</h2>
+    <form action="" method="POST" enctype="multipart/form-data">
+        <div id="Information">
+            <div class="mb-3">
+                <label for="exampleTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" name="newsTitle" value="{{ newsTitle }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="exampleDesc" class="form-label">Description</label>
+                <textarea class="form-control" name="newsDesc" rows="5" required>{{ newsDesc }}</textarea>
+            </div>
+        </div>
+        <div class="upload__box">
+            <div class="upload__btn-box">
+                <label class="upload__btn">
+                    <p>Media Upload</p>
+                    <input type="file" name="mediaImage" class="upload__inputfile" data-max_length="20"
+                        accept="image/*, video/*, audio/*" multiple="">
+                </label>
+            </div>
+            <div class="upload__img-wrap"></div>
+            <div class="upload__img-container">
+                {% for mediaFile in mediaFiles %}
+                <div class="upload__img-box2">
+                    {% if mediaFile['newsMediaCode'] %}
+                    {% if mediaFile['type'] == 1 %}
+                    <img src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}" alt="Image">
+                    {% elif mediaFile['type'] == 2 %}
+                    <iframe src="https://drive.google.com/file/d/{{ mediaFile['newsMediaCode'] }}/preview" width="320"
+                        height="180" frameborder="0" allowfullscreen></iframe>
+                    {% elif mediaFile['type'] == 3 %}
+                    <audio controls>
+                        <source src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}"
+                            type="{{ mediaFile['type'] }}">
+                        Your browser does not support the audio tag.
+                    </audio>
+                    {% else %}
+                    <p>No file type available: {{ mediaFile['type'] }}</p>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Confirm</button>
+        <a href="/media/{{projID}}/{{tourID}}" class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+    </form>
+</div>
+<script>
+    jQuery(document).ready(function () {
+        ImgUpload();
+    });
+
+    jQuery(document).ready(function () {
+        var fileInput = document.querySelector('input[type="file"]');
+
+        // Add event listener for change event
+        fileInput.addEventListener('change', function () {
+            console.log('Files selected:', fileInput.files);
+            ImgUpload(fileInput.files);
+        });
+    });
+
+    function ImgUpload(files) {
+        var imgWrap = "";
+        var imgArray = [];
+
+        $('.upload__inputfile').each(function () {
+            imgWrap = $(this).closest('.upload__box').find('.upload__img-wrap');
+            var maxLength = $(this).attr('data-max_length');
+
+            for (let i = 0; i < files.length; i++) {
+                let f = files[i];
+
+                if (!f.type.match('image.*') && !f.type.match('video.*') && !f.type.match('audio.*')) {
+                    continue;
+                }
+
+                if (imgArray.length >= maxLength) {
+                    break;
+                } else {
+                    imgArray.push(f);
+
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        if (f.type.startsWith('image')) {
+                            // For images
+                            var html = "<div class='upload__img-box'><div style='background-image: url(" + e.target.result + ")' data-number='" + $(".upload__img-close").length + "' data-file='" + f.name + "' class='img-bg'></div><div class='upload__img-close'>Close</div></div>";
+                            imgWrap.append(html);
+                        } else if (f.type.startsWith('video')) {
+                            // For videos
+                            var video = document.createElement('video');
+                            video.controls = true;
+                            video.src = URL.createObjectURL(f);
+                            // Apply CSS to resize the video
+                            video.style.width = '30%'; // Adjust as needed
+                            video.style.height = 'auto'; // Maintain aspect ratio
+                            var html = "<div class='upload__video-box'><div class='video-container'>" + video.outerHTML + "</div><div class='upload__img-close'>Close</div></div>";
+                            imgWrap.append(html);
+                        } else {
+                            console.error('Unsupported file type:', f.type);
+                        }
+                    };
+                    reader.readAsDataURL(f);
+                }
+            }
+        });
+
+        $('body').on('click', ".upload__img-close", function (e) {
+            var file = $(this).parent().data("file");
+            var mediaType = $(this).parent().hasClass("img-bg") ? "image" : "video";
+
+            // Remove the file from the appropriate array
+            if (mediaType === "image") {
+                for (var i = 0; i < imgArray.length; i++) {
+                    if (imgArray[i].name === file) {
+                        imgArray.splice(i, 1);
+                        break;
+                    }
+                }
+            } else if (mediaType === "video") {
+                for (var i = 0; i < videoArray.length; i++) {
+                    if (videoArray[i].name === file) {
+                        videoArray.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+
+            $(this).parent().parent().remove();
+        });
+    }
+</script>
+{% endblock %}

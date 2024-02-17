@@ -2,112 +2,116 @@
 
 {% block content %}
 
-		<div class="container h-100 navbarcontentpadding">
-			<div>
-				<div class="d-flex justify-content-between">
-                    <h1 class="fs-4 fw-bold my-4">{% if not tourName %}No Tournament Name{% else %}{{tourName}}{% endif %}</h1>
-                    <a href="/dashboard/{{projID}}/{{tourID}}" class="btn btn-primary my-4" role="button" aria-disabled="true">Manage</a>
-                </div>
-                <div class="row justify-content-center mb-4">
-                    <ul class="nav nav-pills">
-                        <li class="nav-item">
-                          <a class="nav-link active" aria-current="page" href="#">Overview</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link disabled" aria-disabled="true" href="#">Participants</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link disabled" aria-disabled="true" href="#">Matches</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link disabled" aria-disabled="true" href="#">Stats</a>
-                        </li>
-                         <li class="nav-item">
-                          <a class="nav-link disabled" aria-disabled="true" href="#">Media</a>
-                        </li>
-                      </ul>
-                </div>
-                <div class="row justify-content-center mb-4">
-                    {% if tourBannerID %}
-                    <img src="https://drive.google.com/uc?export=view&id={{tourBannerID}}" alt="" height="350px">
-                    {% else %}
-                    <!-- Image placeholder -->
-                    <img src="https://via.placeholder.com/600x350/F9F9F9?text=Please+Upload+Banner+Image" alt="" height="350px">
-                    {% endif %}
-                </div>
-                <div class="row justify-content-center mb-4">
-                    <ul class="nav nav-pills">
-                        <li class="nav-item" id="detailsTab">
-                            <a class="nav-link active" aria-disabled="false">Details</a>
-                        </li>
-                        <li class="nav-item" id="ruleTab">
-                            <a class="nav-link" aria-disabled="false">Rules</a>
-                        </li>
-                        <li class="nav-item" id="prizeTab">
-                            <a class="nav-link" aria-disabled="false">Prize</a>
-                        </li>
-                        <li class="nav-item" id="contactTab">
-                            <a class="nav-link" aria-disabled="false">Contact</a>
-                        </li>
-                    </ul>
-                </div>
 
-                <div id="detailsTabContent" block>
-                    <h6 class="mb-4 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</h6>
-                    <h6 class="mb-4 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</h6>
-                    <!-- <h4 class="fs-4 mb-4 ">Age Limit: 18 and above</h4> -->
-                    <h6 class="mb-4 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</h6>
-                    <h6 class="mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h6>
+<div class="container h-100 navbarcontentpadding">
+    <div>
+        <div class="d-flex justify-content-between">
+            <h1 class="fs-4 fw-bold my-4">{% if not tourName %}No Tournament Name{% else %}{{tourName}}{% endif %}</h1>
+            <a href="/dashboard/{{projID}}/{{tourID}}" class="btn btn-primary my-4" role="button"
+                aria-disabled="true">Manage</a>
+        </div>
+        <div class="row justify-content-center mb-4">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/tournamentOverviewPage/{{projID}}/{{tourID}}">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-disabled="true" href="/participantsPublicPreview/{{projID}}/{{tourID}}">Participants</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-disabled="true" href="/matchesPublicPreview/{{projID}}/{{tourID}}">Matches</a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" aria-disabled="true" href="">Stats</a>
+                </li> -->
+                <li class="nav-item">
+                    <a class="nav-link" aria-disabled="false" href="/publicMediaPreview/{{projID}}/{{tourID}}">Media</a>
+                </li>
+            </ul>
+        </div>
+        <div class="row justify-content-center mb-4">
+            {% if tourBannerID %}
+            <img src="https://drive.google.com/thumbnail?id={{tourBannerID}}" alt="" height="350px">
+            {% else %}
+            <!-- Image placeholder -->
+            <img src="https://via.placeholder.com/600x350/F9F9F9?text=Please+Upload+Banner+Image" alt="" height="350px">
+            {% endif %}
+        </div>
+        <div class="container">
+            <div class="row justify-content-center mb-4">
+                <ul class="nav nav-pills">
+                    <li class="nav-item" id="detailsTab">
+                        <a class="nav-link active" aria-disabled="false">Details</a>
+                    </li>
+                    <li class="nav-item" id="ruleTab">
+                        <a class="nav-link" aria-disabled="false">Rules</a>
+                    </li>
+                    <li class="nav-item" id="prizeTab">
+                        <a class="nav-link" aria-disabled="false">Prize</a>
+                    </li>
+                    <li class="nav-item" id="contactTab">
+                        <a class="nav-link" aria-disabled="false">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <div id="detailsTabContent" block>
+                <h6 class="mb-4 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</h6>
+                <h6 class="mb-4 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</h6>
+                <!-- <h4 class="fs-4 mb-4 ">Age Limit: 18 and above</h4> -->
+                <h6 class="mb-4 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</h6>
+                <h6 class="mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h6>
+                <h6 class="mb-4 ">Description: {% if not generalInfoDesc %}No Description{% else %}{{generalInfoDesc}}{% endif %}</h6>
+                <p>{{generalInfoDesc}}</p>
+            </div>
+            <div id="ruleTabContent" hidden>
+                <h6 class="mb-4 ">{{rules}}</h6>
+            </div>
+            <div id="prizeTabContent" hidden>
+                <h6 class="mb-4 ">{{prize}}</h6>
+            </div>
+            <div id="contactTabContent" hidden>
+                <h6 class="mb-4 ">{{contact}}</h6>
+            </div>
+        </div>
+    </div>
+</div>
 
-                </div>
-                <div id="ruleTabContent" hidden>
-                    <h6 class="mb-4 ">Rule 1: Cannot Tackle</h6>
-                </div>
-                <div id="prizeTabContent" hidden>
-                    <h6 class="mb-4 ">Prize Pool: $1 Billion USD</h6>
-                </div>
-                <div id="contactTabContent" hidden>
-                    <h6 class="mb-4 ">Official Email: contact@gamesphere.com</h6>
-                </div>
-			</div>
-		</div>
-	</section>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+      let detailsTab = document.getElementById("detailsTab");
+      let ruleTab = document.getElementById("ruleTab");
+      let prizeTab = document.getElementById("prizeTab");
+      let contactTab = document.getElementById("contactTab");
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        let detailsTab = document.getElementById("detailsTab");
-        let ruleTab = document.getElementById("ruleTab");
-        let prizeTab = document.getElementById("prizeTab");
-        let contactTab = document.getElementById("contactTab");
-        let detailsTabContent = document.getElementById("detailsTabContent");
-        let ruleTabContent = document.getElementById("ruleTabContent");
-        let prizeTabContent = document.getElementById("prizeTabContent");
-        let contactTabContent = document.getElementById("contactTabContent");
-        
-        detailsTab.addEventListener("click", function(){tabFn(detailsTab);});
-        ruleTab.addEventListener("click", function(){tabFn(ruleTab);});
-        prizeTab.addEventListener("click", function(){tabFn(prizeTab);});
-        contactTab.addEventListener("click", function(){tabFn(contactTab);});
+      let detailsTabContent = document.getElementById("detailsTabContent");
+      let ruleTabContent = document.getElementById("ruleTabContent");
+      let prizeTabContent = document.getElementById("prizeTabContent");
+      let contactTabContent = document.getElementById("contactTabContent");
 
-        function tabFn(tabClicked) {
-            const tabs = [detailsTab, ruleTab, prizeTab, contactTab];
-            const tabsContent = [detailsTabContent, ruleTabContent, prizeTabContent, contactTabContent];
+      detailsTab.addEventListener("click", function(){tabFn(detailsTab);});
+      ruleTab.addEventListener("click", function(){tabFn(ruleTab);});
+      prizeTab.addEventListener("click", function(){tabFn(prizeTab);});
+      contactTab.addEventListener("click", function(){tabFn(contactTab);});
 
-            for (tab of tabs){
-                if (tabClicked === tab){
-                    tab.firstElementChild.classList.add("active");
-                    for(tabC of tabsContent){
-                        if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)){
-                            tabC.hidden = false;
-                        } else {
-                            tabC.hidden = true;
-                        }
-                    }
-                } else {
-                    tab.firstElementChild.classList.remove("active");
-                }
-            }
-        }
-    </script>
-	
+      function tabFn(tabClicked) {
+          const tabs = [detailsTab, ruleTab, prizeTab, contactTab]
+          const tabsContent = [detailsTabContent, ruleTabContent, prizeTabContent, contactTabContent]
+
+      for (tab of tabs) {
+          if (tabClicked === tab) {
+              tab.firstElementChild.classList.add("active");
+              for (tabC of tabsContent) {
+                  if (tabsContent.indexOf(tabC) === tabs.indexOf(tab)) {
+                      tabC.hidden = false;
+                  } else {
+                      tabC.hidden = true;
+                  }
+              }
+          } else {
+              tab.firstElementChild.classList.remove("active");
+          }
+      }
+  }	
+  </script>
+
 {% endblock %}

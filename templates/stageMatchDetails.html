@@ -3,6 +3,24 @@
 {% block content %}
 <div class="container h-100 navbarcontentpadding">
     <div>
+        {% for message in get_flashed_messages(category_filter=["error"]) %}
+            {% if message %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        {% for message in get_flashed_messages(category_filter=["success"]) %}
+            {% if message %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endfor %}
+
         <header class="d-flex">
             <label class="fs-4 fw-bold my-4">Match Details</label>
         </header>
@@ -111,19 +129,19 @@
                         </div>
 
                         <div class="mb-4 col-xl-6">
-                            <label class="mb-2 text-muted" for="venue">Available Venues</label>
-                            <select id="venue" class="form-select" name="venue" required autofocus>
-                                <option value="-1">Select start and end date time first </option>
-                                {% if currentvenueID is not none %} <option value="{{currentvenueID}}" selected>{{currentvenueName}}</option> {% else %} <option value="-2">Select a venue for match</option> {% endif %}
-                                {% for v in venuelistFiltered %}
-                                    <option value="{{v['venueID']}}" {% if currentvenueID == v['venueID'] %} selected {% endif %}>{{v['venueName']}}</option>
-                                {% endfor %}
-                            </select>
+                            <label class="mb-2 text-muted" for="format">Filter Facilities</label>
+                            <input type="text" id="venueSearch" class="form-control" placeholder="Type to filter venue">
                         </div>
 
                         <div class="mb-4 col-xl-6">
-                            <label class="mb-2 text-muted" for="format">Filter Facilities</label>
-                            <input type="text" id="venueSearch" class="form-control" placeholder="Type to filter venue">
+                            <label class="mb-2 text-muted" for="venue">Available Venues</label>
+                            <select id="venue" class="form-select" name="venue" required autofocus>
+                                <option value="-1">Select start and end date time first </option>
+                                <!-- {% if currentvenueID is not none %} <option value="{{currentvenueID}}" selected>{{currentvenueName}} - Capacity: {{currentvenueCapacity}}</option> {% else %} <option value="-2">Select a venue for match</option> {% endif %} -->
+                                {% for v in venuelistFiltered %}
+                                    <option value="{{v['venueID']}}" {% if currentvenueID == v['venueID'] %} selected {% endif %}>{{v['venueName']}} - Capacity: {{v['venueCapacity']}}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                     </div>
@@ -354,6 +372,14 @@
 
 		startDateInput.addEventListener('change', updateVenueOptions);
 		endDateInput.addEventListener('change', updateVenueOptions);
+        // Get the current URL
+        var currentURL = window.location.href;
+
+        // Split the URL by '/' to get individual segments
+        var urlSegments = currentURL.split('/');
+
+        // Extract the match ID from the URL segments (the last segment)
+        var matchID = parseInt(urlSegments[urlSegments.length - 1]);
 
 		function updateVenueOptions() {
 			if (startDateInput.value && endDateInput.value) {
@@ -369,7 +395,8 @@
 					url: "/get_venues",  // Update the route to handle format retrieval
 					data: { 
 						matchstart: startDateInput.value, 
-						matchend: endDateInput.value
+						matchend: endDateInput.value,
+                        matchID: matchID
 					},
 					success: function (response) {
 						console.log(response);

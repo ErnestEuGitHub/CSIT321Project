@@ -73,7 +73,8 @@ def updateNavProjects():
             
             return projects
         
-def updateVenue(matchstart, matchend):
+def updateVenue(matchstart, matchend, matchID):
+        
         with dbConnect.engine.connect() as conn:
             query = "SELECT matchID, venueID FROM matches WHERE (:matchstart >= matches.startTime AND :matchend <= matches.endTime) OR (:matchstart <= matches.startTime AND :matchend >= matches.endTime) OR (:matchstart >= matches.startTime AND :matchstart <= matches.endTime) OR (:matchend >= matches.startTime AND :matchend <= matches.endTime) UNION SELECT exEventName, venueID FROM venueExtEvent WHERE (:matchstart >= venueExtEvent.startDateTime AND :matchend <= venueExtEvent.endDateTime) OR (:matchstart <= venueExtEvent.startDateTime AND :matchend >= venueExtEvent.endDateTime) OR (:matchstart >= venueExtEvent.startDateTime AND :matchstart <= venueExtEvent.endDateTime) OR (:matchend >= venueExtEvent.startDateTime AND :matchend <= venueExtEvent.endDateTime)"
             inputs = {'matchstart': matchstart, 'matchend': matchend}
@@ -81,7 +82,7 @@ def updateVenue(matchstart, matchend):
             unavailableVenuesfetch = getUnavailableVenues.fetchall()
 
             unavailableVenuesListDict = [row._asdict() for row in unavailableVenuesfetch]
-            venueIDs = [row['venueID'] for row in unavailableVenuesListDict]
+            venueIDs = [row['venueID'] for row in unavailableVenuesListDict if row['matchID'] != matchID]
             venueIDs = [venueID for venueID in venueIDs if venueID is not None]
             unavailableVenueIDs = set(venueIDs)
 
@@ -154,14 +155,11 @@ def verifyOwner(tourID):
         getTour = conn.execute(text(query), inputs)
         row = getTour.fetchone()  # Assuming tourID is unique
         
-        print("row: ", row)
-        
         if row and row[0] == session["id"]:
             isOwner = True
         else:
             isOwner = False
 
-        print("is_owner: ", isOwner)
         return isOwner
             
 

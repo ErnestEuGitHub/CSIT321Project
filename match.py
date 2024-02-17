@@ -166,8 +166,37 @@ class Match:
     def loadMatchDetails(projID, tourID, stageID, matchID):
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        
+        if request.method == "POST":
+            action = request.form.get('action')
 
-        with dbConnect.engine.connect() as conn:
+            #Book venue button submission
+            if action == 'venue':
+                startDate = request.form.get("startDate")
+                endDate = request.form.get("endDate")
+                venue = request.form.get("venue")
+
+                print('startDate is :', startDate)
+                print('endDate is :', endDate)
+                print('venue is :', venue)
+
+                if startDate is None or endDate is None:
+                    flash('Please select a valid start and end duration!', 'error')
+                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID))
+                elif int(venue) < 0:
+                    flash('Please select a valid venue!', 'error')
+                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID))
+                else:
+                    with dbConnect.engine.connect() as conn:
+                        query = "UPDATE matches SET startTime = :startTime, endTime = :endTime, venueID = :venueID WHERE matchID = :matchID"
+                        inputs = {'startTime': startDate, 'endTime': endDate, 'venueID': venue, 'matchID': matchID}
+                        updateVenue = conn.execute(text(query), inputs)
+                        
+                    flash('Venue Booking Updated!', 'success')
+                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID))
+        else:
+
+          with dbConnect.engine.connect() as conn:
                 
             stageQuery = "SELECT * FROM stages WHERE stageID = :stageID"
             stageInputs = {'stageID': stageID}
@@ -286,7 +315,7 @@ class Match:
 
 
     def updateGamesDetails():
-        
+   
         if request.method == "POST":
 
             data = request.get_json()

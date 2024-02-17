@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+<link rel="stylesheet" href="../static/css/login.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/static/css/navbar.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<head>
+    <title>
+        Gamesphere
+    </title>
+</head>
+
+<body>
+    <header class="site-navbar py-4" role="banner">
+
+		<div class="container">
+		  <div class="d-flex align-items-center justify-content-center">
+			<div class="site-logo">
+			  <a href="/">
+				GameSphere
+			  </a>
+			</div>
+			<div class="ml-auto">
+			  <nav class="site-navigation position-relative text-right" role="navigation">
+				<ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
+				  <li><a href="/" class="nav-link">Home</a></li>
+				  <li><a href="/tournamentsPublic" class="nav-link">Tournaments</a></li>
+				  <li><a href="/login" class="nav-link">Login</a></li>
+				</ul>
+			  </nav>
+  
+			  <a href="#" class="d-inline-block d-lg-none site-menu-toggle js-menu-toggle text-black float-right text-white"><span
+				  class="icon-menu h3 text-white"></span></a>
+			</div>
+		  </div>
+		</div>
+  
+	</header>
+
+    <!-- <div class="leftnav">
+
+    </div> -->
+
+    <!-- Content -->
+    {% block content %}{% endblock %}
+</body>
