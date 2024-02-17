@@ -2335,7 +2335,7 @@ class Tournaments:
 
     def tournamentOverviewPublic(tourID):
         with dbConnect.engine.connect() as conn:
-            query = "SELECT tournaments.*, sports.sportName, generalInfo.* FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID JOIN generalInfo ON tournaments.generalInfoID = generalInfo.generalInfoID WHERE tourID = :tourID"
+            query = "SELECT tournaments.*, sports.sportName, generalInfo.* FROM tournaments LEFT JOIN sports ON tournaments.sportID = sports.sportID LEFT JOIN generalInfo ON tournaments.generalInfoID = generalInfo.generalInfoID WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
             getTourInfo = conn.execute(text(query), inputs)
             fetchTourInfo = getTourInfo.fetchall()
