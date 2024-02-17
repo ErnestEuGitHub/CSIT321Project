@@ -1728,7 +1728,7 @@ class Tournaments:
    
     
     
-    def publicMedia(projID, tourID):
+    def publicMediaPreview(projID, tourID):
         # For navbar
         navtype = 'tournament'
         tournamentlist = updateNavTournaments(projID)
@@ -1770,7 +1770,7 @@ class Tournaments:
                         'newsMediaCode': row[3]
                     })
 
-        return render_template('publicMedia.html', newsBlock=newsBlock, newsDetails=newsDetails, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID, tourID=tourID, tourName=tourName)
+        return render_template('publicMediaPreview.html', newsBlock=newsBlock, newsDetails=newsDetails, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID, tourID=tourID, tourName=tourName)
 
 
 #Placement
@@ -1928,9 +1928,143 @@ class Tournaments:
                 return redirect(url_for("loadMedia", tourID=tourID, projID=projID))
             else:
                 return redirect(url_for("loadMedia", tourID=tourID, projID=projID))
+            
 
+    def publicMedia(tourID):
+        # For navbar
+        with dbConnect.engine.connect() as conn:
+            # Fetch news titles
+            query = "SELECT newsID, newsTitle FROM news WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            result = conn.execute(text(query), inputs)
+            rows = result.fetchall()
+            newsBlock = [row._asdict() for row in rows]
+
+            # Fetch tour name
+            query_tour_name = "SELECT tourName FROM tournaments WHERE tourID = :tourID"
+            result_tour_name = conn.execute(text(query_tour_name), {'tourID': tourID})
+            tourName_row = result_tour_name.fetchone()
+            tourName = tourName_row[0] if tourName_row else None
+
+            # Fetch news details including media files
+            queryNews = """
+                SELECT news.newsID, newsDesc, type, newsMediaCode
+                FROM news LEFT JOIN newsMedia
+                ON news.newsID = newsMedia.newsID
+                WHERE news.tourID = :tourID
+            """
+            result = conn.execute(text(queryNews), {'tourID': tourID})
+            newsDetails = {}
+            for row in result:
+                newsID = row[0]
+                if newsID not in newsDetails:
+                    newsDetails[newsID] = {
+                        'newsDesc': row[1],
+                        'mediaFiles': []
+                    }
+                if row[3]:
+                    newsDetails[newsID]['mediaFiles'].append({
+                        'type': row[2],
+                        'newsMediaCode': row[3]
+                    })
+
+        return render_template('publicMedia.html', newsBlock=newsBlock, newsDetails=newsDetails, tourID=tourID, tourName=tourName)
               
-              
+    
+    def matchesPublicPreview(projID, tourID):
+        navtype = 'tournament'
+        tournamentlist = updateNavTournaments(projID)
+        projectName = retrieveProjectNavName(projID)
+        
+        try:
+            with dbConnect.engine.connect() as conn:
+
+                matchquery = "SELECT stageName, stageSequence, stageFormatID, stageStatusID, stageID FROM stages WHERE tourID = :tourID AND stageStatusID <> 4"
+                inputs = {'tourID': tourID}
+                result = conn.execute(text(matchquery), inputs)
+                rows = result.fetchall()
+                # print(rows)
+                matchStages = [row._asdict() for row in rows]
+                # print(matchStages)
+
+                matchstageList = ''
+                
+                for matchstage in matchStages:
+
+                    if int(matchstage["stageFormatID"]) == 1:
+                        matchstage["stageFormatID"] = "Single Elimination"
+                    elif int(matchstage["stageFormatID"]) == 2:
+                        matchstage["stageFormatID"] = "Double Elimination"
+                    elif int(matchstage["stageFormatID"]) == 3:
+                        matchstage["stageFormatID"] = "Single Round Robin"
+                    elif int(matchstage["stageFormatID"]) == 4:
+                        matchstage["stageFormatID"] = "Double Round Robin"
+                    else:
+                        print("Invalid stage format!!!")
+
+                    matchstage_html = f'''
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
+                                                <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
+                                                <a href="/loadmatch/{projID}/{tourID}/{matchstage["stageID"]}">
+                                                    <button class="btn btn-primary" type="button" aria-expanded="true">
+                                                        View
+                                                    </button>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                '''
+                    
+                    matchstageList += matchstage_html
+
+                query = "SELECT * FROM tournaments WHERE tourID = :tourID"
+                inputs = {'tourID': tourID}
+                getTourInfo = conn.execute(text(query), inputs)
+                fetchTourInfo = getTourInfo.fetchall()
+                tourInfo = [row._asdict() for row in fetchTourInfo]
+
+                tourName = tourInfo[0]['tourName']
+
+            return render_template('matchesPublicPreview.html', tourID=tourID, matchstageList = matchstageList, tourName=tourName, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID)
+        except Exception as e:
+            flash('Oops, an error has occured.', 'error')
+            print(f"Error details: {e}")
+            return render_template('matchesPublicPreview.html', tourID=tourID)
+
+    def participantsPublicPreview(projID, tourID):
+        navtype = 'tournament'
+        tournamentlist = updateNavTournaments(projID)
+        projectName = retrieveProjectNavName(projID)
+
+        with dbConnect.engine.connect() as conn:
+            # Query the 'participants' table and 'players' tables
+                queryOne ="""
+                SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+                FROM participants LEFT JOIN players
+                ON participants.participantID = players.participantID
+                WHERE participants.tourID = :tourID
+                GROUP BY participants.participantID, participantEmail, participantName"""
+                inputOne = {'tourID': tourID}
+                getparticipants = conn.execute(text(queryOne),inputOne)
+                participants = getparticipants.fetchall()
+
+                # Get the total number of participants
+                total_participants = len(participants)
+
+                # Query the 'tournaments' table
+                queryThree = "SELECT tourName, tourSize FROM tournaments WHERE tourID = :tourID"
+                inputThree = {'tourID': tourID}
+                getTournamentSize = conn.execute(text(queryThree),inputThree)
+                tournamentSize = getTournamentSize.fetchall() #scalar only extract the value
+                
+                tourName = tournamentSize[0][0]
+                tourSize = tournamentSize[0][1]
+
+                # Render the HTML template with the participant data and total number    
+                return render_template('participantPreview.html', participants=participants, total_participants=total_participants, tourName=tourName, tourSize=tourSize, tourID=tourID, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID)
+
     def upload():
         if 'tourImage' not in request.files:
             flash('No file part', 'error')
