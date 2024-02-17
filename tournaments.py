@@ -1931,36 +1931,36 @@ class Tournaments:
 
               
               
-def upload():
-    if 'tourImage' not in request.files:
-        flash('No file part', 'error')
-        return redirect(url_for('createTour'))
-
-        tourImage = request.files['tourImage']
-
-        if tourImage.filename == '':
-            flash('No selected file', 'error')
-            return redirect(url_for('createTour'))
-        
-        
-        
-
-        #------------ Banner part -------------------#
-
-        if 'bannerImage' not in request.files:
+    def upload():
+        if 'tourImage' not in request.files:
             flash('No file part', 'error')
             return redirect(url_for('createTour'))
-        
-        bannerImage = request.files['bannerImage']
 
-        if bannerImage.filename == '':
-            flash('No selected file', 'error')
+            tourImage = request.files['tourImage']
+
+            if tourImage.filename == '':
+                flash('No selected file', 'error')
+                return redirect(url_for('createTour'))
+            
+            
+            
+
+            #------------ Banner part -------------------#
+
+            if 'bannerImage' not in request.files:
+                flash('No file part', 'error')
+                return redirect(url_for('createTour'))
+            
+            bannerImage = request.files['bannerImage']
+
+            if bannerImage.filename == '':
+                flash('No selected file', 'error')
+                return redirect(url_for('createTour'))
+
+            upload_to_google_drive(tourImage, bannerImage) 
+
+            flash('File uploaded successfully', 'success')
             return redirect(url_for('createTour'))
-
-        upload_to_google_drive(tourImage, bannerImage) 
-
-        flash('File uploaded successfully', 'success')
-        return redirect(url_for('createTour'))
     
 
     def createTemplate(projID):
@@ -2188,7 +2188,15 @@ def upload():
                     
                     matchstageList += matchstage_html
 
-            return render_template('matchesPublic.html', tourID=tourID, matchstageList = matchstageList)
+                query = "SELECT * FROM tournaments WHERE tourID = :tourID"
+                inputs = {'tourID': tourID}
+                getTourInfo = conn.execute(text(query), inputs)
+                fetchTourInfo = getTourInfo.fetchall()
+                tourInfo = [row._asdict() for row in fetchTourInfo]
+
+                tourName = tourInfo[0]['tourName']
+
+            return render_template('matchesPublic.html', tourID=tourID, matchstageList = matchstageList, tourName=tourName)
         except Exception as e:
             flash('Oops, an error has occured.', 'error')
             print(f"Error details: {e}")
