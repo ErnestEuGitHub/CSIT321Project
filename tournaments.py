@@ -1132,7 +1132,7 @@ class Tournaments:
 
                 sportsOptions = [row._asdict() for row in rows]
                 
-                query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.generalInfoID, tournaments.tourImageID, tournaments.tourBannerID FROM tournaments JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
+                query = "SELECT tournaments.tourName, tournaments.tourSize, tournaments.startDate, tournaments.endDate, tournaments.gender, tournaments.sportID, formats.formatName, tournaments.statusID, tournaments.generalInfoID, tournaments.tourImageID, tournaments.tourBannerID FROM tournaments LEFT JOIN formats ON tournaments.formatID = formats.formatID WHERE tournaments.tourID = :tourID"
                 inputs = {'tourID': tourID}
                 result = conn.execute(text(query), inputs)
                 rows = result.fetchall()
