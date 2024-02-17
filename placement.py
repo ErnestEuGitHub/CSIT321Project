@@ -10,7 +10,7 @@ def placement(projID, tourID):
     tournamentName = retrieveDashboardNavName(tourID)
 
     with dbConnect.engine.connect() as conn:
-        query = "SELECT stageID, stageName FROM stages WHERE tourID = :tourID ORDER BY stageSequence ASC"
+        query = "SELECT stageID, stageName FROM stages WHERE tourID = :tourID AND stageStatusID = 1 ORDER BY stageSequence ASC"
         inputs = {'tourID': tourID}
         result = conn.execute(text(query), inputs)
         rows = result.fetchall()
