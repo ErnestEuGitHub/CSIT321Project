@@ -847,6 +847,53 @@ def loadMediaPublic(tourID):
     page = Tournaments.publicMedia(tourID)
     return page
 
+@app.route('/loadmatchpreview/<projID>/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadmatchpreview(projID, tourID, stageID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+            
+            if rows:
+                page = Match.loadMatchPreview(projID, tourID, stageID)
+                return page
+            else:
+                return render_template('notfound.html')
+
+@app.route('/loadmatchdetailspreview/<projID>/<tourID>/<stageID>/<matchID>', methods=["POST", "GET"])
+def loadmatchdetailspreview(projID, tourID, stageID, matchID):
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+
+            if rows:
+                page = Match.loadMatchDetailsPreview(projID, tourID, stageID, matchID)
+                return page
+            else:
+                return render_template('notfound.html')
+            
+@app.route('/loadmatchpublic/<tourID>/<stageID>', methods=["POST", "GET"])
+def loadmatchpublic(tourID, stageID):
+ 
+        page = Match.loadMatchPublic(tourID, stageID)
+        return page
+    
+
+@app.route('/loadmatchdetailspublic/<tourID>/<stageID>/<matchID>', methods=["POST", "GET"])
+def loadmatchdetailspublic(tourID, stageID, matchID):
+
+        page = Match.loadMatchDetailsPublic(tourID, stageID, matchID)
+        return page
+
 
 @app.errorhandler(404)
 def loadnotfound(error):
