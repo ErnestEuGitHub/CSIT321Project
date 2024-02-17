@@ -48,6 +48,7 @@ def loadregister():
 
 @app.route('/home')
 def loadhome():
+    app.logger.info('Received request to /home from %s', request.remote_addr)
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
@@ -623,7 +624,6 @@ def loadmatch(projID, tourID, stageID):
             if rows:
                 page = Match.loadMatch(projID, tourID, stageID)
                 return page
-            
             else:
                 return render_template('notfound.html')
             
@@ -641,9 +641,14 @@ def loadmatchdetails(projID, tourID, stageID, matchID):
             if rows:
                 page = Match.loadMatchDetails(projID, tourID, stageID, matchID)
                 return page
-            
             else:
                 return render_template('notfound.html')
+            
+@app.route('/updategamesdetails', methods=['POST'])
+def updategamesdetails():
+    print('updategamedetails ran')
+    success = Match.updateGamesDetails()
+    return success
 
               
 @app.route('/venuetest' , methods=["POST", "GET"])
