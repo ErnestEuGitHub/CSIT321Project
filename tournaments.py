@@ -1488,11 +1488,9 @@ class Tournaments:
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
                 request.form.get("SetupStructure"),
-                request.form.get("ManageRegistration"),
                 request.form.get("ManageParticipant"),
                 request.form.get("PlaceParticipant"),
                 request.form.get("StartMatch"),
-                request.form.get("ManageFinalStanding"),
                 request.form.get("ManagePublicPage"),
                 request.form.get("ManageMedia"),
             ]
@@ -1545,11 +1543,9 @@ class Tournaments:
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
                 request.form.get("Setup Structure"),
-                request.form.get("Manage Registration"),
                 request.form.get("Manage Participant"),
                 request.form.get("Place Participant"),
                 request.form.get("Start Match"),
-                request.form.get("Manage Final Standing"),
                 request.form.get("Manage Public Page"),
                 request.form.get("Manage Media"),
             ]
@@ -1628,11 +1624,9 @@ class Tournaments:
             moderatorEmail = request.form.get("moderatorEmail")
             selectedPermissions = [
                 request.form.get("Setup Structure"),
-                request.form.get("Manage Registration"),
                 request.form.get("Manage Participant"),
                 request.form.get("Place Participant"),
                 request.form.get("Start Match"),
-                request.form.get("Manage Final Standing"),
                 request.form.get("Manage Public Page"),
                 request.form.get("Manage Media"),
             ]
