@@ -38,6 +38,10 @@ class Match:
                 print(match)
 
                 if int(stageFormatID) == 1 or int(stageFormatID) == 2:
+                    
+                    print("singleElim ran")
+                    print()
+                    
                     for m in match:
                         # print(m["matchID"])
                         matchParticipantQuery = 'SELECT * FROM matchParticipant JOIN participants ON matchParticipant.participantID = participants.participantID WHERE matchParticipant.matchID = :matchID'
@@ -58,21 +62,29 @@ class Match:
                         # print(matchParticipant)
 
                     #Separate them into different rounds
-                    noOfRound = int(math.log2(int(numberOfParticipants)))
+                    noOfRounds = int(math.log2(int(numberOfParticipants)))
                     stageMatchArray = []
-                    for no in range(noOfRound):
+                    for no in range(noOfRounds):
                         roundMatchArray = []
                         for m in match:
                             if m["bracketSequence"] == no + 1:
                                 roundMatchArray.append(m)
-                        stageMatchArray.append(roundMatchArray)        
-                    # print("Below is stageMatchArray")
-                    # print(stageMatchArray)   
+                        stageMatchArray.append(roundMatchArray)
+
+                    print("Below is stageMatchArray single elim")
+                    print(stageMatchArray)  
+
+                    rankingArray = ["rankingArray"]
                     
                     return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                             stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                            numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray = stageMatchArray)
-                else:
+                                            numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray)
+                
+                elif stageFormatID == 3 or stageFormatID == 4:
+
+                    print("singleElim ran")
+                    print()
+
                     print()
                     print('stageFormatID')
                     print(stageFormatID)
@@ -108,9 +120,9 @@ class Match:
                         stageMatchArray.append(tempgroupArray)
                         tempgroupArray = []
                     
-                    print('This is stageMatchArray')
-                    print(stageMatchArray)
-                    print()
+                    # print('This is stageMatchArray')
+                    # print(stageMatchArray)
+                    # print()
 
                     for noGrp in stageMatchArray:
                         for noRound in noGrp:
@@ -129,9 +141,9 @@ class Match:
 
                                 m["matchParticipants"] = matchParticipant
 
-                    print('This is stageMatchArray')
-                    print(stageMatchArray)
-                    print()
+                    # print('This is stageMatchArray')
+                    # print(stageMatchArray)
+                    # print()
 
                     rankingArray = []
                     
@@ -155,7 +167,7 @@ class Match:
                         
                     return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                             stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                            numberOfGroups = numberOfGroups, noOfRounds = noOfRounds, matchFormatID = matchFormatID, stageMatchArray = stageMatchArray, rankingArray = rankingArray)
+                                            numberOfGroups=numberOfGroups, noOfRounds=noOfRounds, matchFormatID=matchFormatID, stageMatchArray=stageMatchArray, rankingArray=rankingArray)
 
                                     
         except Exception as e:
