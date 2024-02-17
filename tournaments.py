@@ -1605,7 +1605,7 @@ class Tournaments:
                 request.form.get("ManagePublicPage"),
                 request.form.get("ManageMedia"),
             ]
-            # print(selectedPermissions)
+            print(selectedPermissions)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
