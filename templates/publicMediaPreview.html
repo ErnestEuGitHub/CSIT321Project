@@ -62,14 +62,14 @@
                 <div id="carouselExample-{{ n['newsID'] }}" class="carousel slide">
                     <div class="carousel-inner">
                         {% for mediaFile in newsDetails[n['newsID']]['mediaFiles'] %}
-                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <div class="carousel-item {% if loop.first %}active{% endif %} text-center">
                             {% if mediaFile['newsMediaCode'] %}
                             {% if mediaFile['type'] == 1 %}
-                            <img src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}"
+                            <img src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}&sz=s4000"
                                 class="d-block w-100" alt="Image">
                             {% elif mediaFile['type'] == 2 %}
                             <iframe src="https://drive.google.com/file/d/{{ mediaFile['newsMediaCode'] }}/preview"
-                                width="640" height="360" frameborder="0" allowfullscreen></iframe>
+                                width="720" height="480" frameborder="0" allowfullscreen></iframe>
                             {% elif mediaFile['type'] == 3 %}
                             <audio class="d-block w-100" controls>
                                 <source src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}"
