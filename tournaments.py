@@ -1058,11 +1058,11 @@ class Tournaments:
             
                     try:
                         with dbConnect.engine.connect() as conn:
-                            query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
-                            inputs = {'sport': sport, 'format': format}
-                            getsfID = conn.execute(text(query), inputs)
-                            rows = getsfID.fetchall()
-                            formatID = rows[0][2]
+                            # query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
+                            # inputs = {'sport': sport, 'format': format}
+                            # getsfID = conn.execute(text(query), inputs)
+                            # rows = getsfID.fetchall()
+                            # formatID = rows[0][2]
 
                             query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = 0, tourImageID = :tourImageID, tourBannerID = :tourBannerID, statusID = :statusID WHERE tourID = :tourID"
                             pic_id = upload_to_google_drive_2(tourImage, tourImage2)
