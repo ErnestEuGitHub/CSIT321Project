@@ -1836,3 +1836,81 @@ class Tournaments:
 
 
         return render_template('tournamentOverviewPublic.html', tourName=tourName, startDate=startDate, endDate=endDate, gender=gender, sportName=sportName, tourBannerID=tourBannerID, tourID=tourID, generalInfoDesc=generalInfoDesc, rules=rules, prize=prize, contact=contact)
+    
+    def tournamentOverviewParticipantPublic(tourID):
+        with dbConnect.engine.connect() as conn:
+            # Query the 'participants' table and 'players' tables
+                queryOne ="""
+                SELECT participants.participantID, participantEmail, participantName, GROUP_CONCAT(playerName) AS playerNames
+                FROM participants LEFT JOIN players
+                ON participants.participantID = players.participantID
+                WHERE participants.tourID = :tourID
+                GROUP BY participants.participantID, participantEmail, participantName"""
+                inputOne = {'tourID': tourID}
+                getparticipants = conn.execute(text(queryOne),inputOne)
+                participants = getparticipants.fetchall()
+
+                # Get the total number of participants
+                total_participants = len(participants)
+
+                # Query the 'tournaments' table
+                queryThree = "SELECT tourName, tourSize FROM tournaments WHERE tourID = :tourID"
+                inputThree = {'tourID': tourID}
+                getTournamentSize = conn.execute(text(queryThree),inputThree)
+                tournamentSize = getTournamentSize.fetchall() #scalar only extract the value
+                
+                tourName = tournamentSize[0][0]
+                tourSize = tournamentSize[0][1]
+
+                # Render the HTML template with the participant data and total number    
+                return render_template('participantTourOverviewPublic.html', participants=participants, total_participants=total_participants, tourName=tourName, tourSize=tourSize, tourID=tourID)
+        
+    def matchesPublic(tourID):
+        try:
+            with dbConnect.engine.connect() as conn:
+
+                matchquery = "SELECT stageName, stageSequence, stageFormatID, stageStatusID, stageID FROM stages WHERE tourID = :tourID AND stageStatusID <> 4"
+                inputs = {'tourID': tourID}
+                result = conn.execute(text(matchquery), inputs)
+                rows = result.fetchall()
+                # print(rows)
+                matchStages = [row._asdict() for row in rows]
+                # print(matchStages)
+
+                matchstageList = ''
+                
+                for matchstage in matchStages:
+
+                    if int(matchstage["stageFormatID"]) == 1:
+                        matchstage["stageFormatID"] = "Single Elimination"
+                    elif int(matchstage["stageFormatID"]) == 2:
+                        matchstage["stageFormatID"] = "Double Elimination"
+                    elif int(matchstage["stageFormatID"]) == 3:
+                        matchstage["stageFormatID"] = "Single Round Robin"
+                    elif int(matchstage["stageFormatID"]) == 4:
+                        matchstage["stageFormatID"] = "Double Round Robin"
+                    else:
+                        print("Invalid stage format!!!")
+
+                    matchstage_html = f'''
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
+                                                <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
+                                                <a href="/loadmatchPublic/{tourID}/{matchstage["stageID"]}">
+                                                    <button class="btn btn-primary" type="button" aria-expanded="true">
+                                                        View
+                                                    </button>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                '''
+                    
+                    matchstageList += matchstage_html
+
+            return render_template('matchesPublic.html', tourID=tourID, matchstageList = matchstageList)
+        except Exception as e:
+            flash('Oops, an error has occured.', 'error')
+            print(f"Error details: {e}")
+            return render_template('matchesPublic.html', tourID=tourID)
