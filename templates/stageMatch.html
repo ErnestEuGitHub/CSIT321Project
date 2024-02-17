@@ -4,15 +4,23 @@
 <link rel="stylesheet" href="/static/css/matchSeeding.css">
 
 <div class="content">
-    <div class="panel panel-default ms-2">
-        <div class="bracket">
+    <div class="mx-5" style="min-width: 950px; max-width: 950px;">
+        <div class="d-flex align-items-center justify-content-between">
+            <header class="d-flex">
+                <label class="fs-4 fw-bold my-3">{{stageName}} Matches</label>
+            </header>
+            <a href='/match/{{projID}}/{{tourID}}' class="btn btn-secondary" role="button" aria-disabled="true">Back</a>
+        </div>
+        {% if stageFormatID == 1 %}
+        <div class="bracket card">
+            <div class="card-body">
             <section class="round one">
                 {% for one in range(numberOfParticipants//4) %}
                     <div class="winners">
                         <div class="matchups">
                             <div class="matchup r1">
-                                <a href="" class="text-decoration-none text-info">
-                                    <span class="startTime">Date and Time</span>
+                                <a href="" class="text-decoration-none text-black">
+                                    <span class="startTime text-secondary">Date and Time</span>
                                     <div class="participants">
                                         <div class="participant">
                                             <span class="participantName1 col-7">Team 1</span>
@@ -26,7 +34,7 @@
                                 </a>
                             </div>
                             <div class="matchup r1">
-                                <a href="" class="text-decoration-none text-info">
+                                <a href="" class="text-decoration-none text-black">
                                     <div class="participants">
                                         <div class="participant">
                                             <span class="participantName1 col-7">Team 1</span>
@@ -37,7 +45,7 @@
                                             <span class="participantMatchScore2 col text-center">3</span>
                                         </div>
                                     </div>
-                                    <span class="startTime">Date and Time</span>
+                                    <span class="startTime text-secondary">Date and Time</span>
                                 </a>
                             </div>
                         </div>
@@ -54,8 +62,8 @@
                     <div class="winners py-roundtwo">
                         <div class="matchups">
                             <div class="matchup r2">
-                                <a href="" class="text-decoration-none text-info">
-                                    <span class="startTime">Date and Time</span>
+                                <a href="" class="text-decoration-none text-black">
+                                    <span class="startTime text-secondary">Date and Time</span>
                                     <div class="participants">
                                         <div class="participant">
                                             <span class="participantName1 col-7">Team 1</span>
@@ -69,7 +77,7 @@
                                 </a>
                             </div>
                             <div class="matchup r2">
-                                <a href="" class="text-decoration-none text-info">
+                                <a href="" class="text-decoration-none text-black">
                                     <div class="participants">
                                         <div class="participant">
                                             <span class="participantName1 col-7">Team 1</span>
@@ -80,7 +88,7 @@
                                             <span class="participantMatchScore2 col text-center">3</span>
                                         </div>
                                     </div>
-                                    <span class="startTime">Date and Time</span>
+                                    <span class="startTime text-secondary">Date and Time</span>
                                 </a>
                             </div>
                         </div>
@@ -98,8 +106,8 @@
                 <div class="winners py-roundthree">
                     <div class="matchups">
                         <div class="matchup r3">
-                            <a href="" class="text-decoration-none text-info">
-                                <span class="startTime">Date and Time</span>
+                            <a href="" class="text-decoration-none text-black">
+                                <span class="startTime text-secondary">Date and Time</span>
                                 <div class="participants">
                                     <div class="participant">
                                         <span class="participantName1 col-7">Team 1</span>
@@ -113,7 +121,7 @@
                             </a>
                         </div>
                         <div class="matchup r3">
-                            <a href="" class="text-decoration-none text-info">
+                            <a href="" class="text-decoration-none text-black">
                                 <div class="participants">
                                     <div class="participant">
                                         <span class="participantName1 col-7">Team 1</span>
@@ -124,7 +132,7 @@
                                         <span class="participantMatchScore2 col text-center">3</span>
                                     </div>
                                 </div>
-                                <span class="startTime">Date and Time</span>
+                                <span class="startTime text-secondary">Date and Time</span>
                             </a>
                         </div>
                     </div>
@@ -143,8 +151,8 @@
                 <div class="winners py-roundfour">
                     <div class="matchups">
                         <div class="matchup r4">
-                            <a href="" class="text-decoration-none text-info">
-                                <span class="startTime">Date and Time</span>
+                            <a href="" class="text-decoration-none text-black">
+                                <span class="startTime text-secondary">Date and Time</span>
                                 <div class="participants">
                                     <div class="participant">
                                         <span class="participantName1 col-7">Team 1</span>
@@ -158,7 +166,7 @@
                             </a>
                         </div>
                         <div class="matchup r4">
-                            <a href="" class="text-decoration-none text-info">
+                            <a href="" class="text-decoration-none text-black">
                                 <div class="participants">
                                     <div class="participant">
                                         <span class="participantName1 col-7">Team 1</span>
@@ -169,7 +177,7 @@
                                         <span class="participantMatchScore2 col text-center">3</span>
                                     </div>
                                 </div>
-                                <span class="startTime">Date and Time</span>
+                                <span class="startTime text-secondary">Date and Time</span>
                             </a>
                         </div>
                     </div>
@@ -188,8 +196,8 @@
                 <div class="winners py-roundfive">
                     <div class="matchups">
                         <div class="matchup r5">
-                            <a href="" class="text-decoration-none text-info">
-                                <span class="startTime">Date and Time</span>
+                            <a href="" class="text-decoration-none text-black">
+                                <span class="startTime text-secondary">Date and Time</span>
                                 <div class="participants">
                                     <div class="participant">
                                         <span class="participantName1 col-7">Team 1</span>
@@ -203,7 +211,7 @@
                             </a>
                         </div>
                         <div class="matchup r5">
-                            <a href="" class="text-decoration-none text-info">
+                            <a href="" class="text-decoration-none text-black">
                                 <div class="participants">
                                     <div class="participant">
                                         <span class="participantName1 col-7">Team 1</span>
@@ -214,7 +222,7 @@
                                         <span class="participantMatchScore2 col text-center">3</span>
                                     </div>
                                 </div>
-                                <span class="startTime">Date and Time</span>
+                                <span class="startTime text-secondary">Date and Time</span>
                             </a>
                         </div>
                     </div>
@@ -231,8 +239,8 @@
                 <div class="winners">
                     <div class="matchups">
                         <div class="matchup final">
-                            <a href="" class="text-decoration-none text-info">
-                                <span class="startTime">Date and Time</span>
+                            <a href="" class="text-decoration-none text-black">
+                                <span class="startTime text-secondary">Date and Time</span>
                                 <div class="participants">
                                     <div class="participant">
                                         <span class="participantName1 col-7">Team 1</span>
@@ -248,89 +256,226 @@
                     </div>
                 </div>
             </section>
+            </div>
         </div>
+        {% endif %}
+        {% if stageFormatID == 3 or stageFormatID == 4 %}
+            {% for ng in range(numberOfGroups) %}
+            <div class="group{{ng + 1}} mb-5">
+                <label class="fs-5 fw-bold mb-3">Group {{ng + 1}}</label>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="ranking">
+                            <label class="fs-5 fw-bold mb-3">Ranking</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-3" >
+                    <div class="card-body d-flex flex-column">
+                        {% for nr in range(noOfRounds) %}
+                        <label class="mb-2 fw-bold">Round {{nr + 1}}</label>
+                        <div class="mb-3 round{{nr + 1}} d-flex flex-row flex-wrap">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
     </div>
 </div>
 
 <script>
     
     var stageMatchArray = {{stageMatchArray|tojson|safe}};
+    var stageFormatID = {{stageFormatID|tojson|safe}};
+    var numberOfGroups = {{numberOfGroups|tojson|safe}};
+    var noOfRounds = {{noOfRounds|tojson|safe}};
+    var projID = {{projID|tojson|safe}};
+    var tourID = {{tourID|tojson|safe}};
+    var stageID = {{stageID|tojson|safe}};
     console.log(stageMatchArray);
+    console.log(stageFormatID);
 
-    // roundOneMatchArray = stageMatchArray[0]
-    // console.log(roundOneMatchArray);
-
-    document.addEventListener("DOMContentLoaded", function () {
-
-        for (let i = 0; i < stageMatchArray.length; i++) {
-            if (i == (stageMatchArray.length - 1)){
-                var matchups = document.querySelectorAll('.matchup.final');
-                var startTimes = document.querySelectorAll('.matchup.final .startTime');
-                var participantName1 = document.querySelectorAll('.matchup.final .participants .participant .participantName1');
-                var participantName2 = document.querySelectorAll('.matchup.final .participants .participant .participantName2');
-                var participantScore1 = document.querySelectorAll('.matchup.final .participants .participant .participantMatchScore1');
-                var participantScore2 = document.querySelectorAll('.matchup.final .participants .participant .participantMatchScore2');
-                var matchDetailLinks = document.querySelectorAll('.matchup.final a');
-            } else {
-                var matchups = document.querySelectorAll('.matchup.r' + (i+1));
-                var startTimes = document.querySelectorAll('.matchup.r' + (i+1) + ' .startTime');
-                var participantName1 = document.querySelectorAll('.matchup.r' + (i+1) + ' .participants .participant .participantName1');
-                var participantName2 = document.querySelectorAll('.matchup.r' + (i+1) + ' .participants .participant .participantName2');
-                var participantScore1 = document.querySelectorAll('.matchup.r' + (i+1) + ' .participants .participant .participantMatchScore1');
-                var participantScore2 = document.querySelectorAll('.matchup.r' + (i+1) + ' .participants .participant .participantMatchScore2');
-                var matchDetailLinks = document.querySelectorAll('.matchup.r' + (i+1) + ' a');
-            }
-
-            console.log(matchups)
-            console.log(startTimes)
-            console.log(participantName1)
-            console.log(participantName2)
-            console.log(matchDetailLinks)
-
-            for (let k = 0; k < stageMatchArray[i].length; k++){
-                matchups[k].id = stageMatchArray[i][k].matchID;
-                
-                var dateString = stageMatchArray[i][k].startTime
-                if (dateString == null){
-                    startTimes[k].textContent = "Start: TBD";
+    if (stageFormatID == 1){
+        document.addEventListener("DOMContentLoaded", function () {
+            for (let i = 0; i < stageMatchArray.length; i++) {
+                if (i == (stageMatchArray.length - 1)){
+                    var matchups = document.querySelectorAll('.matchup.final');
+                    var startTimes = document.querySelectorAll('.matchup.final .startTime');
+                    var participantName1 = document.querySelectorAll('.matchup.final .participants .participant .participantName1');
+                    var participantName2 = document.querySelectorAll('.matchup.final .participants .participant .participantName2');
+                    var participantScore1 = document.querySelectorAll('.matchup.final .participants .participant .participantMatchScore1');
+                    var participantScore2 = document.querySelectorAll('.matchup.final .participants .participant .participantMatchScore2');
+                    var matchDetailLinks = document.querySelectorAll('.matchup.final a');
                 } else {
-                    var dateObject = new Date(dateString);
-                    var options = {day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC'}
-                    var formattedDate = new Intl.DateTimeFormat('en-US', options).format(dateObject);
-                    startTimes[k].textContent = "Start: " + formattedDate;
-                }
-              
-                matchDetailLinks[k].href = "/loadmatchdetails/{{projID}}/{{tourID}}/{{stageID}}/" + stageMatchArray[i][k].matchID
-                
-                //Partcipant Name
-                if (stageMatchArray[i][k].matchParticipants[0].participantName){
-                    participantName1[k].textContent = stageMatchArray[i][k].matchParticipants[0].participantName;
-                } else {
-                    participantName1[k].textContent = "TBD";
+                    var matchups = document.querySelectorAll('.matchup.r' + (i+1));
+                    var startTimes = document.querySelectorAll('.matchup.r' + (i+1) + ' .startTime');
+                    var participantName1 = document.querySelectorAll('.matchup.r' + (i+1) + ' .participants .participant .participantName1');
+                    var participantName2 = document.querySelectorAll('.matchup.r' + (i+1) + ' .participants .participant .participantName2');
+                    var participantScore1 = document.querySelectorAll('.matchup.r' + (i+1) + ' .participants .participant .participantMatchScore1');
+                    var participantScore2 = document.querySelectorAll('.matchup.r' + (i+1) + ' .participants .participant .participantMatchScore2');
+                    var matchDetailLinks = document.querySelectorAll('.matchup.r' + (i+1) + ' a');
                 }
 
-                if (stageMatchArray[i][k].matchParticipants[1].participantName){
-                    participantName2[k].textContent = stageMatchArray[i][k].matchParticipants[1].participantName;
-                } else {
-                    participantName2[k].textContent = "TBD";
-                }
+                console.log(matchups)
+                console.log(startTimes)
+                console.log(participantName1)
+                console.log(participantName2)
+                console.log(matchDetailLinks)
+
+                for (let k = 0; k < stageMatchArray[i].length; k++){
+                    matchups[k].id = stageMatchArray[i][k].matchID;
+                    
+                    var dateString = stageMatchArray[i][k].startTime
+                    if (dateString == null){
+                        startTimes[k].textContent = "Start: ?";
+                    } else {
+                        var dateObject = new Date(dateString);
+                        var options = {day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', hour12: false}
+                        var formattedDate = new Intl.DateTimeFormat('en-US', options).format(dateObject);
+                        startTimes[k].textContent = "Start: " + formattedDate;
+                    }
                 
-                //Partcipant Score
-                if (stageMatchArray[i][k].matchParticipants[0].matchScore){
+                    matchDetailLinks[k].href = "/loadmatchdetails/{{projID}}/{{tourID}}/{{stageID}}/" + stageMatchArray[i][k].matchID
+                    
+                    //Partcipant Name
+                    if (stageMatchArray[i][k].matchParticipants[0].participantName){
+                        participantName1[k].textContent = stageMatchArray[i][k].matchParticipants[0].participantName;
+                    } else {
+                        participantName1[k].textContent = "TBD";
+                    }
+
+                    if (stageMatchArray[i][k].matchParticipants[1].participantName){
+                        participantName2[k].textContent = stageMatchArray[i][k].matchParticipants[1].participantName;
+                    } else {
+                        participantName2[k].textContent = "TBD";
+                    }
+
+                    //Partcipant Score
                     participantScore1[k].textContent = stageMatchArray[i][k].matchParticipants[0].matchScore;
-                } else {
-                    participantScore1[k].textContent = "TBD";
+                    participantScore2[k].textContent = stageMatchArray[i][k].matchParticipants[1].matchScore;
+                    
+                }
+            }
+        });
+    } else if (stageFormatID == 3 || stageFormatID == 4) {
+        console.log(numberOfGroups);
+
+        var rankingArray = {{rankingArray|tojson|safe}};
+        console.log(rankingArray);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            for (let i = 0; i < numberOfGroups; i++) {
+                var group = document.querySelector('.group' + (i+1));
+                console.log(group);
+
+                var table = document.createElement('table');
+                table.classList.add('table'); // Add any necessary classes
+
+                // Create thead element and its row
+                var thead = document.createElement('thead');
+                var theadRow = document.createElement('tr');
+
+                // Create th elements for thead row
+                ['Name', 'P', 'W', 'D', 'L', 'SF', 'SA', '+/-', 'Pts'].forEach(function(headerText) {
+                    var th = document.createElement('th');
+                    th.setAttribute('scope', 'col');
+                    th.textContent = headerText;
+                    if (headerText != "Name"){
+                        th.classList = "text-center"
+                    }
+                    theadRow.appendChild(th);
+                });
+
+                // Append thead row to thead
+                thead.appendChild(theadRow);
+
+                // Append thead to table
+                table.appendChild(thead);
+
+                // Create tbody element
+                var tbody = document.createElement('tbody');
+
+                // Populate tbody with data from rankingArray
+
+                console.log(rankingArray[i].length);
+
+                for (let p in rankingArray[i]){
+                    var row = document.createElement('tr');
+                    console.log(p);
+
+                    var rowhtml = `
+                        <td class="align-middle">${rankingArray[i][p].participantName}</td>
+                        <td class="align-middle text-center">${rankingArray[i][p].matchPlayed}</td>
+                        <td class="align-middle text-center">${rankingArray[i][p].win}</td>
+                        <td class="align-middle text-center">${rankingArray[i][p].draw}</td>
+                        <td class="align-middle text-center">${rankingArray[i][p].loss}</td>
+                        <td class="align-middle text-center">${rankingArray[i][p].scoreFor}</td>
+                        <td class="align-middle text-center">${rankingArray[i][p].scoreAgainst}</td>
+                        <td class="align-middle text-center">${rankingArray[i][p].scoreDiff}</td>
+                        <td class="align-middle text-center">${rankingArray[i][p].points}</td>
+                    `;
+                    row.innerHTML = rowhtml;
+                    tbody.appendChild(row);
                 }
 
-                if (stageMatchArray[i][k].matchParticipants[1].matchScore){
-                    participantScore2[k].textContent = stageMatchArray[i][k].matchParticipants[1].matchScore;
-                } else {
-                    participantScore2[k].textContent = "TBD";
+                table.appendChild(tbody);
+
+                var ranking = document.querySelector('.group' + (i+1) + ' .ranking');
+                console.log(ranking);
+                ranking.appendChild(table);
+
+                for (let k = 0; k < noOfRounds; k++){
+                    var round = document.querySelector('.group' + (i+1) + ' .round' + (k+1));
+                    console.log(round)
+                    console.log(stageMatchArray[i][k])
+
+                    for (let m = 0; m < stageMatchArray[i][k].length; m++){
+                        console.log(stageMatchArray[i][k][m])
+
+                        stageMatchArray[i][k][m].startTime
+
+                        var dateString = stageMatchArray[i][k][m].startTime
+                        if (dateString == null){
+                            matchStartTime = "?";
+                        } else {
+                            var dateObject = new Date(dateString);
+                            var options = {day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'UTC', hour12: false}
+                            var formattedDate = new Intl.DateTimeFormat('en-US', options).format(dateObject);
+                            matchStartTime = formattedDate;
+                        }
+                        var hrefForRound = `/loadmatchdetails/${projID}/${tourID}/${stageID}/${stageMatchArray[i][k][m].matchID}`;
+                        var htmlForRound = `<div class="p-1" style="min-width: 175px; max-width: 175px; max-height: 100px;">
+                                <span class="startTime text-black">${matchStartTime}</span>
+                                <div class="card">
+                                    <div class="card-body p-2 ">
+                                        <a href=${hrefForRound} class="text-decoration-none text-secondary">
+                                            <div class="">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="mx-2 overflow-hidden" style="max-width: 150px; max-height: 24px">${stageMatchArray[i][k][m].matchParticipants[0].participantName}</span>
+                                                    
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="mx-2 overflow-hidden" style="max-width: 150px; max-height: 24px">${stageMatchArray[i][k][m].matchParticipants[1].participantName}</span>
+                                                
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>`;
+                        var divRound = document.createElement('div');
+                        // div.className = "d-flex flex-row flex-wrap"
+                        divRound.innerHTML = htmlForRound;
+                        round.appendChild(divRound);
+                    }
                 }
-                
             }
-        }
-    });
+        });
+    }
+
+    
 
 </script>
 {% endblock %}
