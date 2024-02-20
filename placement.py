@@ -8,6 +8,8 @@ def placement(projID, tourID):
     #fornavbar
     navtype = 'dashboard'
     tournamentName = retrieveDashboardNavName(tourID)
+    moderatorPermissionList = gettingModeratorPermissions(tourID)
+    isOwner = verifyOwner(tourID)
 
     with dbConnect.engine.connect() as conn:
         query = "SELECT stageID, stageName FROM stages WHERE tourID = :tourID AND stageStatusID = 1 ORDER BY stageSequence ASC"
@@ -17,4 +19,4 @@ def placement(projID, tourID):
 
         placementStages = [row._asdict() for row in rows]
  
-    return render_template('placement.html', placementStages=placementStages, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID)
+    return render_template('placement.html', placementStages=placementStages, navtype=navtype, tournamentName=tournamentName, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
