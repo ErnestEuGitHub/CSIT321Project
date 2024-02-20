@@ -9,8 +9,10 @@ class Stage:
     #configureStage
     def configureStage(projID, tourID, stageID):
 
-        tournamentName = retrieveDashboardNavName(tourID)
         navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
             print(tourID)
@@ -81,11 +83,13 @@ class Stage:
                 
                     flash('Stage Configured!', 'success')
                     # return render_template('structure.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID)
-                    return redirect(url_for("loadstructure", projID = projID, tourID=tourID))
+                    return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, projID = projID, tourID=tourID
+                                       , moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+            return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID
+                                       , moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         else:
             tournamentName = retrieveDashboardNavName(tourID)
             navtype = 'dashboard'
@@ -121,7 +125,8 @@ class Stage:
 
                         return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID = projID, tourID=tourID, stageID=stageID,
                                        stageName = stageName, stageSequence = stageSequence, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                       numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, maxGames = maxGames, tfMatch = tfMatch)
+                                       numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, maxGames = maxGames, tfMatch = tfMatch
+                                       , moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
                         roundQuery = "SELECT winPts, drawPts, lossPts, roundRobinID FROM roundFormat WHERE stageID = :stageID"
@@ -144,23 +149,26 @@ class Stage:
                         
                         return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                        stageName = stageName, stageSequence = stageSequence, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                       numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, maxGames = maxGames, winPts = winPts, drawPts = drawPts, lossPts = lossPts, tieBreakers = tieBreakers)
+                                       numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, maxGames = maxGames, winPts = winPts, drawPts = drawPts, lossPts = lossPts, tieBreakers = tieBreakers
+                                       , moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                     else:
                         print("Cannot get any information on stageFormat")
 
 
-                return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID)   
+                return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)   
                     
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+            return render_template('configureStage.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
             
         
     def deleteStage(projID, tourID, stageID):
 
-        tournamentName = retrieveDashboardNavName(tourID)
         navtype = 'dashboard'
+        tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         print(stageID)
 
@@ -177,6 +185,6 @@ class Stage:
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-            return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID))
+            return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
         else:
-            return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID))
+            return redirect(url_for("loadstructure", navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
