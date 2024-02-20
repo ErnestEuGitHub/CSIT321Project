@@ -152,20 +152,22 @@ def loadTourOverviewWithID(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
-        with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments WHERE tourID = :tourID"
-            inputs = {'tourID': tourID}
-            checktour = conn.execute(text(query), inputs)
-            rows = checktour.fetchall()
+        page = Tournaments.TourOverviewDetails(projID, tourID)
+        return page  
+        # with dbConnect.engine.connect() as conn:
+        #     query = "SELECT * from tournaments WHERE tourID = :tourID"
+        #     inputs = {'tourID': tourID}
+        #     checktour = conn.execute(text(query), inputs)
+        #     rows = checktour.fetchall()
             
-            #statusID=5, the tournament is suspended
-            if rows[0][9] == 5:
-                return redirect(url_for('loadtournaments', projID=projID))
-            elif rows[0][10] == session['id']:
-                page = Tournaments.TourOverviewDetails(projID, tourID)
-                return page            
-            else:
-                return render_template('notfound.html')
+        #     #statusID=5, the tournament is suspended
+        #     if rows[0][9] == 5:
+        #         return redirect(url_for('loadtournaments', projID=projID))
+        #     elif rows[0][10] == session['id']:
+        #         page = Tournaments.TourOverviewDetails(projID, tourID)
+        #         return page            
+        #     else:
+        #         return render_template('notfound.html')
             
 @app.route('/participantTournamentOverviewPage/<projID>/<tourID>')
 def loadParticipantTourOverviewWithID(projID, tourID):
@@ -438,18 +440,21 @@ def loadstructure(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
-        with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
-            inputs = {'userID': session["id"], 'tourID': tourID}
-            checktour = conn.execute(text(query), inputs)
-            rows = checktour.fetchall()
+        page = Tournaments.structure(projID, tourID)
+        return page
+        # with dbConnect.engine.connect() as conn:
+        #     query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+        #     inputs = {'userID': session["id"], 'tourID': tourID}
+        #     checktour = conn.execute(text(query), inputs)
+        #     rows = checktour.fetchall()
 
-            if rows:
-                page = Tournaments.structure(projID, tourID)
-                return page
+        #     if rows:
+        #         page = Tournaments.structure(projID, tourID)
+        #         return page
             
-            else:
-                return render_template('notfound.html')
+        #     else:
+        #         print("access denied!")
+        #         return render_template('notfound.html')
             
 @app.route('/createStage/<projID>/<tourID>', methods=["POST", "GET"])
 def loadcreatestage(projID, tourID):
@@ -755,19 +760,20 @@ def loadModeratorsTournament(userID):
 def match(projID, tourID):
     if "id" not in session:
         return redirect(url_for('loadLogin'))
-    else:
-        with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
-            inputs = {'userID': session["id"], 'tourID': tourID}
-            checktour = conn.execute(text(query), inputs)
-            rows = checktour.fetchall()
+    # else:
+    #     with dbConnect.engine.connect() as conn:
+    #         query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+    #         inputs = {'userID': session["id"], 'tourID': tourID}
+    #         checktour = conn.execute(text(query), inputs)
+    #         rows = checktour.fetchall()
 
-            if rows:
-                page = Tournaments.match(projID, tourID)
-                return page
+    #         if rows:
+    else:
+        page = Tournaments.match(projID, tourID)
+        return page
             
-            else:
-                return render_template('notfound.html')
+    # else:
+    #     return render_template('notfound.html')
             
 @app.route('/loadmatch/<projID>/<tourID>/<stageID>', methods=["POST", "GET"])
 def loadmatch(projID, tourID, stageID):
