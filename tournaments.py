@@ -1816,10 +1816,8 @@ class Tournaments:
             
             # Query the 'moderator' table
             queryModeratorList ="""
-            SELECT tournaments.tourName, tournaments.tourID, projects.projID
-            FROM moderators
-            LEFT JOIN tournaments ON moderators.tourID = tournaments.tourID 
-            LEFT JOIN projects ON tournaments.projID = projects.projID 
+            SELECT tournaments.tourName, tournaments.tourID, tournaments.projID
+            FROM moderators LEFT JOIN tournaments ON moderators.tourID = tournaments.tourID 
             WHERE moderators.userID = :userID"""
             inputModeratorList = {'userID': session["id"]}
             getmoderators = conn.execute(text(queryModeratorList),inputModeratorList)
