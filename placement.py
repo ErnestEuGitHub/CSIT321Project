@@ -19,4 +19,4 @@ def placement(projID, tourID):
 
         placementStages = [row._asdict() for row in rows]
  
-    return render_template('placement.html', placementStages=placementStages, navtype=navtype, tournamentName=tournamentName, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+    return render_template('placement.html', placementStages=placementStages, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
