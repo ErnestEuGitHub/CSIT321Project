@@ -31,7 +31,7 @@
         </div>
         <div class="row justify-content-center mb-4">
             {% if tourBannerID %}
-            <img src="https://drive.google.com/thumbnail?id={{tourBannerID}}" alt="" height="350px">
+            <img src="https://drive.google.com/thumbnail?id={{tourBannerID}}&sz=s4000" alt="" height="350px">
             {% else %}
             <!-- Image placeholder -->
             <img src="https://via.placeholder.com/600x350/F9F9F9?text=Please+Upload+Banner+Image" alt="" height="350px">
@@ -55,18 +55,22 @@
                 </ul>
             </div>
             <div id="detailsTabContent" block>
-                <h6 class="mb-4 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</h6>
-                <h6 class="mb-4 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</h6>
-                <!-- <h4 class="fs-4 mb-4 ">Age Limit: 18 and above</h4> -->
-                <h6 class="mb-4 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</h6>
-                <h6 class="mb-4 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</h6>
-                <h6 class="mb-4 ">Description: {% if not generalInfoDesc %}No Description{% else %}{{generalInfoDesc}}{% endif %}</h6>
-                <p>{{generalInfoDesc}}</p>
-                <div class="d-flex align-items-center">
-                    <p class="mb-0">Share on:</p>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u=gamesphere.onrender.com/tournamentOverviewPublic/{{tourID}}&quote={{ tourName }}" class="fa fa-facebook ms-2"></a>
-                    <a href="https://twitter.com/intent/tweet?text={{ tourName }}&url=gamesphere.onrender.com/tournamentOverviewPublic/{{tourID}}"  class="fa fa-twitter ms-2"></a>
+                <div class="d-flex flex-column">
+                    <label class="mb-2 ">Sport: {% if not sportName %}No Sport Name{% else %}{{sportName}}{% endif %}</label>
+                    <label class="mb-2 ">Gender: {% if not gender %}No Gender{% else %}{{gender}}{% endif %}</label>
+                    <label class="mb-2 ">Tournament Start Date: {% if not startDate %}No Start Date{% else %}{{startDate}}{% endif %}</label>
+                    <label class="mb-2 ">Tournament End Date: {% if not endDate %}No End Date{% else %}{{endDate}}{% endif %}</label>
+                    <!-- <label class="mb-2 ">Description: {% if generalInfoDesc == none %}No Description{% else %}{{generalInfoDesc}}{% endif %}</label>
+                    <p>{{generalInfoDesc}}</p> -->
+                    <label class="mb-4 ">Description: </label> {% if not generalInfoDesc %}No Description{% else %}<p>{{generalInfoDesc}}</p>{% endif %}
+                    
                 </div>
+                    <div class="d-flex align-items-center">
+                        <p class="mb-0">Share on:</p>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=gamesphere.onrender.com/tournamentOverviewPublic/{{tourID}}&quote={{ tourName }}" class="fa fa-facebook ms-2"></a>
+                        <a href="https://twitter.com/intent/tweet?text={{ tourName }}&url=gamesphere.onrender.com/tournamentOverviewPublic/{{tourID}}"  class="fa fa-twitter ms-2"></a>
+                    </div>
+                
             </div>
             <div id="ruleTabContent" hidden>
                 <h6 class="mb-4 ">{{rules}}</h6>

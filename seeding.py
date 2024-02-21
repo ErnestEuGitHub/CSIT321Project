@@ -2,13 +2,15 @@ from flask import render_template, session, request, flash, jsonify, url_for, re
 from itertools import combinations
 from database import dbConnect
 from sqlalchemy import text
-from general import retrieveDashboardNavName
+from general import *
 
 def seeding(projID, tourID, stageID):
 
     #fornavbar
     navtype = 'dashboard'
     tournamentName = retrieveDashboardNavName(tourID)
+    moderatorPermissionList = gettingModeratorPermissions(tourID)
+    isOwner = verifyOwner(tourID)
 
     if request.method == "POST":
         data = request.get_json()
@@ -523,6 +525,6 @@ def seeding(projID, tourID, stageID):
                         seedingTeam.append(getSeedingName[0])
 
             if stageForm == 1 or stageForm == 2:
-                return render_template('seedingSingleElim.html', participantID=participantID, participantName=participantName, numberOfParticipants=numberOfParticipants, numberOfGroups=numberOfGroups, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, seedingTeam=seedingTeam)
+                return render_template('seedingSingleElim.html', participantID=participantID, participantName=participantName, numberOfParticipants=numberOfParticipants, numberOfGroups=numberOfGroups, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, seedingTeam=seedingTeam, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
             elif stageForm == 3 or stageForm == 4:
-                return render_template('seeding.html', participantID=participantID, participantName=participantName, numberOfParticipants=numberOfParticipants, numberOfGroups=numberOfGroups, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, seedingTeam=seedingTeam)
+                return render_template('seeding.html', participantID=participantID, participantName=participantName, numberOfParticipants=numberOfParticipants, numberOfGroups=numberOfGroups, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, seedingTeam=seedingTeam, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)

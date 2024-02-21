@@ -168,7 +168,7 @@ class Tournaments:
         projectName = retrieveProjectNavName(projID)
         
         with dbConnect.engine.connect() as conn:
-            query = "SELECT tournaments.*, sports.sportName, generalInfo.* FROM tournaments JOIN sports ON tournaments.sportID = sports.sportID JOIN generalInfo ON tournaments.generalInfoID = generalInfo.generalInfoID WHERE tourID = :tourID"
+            query = "SELECT tournaments.*, sports.sportName, generalInfo.* FROM tournaments LEFT JOIN sports ON tournaments.sportID = sports.sportID LEFT JOIN generalInfo ON tournaments.generalInfoID = generalInfo.generalInfoID WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
             result = conn.execute(text(query), inputs)
             rows = result.fetchall()
@@ -1045,9 +1045,9 @@ class Tournaments:
                 elif int(tourSize) < 0:
                     flash('Please enter participant size from 1-10,000!', 'error')
                     return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
-                elif not format:
-                    flash('That is not a valid format for the sport!', 'error')
-                    return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+                # elif not format:
+                #     flash('That is not a valid format for the sport!', 'error')
+                #     return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 elif not endDate or not startDate:
                     flash('Start or End Dates are not filled!', 'error')
                     return render_template('generalsettings.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=int(sport), status=status, sportlist=sportsOptions, generalDesc=generalDesc, rules=rules, prize=prize, contact=contact, navtype=navtype, tournamentName=tournamentName, tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
@@ -1058,11 +1058,11 @@ class Tournaments:
             
                     try:
                         with dbConnect.engine.connect() as conn:
-                            query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
-                            inputs = {'sport': sport, 'format': format}
-                            getsfID = conn.execute(text(query), inputs)
-                            rows = getsfID.fetchall()
-                            formatID = rows[0][2]
+                            # query = "SELECT * FROM sportsformats JOIN formats ON sportsformats.formatID = formats.formatID WHERE sportID = :sport AND formatName = :format"
+                            # inputs = {'sport': sport, 'format': format}
+                            # getsfID = conn.execute(text(query), inputs)
+                            # rows = getsfID.fetchall()
+                            # formatID = rows[0][2]
 
                             query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, sportID = :sportID, formatID = 0, tourImageID = :tourImageID, tourBannerID = :tourBannerID, statusID = :statusID WHERE tourID = :tourID"
                             pic_id = upload_to_google_drive_2(tourImage, tourImage2)
@@ -1605,7 +1605,7 @@ class Tournaments:
                 request.form.get("ManagePublicPage"),
                 request.form.get("ManageMedia"),
             ]
-            # print(selectedPermissions)
+            print(selectedPermissions)
 
             with dbConnect.engine.connect() as conn:
                 # Check if the user already exists
@@ -1816,10 +1816,8 @@ class Tournaments:
             
             # Query the 'moderator' table
             queryModeratorList ="""
-            SELECT tournaments.tourName, tournaments.tourID, projects.projID
-            FROM moderators
-            LEFT JOIN tournaments ON moderators.tourID = tournaments.tourID 
-            LEFT JOIN projects ON tournaments.projID = projects.projID 
+            SELECT tournaments.tourName, tournaments.tourID, tournaments.projID
+            FROM moderators LEFT JOIN tournaments ON moderators.tourID = tournaments.tourID 
             WHERE moderators.userID = :userID"""
             inputModeratorList = {'userID': session["id"]}
             getmoderators = conn.execute(text(queryModeratorList),inputModeratorList)
@@ -2113,7 +2111,7 @@ class Tournaments:
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
                                                 <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
-                                                <a href="/loadmatch/{projID}/{tourID}/{matchstage["stageID"]}">
+                                                <a href="/loadmatchpreview/{projID}/{tourID}/{matchstage["stageID"]}">
                                                     <button class="btn btn-primary" type="button" aria-expanded="true">
                                                         View
                                                     </button>
@@ -2416,7 +2414,7 @@ class Tournaments:
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between" id="{matchstage["stageID"]}">
                                                 <label>{matchstage["stageSequence"]}. {matchstage["stageName"]} - {matchstage["stageFormatID"]}</label>
-                                                <a href="/loadmatchPublic/{tourID}/{matchstage["stageID"]}">
+                                                <a href="/loadmatchpublic/{tourID}/{matchstage["stageID"]}">
                                                     <button class="btn btn-primary" type="button" aria-expanded="true">
                                                         View
                                                     </button>

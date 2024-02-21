@@ -24,4 +24,23 @@
 
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.querySelector('.search-container input');
+        const boxLinks = document.querySelectorAll('.boxlink');
+
+        searchInput.addEventListener('input', function () {
+            const searchText = searchInput.value.toLowerCase().trim();
+
+            boxLinks.forEach(function (boxLink) {
+                const projectName = boxLink.querySelector('p').textContent.toLowerCase();
+                if (projectName.includes(searchText)) {
+                    boxLink.style.display = 'block';
+                } else {
+                    boxLink.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

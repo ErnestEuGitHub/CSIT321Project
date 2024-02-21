@@ -63,7 +63,7 @@
                         <div class="carousel-item {% if loop.first %}active{% endif %}">
                             {% if mediaFile['newsMediaCode'] %}
                             {% if mediaFile['type'] == 1 %}
-                            <img src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}"
+                            <img src="https://drive.google.com/thumbnail?id={{ mediaFile['newsMediaCode'] }}&sz=s4000"
                                 class="d-block w-100" alt="Image">
                             {% elif mediaFile['type'] == 2 %}
                             <iframe src="https://drive.google.com/file/d/{{ mediaFile['newsMediaCode'] }}/preview"
