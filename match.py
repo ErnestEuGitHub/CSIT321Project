@@ -8,8 +8,11 @@ import math
 class Match:
 
     def loadMatch(projID, tourID, stageID):
+        #fornavbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         try:
             with dbConnect.engine.connect() as conn:
@@ -78,7 +81,7 @@ class Match:
                     
                     return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                             stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                            numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray)
+                                            numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                 
                 elif stageFormatID == 3 or stageFormatID == 4:
 
@@ -167,17 +170,20 @@ class Match:
                         
                     return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                             stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                            numberOfGroups=numberOfGroups, noOfRounds=noOfRounds, matchFormatID=matchFormatID, stageMatchArray=stageMatchArray, rankingArray=rankingArray)
+                                            numberOfGroups=numberOfGroups, noOfRounds=noOfRounds, matchFormatID=matchFormatID, stageMatchArray=stageMatchArray, rankingArray=rankingArray, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
                                     
         except Exception as e:
             flash('Oops, an error has occured.', 'error')
             print(f"Error details: {e}")
-            return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID = stageID)
+            return render_template('stageMatch.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID = stageID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     def loadMatchDetails(projID, tourID, stageID, matchID):
+        #fornavbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
         
         if request.method == "POST":
             action = request.form.get('action')
@@ -194,10 +200,10 @@ class Match:
 
                 if startDate is None or endDate is None:
                     flash('Please select a valid start and end duration!', 'error')
-                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID))
+                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
                 elif int(venue) < 0:
                     flash('Please select a valid venue!', 'error')
-                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID))
+                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
                 else:
                     with dbConnect.engine.connect() as conn:
                         query = "UPDATE matches SET startTime = :startTime, endTime = :endTime, venueID = :venueID WHERE matchID = :matchID"
@@ -205,7 +211,7 @@ class Match:
                         updateVenue = conn.execute(text(query), inputs)
                         
                     flash('Venue Booking Updated!', 'success')
-                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID))
+                    return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
         else:
 
           with dbConnect.engine.connect() as conn:
@@ -323,7 +329,7 @@ class Match:
 
                 venuelistFiltered = [venue for venue in venuelist if venue[0] not in unavailableVenueIDs]
 
-        return render_template('stageMatchDetails.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, maxGames=maxGames, match=match, matchParticipant=matchParticipant, game=game, gameParticipantArray=gameParticipantArray, venuelistFiltered=venuelistFiltered, currentvenueID=currentvenueID, currentvenueName=currentvenueName, matchstart=matchstart, matchend=matchend)
+        return render_template('stageMatchDetails.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, maxGames=maxGames, match=match, matchParticipant=matchParticipant, game=game, gameParticipantArray=gameParticipantArray, venuelistFiltered=venuelistFiltered, currentvenueID=currentvenueID, currentvenueName=currentvenueName, matchstart=matchstart, matchend=matchend, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
     def updateGamesDetails():
    
@@ -492,8 +498,11 @@ class Match:
             return "updateGamesDetails success!"
     
     def loadMatchDetailsPreview(projID, tourID, stageID, matchID):
+        #fornavbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
         
         with dbConnect.engine.connect() as conn:
                 
@@ -610,11 +619,14 @@ class Match:
 
                 venuelistFiltered = [venue for venue in venuelist if venue[0] not in unavailableVenueIDs]
 
-        return render_template('stageMatchDetailsPreview.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, maxGames=maxGames, match=match, matchParticipant=matchParticipant, game=game, gameParticipantArray=gameParticipantArray, venuelistFiltered=venuelistFiltered, currentvenueID=currentvenueID, currentvenueName=currentvenueName, matchstart=matchstart, matchend=matchend)
+        return render_template('stageMatchDetailsPreview.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, maxGames=maxGames, match=match, matchParticipant=matchParticipant, game=game, gameParticipantArray=gameParticipantArray, venuelistFiltered=venuelistFiltered, currentvenueID=currentvenueID, currentvenueName=currentvenueName, matchstart=matchstart, matchend=matchend, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     def loadMatchPreview(projID, tourID, stageID):
+            #fornavbar
             navtype = 'dashboard'
             tournamentName = retrieveDashboardNavName(tourID)
+            moderatorPermissionList = gettingModeratorPermissions(tourID)
+            isOwner = verifyOwner(tourID)
 
             try:
                 with dbConnect.engine.connect() as conn:
@@ -683,7 +695,7 @@ class Match:
                         
                         return render_template('stageMatchPreview.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                                 stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                                numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray)
+                                                numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                     
                     elif stageFormatID == 3 or stageFormatID == 4:
 
@@ -772,18 +784,21 @@ class Match:
                             
                         return render_template('stageMatchPreview.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID=stageID,
                                                 stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                                numberOfGroups=numberOfGroups, noOfRounds=noOfRounds, matchFormatID=matchFormatID, stageMatchArray=stageMatchArray, rankingArray=rankingArray)
+                                                numberOfGroups=numberOfGroups, noOfRounds=noOfRounds, matchFormatID=matchFormatID, stageMatchArray=stageMatchArray, rankingArray=rankingArray, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
                                         
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-                return render_template('stageMatchPreview.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID = stageID)
+                return render_template('stageMatchPreview.html', navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, stageID = stageID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
 
     def loadMatchDetailsPublic(tourID, stageID, matchID):
+        #fornavbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
         
         with dbConnect.engine.connect() as conn:
                 
@@ -900,11 +915,14 @@ class Match:
 
                 venuelistFiltered = [venue for venue in venuelist if venue[0] not in unavailableVenueIDs]
 
-        return render_template('stageMatchDetailsPublic.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID=stageID, matchID=matchID, maxGames=maxGames, match=match, matchParticipant=matchParticipant, game=game, gameParticipantArray=gameParticipantArray, venuelistFiltered=venuelistFiltered, currentvenueID=currentvenueID, currentvenueName=currentvenueName, matchstart=matchstart, matchend=matchend)
+        return render_template('stageMatchDetailsPublic.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID=stageID, matchID=matchID, maxGames=maxGames, match=match, matchParticipant=matchParticipant, game=game, gameParticipantArray=gameParticipantArray, venuelistFiltered=venuelistFiltered, currentvenueID=currentvenueID, currentvenueName=currentvenueName, matchstart=matchstart, matchend=matchend, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     def loadMatchPublic(tourID, stageID):
+            #fornavbar
             navtype = 'dashboard'
             tournamentName = retrieveDashboardNavName(tourID)
+            moderatorPermissionList = gettingModeratorPermissions(tourID)
+            isOwner = verifyOwner(tourID)
 
             try:
                 with dbConnect.engine.connect() as conn:
@@ -973,7 +991,7 @@ class Match:
                         
                         return render_template('stageMatchPublic.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID=stageID,
                                                 stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                                numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray)
+                                                numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
                     
                     elif stageFormatID == 3 or stageFormatID == 4:
 
@@ -1062,11 +1080,11 @@ class Match:
                             
                         return render_template('stageMatchPublic.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID=stageID,
                                                 stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                                numberOfGroups=numberOfGroups, noOfRounds=noOfRounds, matchFormatID=matchFormatID, stageMatchArray=stageMatchArray, rankingArray=rankingArray)
+                                                numberOfGroups=numberOfGroups, noOfRounds=noOfRounds, matchFormatID=matchFormatID, stageMatchArray=stageMatchArray, rankingArray=rankingArray, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
 
                                         
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
-                return render_template('stageMatchPublic.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID = stageID)
+                return render_template('stageMatchPublic.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID = stageID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
             
