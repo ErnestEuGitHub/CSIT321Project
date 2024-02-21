@@ -2232,13 +2232,13 @@ class Tournaments:
             projectName = retrieveProjectNavName(projID)
 
             with dbConnect.engine.connect() as conn:
-                query = "SELECT DISTINCT tournaments.*, stages.tourID FROM tournaments JOIN stages ON tournaments.tourID = stages.tourID;"
-                # inputs = {'projID': projID, 'userID': session["id"]}
-                getTour = conn.execute(text(query))
+                query = "SELECT DISTINCT tournaments.*, stages.tourID FROM tournaments JOIN stages ON tournaments.tourID = stages.tourID WHERE userID = :userID AND statusID != 5;"
+                inputs = {'userID': session["id"]}
+                getTour = conn.execute(text(query), inputs)
                 gettournaments = getTour.fetchall()
                 tourlist = [row._asdict() for row in gettournaments]
 
-            return render_template('createTemplate.html', tourlist=tourlist, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName)
+            return render_template('createTemplate.html', tourlist=tourlist, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, projID=projID)
         
     def editTemplate(projID):
         navtype = 'tournament'
@@ -2294,7 +2294,7 @@ class Tournaments:
                 fetchTemplates = getTemplates.fetchall()
                 templatelist = [row._asdict() for row in fetchTemplates]
 
-            return render_template('editTemplate.html', tourlist=tourlist, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, templatelist=templatelist)
+            return render_template('editTemplate.html', tourlist=tourlist, navtype=navtype, tournamentlist=tournamentlist, projectName=projectName, templatelist=templatelist, projID=projID)
     
     def getTemplateInfo(tourID):
         with dbConnect.engine.connect() as conn:
