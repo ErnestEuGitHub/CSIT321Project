@@ -745,7 +745,7 @@ def createUserAdmin():
                 hashedpw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
                 with dbConnect.engine.connect() as conn:
-                    query = "INSERT INTO users (email, password, profileID, fname, lname) VALUES (:email, :password, :profileID, :fname, :lname)"
+                    query = "INSERT INTO users (email, password, profileID, fname, lname, statusID) VALUES (:email, :password, :profileID, :fname, :lname, 1)"
                     inputs = {'email': email, 'password': hashedpw, 'fname': fname, 'lname': lname, 'profileID': profile}
                     addUser = conn.execute(text(query), inputs)
 
