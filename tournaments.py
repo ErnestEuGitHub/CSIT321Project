@@ -1322,9 +1322,10 @@ class Tournaments:
         isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
-            participantName = request.form.get("participantName")
-            participantEmail = request.form.get("participantEmail")
-            playerName = request.form.getlist("playerName")
+            # .strip() is to trim space before and after
+            participantName = request.form.get("participantName").strip()
+            participantEmail = request.form.get("participantEmail").strip()
+            playerName = [name.strip() for name in request.form.getlist("playerName")]
 
             with dbConnect.engine.connect() as conn:
                 queryParticipant = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
