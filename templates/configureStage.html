@@ -11,7 +11,7 @@
                     <select class="form-select" aria-label="Floating label select example" name="stageFormat" id="stageFormat">
                         <option>Open this select menu</option>
                         <option {% if stageFormatID == 1 %} selected {% endif %} value="1">Single Elimination</option>
-                        <option {% if stageFormatID == 2 %} selected {% endif %} value="2">Double Elimination</option>
+                        <!-- <option {% if stageFormatID == 2 %} selected {% endif %} value="2">Double Elimination</option> -->
                         <option {% if stageFormatID == 3 %} selected {% endif %} value="3">Single Round Robin</option>
                         <option {% if stageFormatID == 4 %} selected {% endif %} value="4">Double Round Robin</option>
                     </select>
@@ -51,13 +51,13 @@
                             <input type="number" class="form-control" name="numberOfGroups" id="numberOfGroups" value="{{ numberOfGroups }}"> 
                             <label for="numberOfGroups">Number of groups</label>
                         </div>
-                        <div id="tfMatchSelect"class="form-floating mb-3">
+                        <!-- <div id="tfMatchSelect"class="form-floating mb-3">
                         <select class="form-select" aria-label="Floating label select example" name="34match" id="34match">
                             <option {% if tfMatch == 1 %} selected {% endif %} value="1">Yes</option>
                             <option {% if tfMatch == 2 or not tfMatch %} selected {% endif %} value="2">No</option>
                         </select>
                         <label for="34match">Enable 3rd/4th Match</label>
-                        </div>
+                        </div> -->
                     </div>
                     <div id="advancedTabContent" hidden>
                         <label class="mb-3">Point Attribution <i class="bi bi-question-circle-fill" 
@@ -91,10 +91,10 @@
                                                 <option>Open this select menu</option>
                                                 <option {% if tb['tbTypeID'] == 1 %} selected {% endif %} value="1">Points (Head to head)</option>
                                                 <option {% if tb['tbTypeID'] == 2 %} selected {% endif %} value="2">Overall Match Win Draw Loss</option>
-                                                <option {% if tb['tbTypeID'] == 3 %} selected {% endif %} value="3">Overall Score </option>
-                                                <option {% if tb['tbTypeID'] == 4 %} selected {% endif %} value="4">Head to Head Score </option>
-                                                <option {% if tb['tbTypeID'] == 5 %} selected {% endif %} value="5">Overall Score Difference </option>
-                                                <option {% if tb['tbTypeID'] == 6 %} selected {% endif %} value="6">Head to Head Score Difference </option>
+                                                <option {% if tb['tbTypeID'] == 3 %} selected {% endif %} value="3">Overall Score</option>
+                                                <option {% if tb['tbTypeID'] == 4 %} selected {% endif %} value="4">Head to Head Score</option>
+                                                <option {% if tb['tbTypeID'] == 5 %} selected {% endif %} value="5">Overall Score Difference</option>
+                                                <option {% if tb['tbTypeID'] == 6 %} selected {% endif %} value="6">Manual</option>
                                             </select>
                                             <button type="button" class="btn btn-primary justify-content-center" onclick="removeTiebreaker(this)"><i class="bi bi-trash3-fill"></i></button>
                                         </div>
@@ -109,8 +109,8 @@
                         <div class="form-floating mb-3">
                             <select class="form-select" aria-label="Floating label select example" name="matchFormat" id="matchFormat">
                                 <option {% if matchFormatID == 1 %} selected {% endif %} value="1">Single Game</option>
-                                <option {% if matchFormatID == 2 %} selected {% endif %} value="2">Home and Away</option>
-                                <option {% if matchFormatID == 3 %} selected {% endif %} value="3" >Best of</option>
+                                <!-- <option {% if matchFormatID == 2 %} selected {% endif %} value="2">Home and Away</option> -->
+                                <option {% if matchFormatID == 3 %} selected {% endif %} value="3">Best of</option>
                             </select>
                             <label for="matchFormat">Format</label>
                         </div>
@@ -273,7 +273,7 @@
                                         <option value="3">Overall Score </option>
                                         <option value="4">Head to Head Score </option>
                                         <option value="5">Overall Score Difference </option>
-                                        <option value="6">Head to Head Score Difference </option>
+                                        <option value="6">Manual</option>
                                     </select>
                                     <button type="button" class="btn btn-primary justify-content-center" onclick="removeTiebreaker(this)"><i class="bi bi-trash3-fill"></i></button>
                                 </div>
