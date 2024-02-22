@@ -330,6 +330,7 @@ class Tournaments:
                             fetchStageFields = getStageFields.fetchall()
                             stagelists = [row._asdict() for row in fetchStageFields]
 
+                            print('stagelists is:', stagelists)
                             for stage in stagelists:
 
                                 templateStageID = stage["stageID"]
@@ -353,6 +354,7 @@ class Tournaments:
                                 stageID = IDfetch.scalar()
                                 
                                 print('Stage Created with Template!')
+                                print('stageID is:', stageID)
                                 if stageFormatID == 1 or stageFormatID == 2:
                                     query = "SELECT * from elimFormat WHERE stageID = :stageID"
                                     inputs = {'stageID': templateStageID}
@@ -441,23 +443,27 @@ class Tournaments:
                                         print(currentMatchArray)
                                         print('Match/Rounds Created with Template!')
 
-                                elif stageFormatID == 3 or stageFormatID == 4:
+                                elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
+                                    
+                                    #get roundFormat of existing roundRobin Stages
+                                    
                                     query = "SELECT * from roundFormat WHERE stageID = :stageID"
                                     inputs = {'stageID': templateStageID}
-                                    getRoundFormat = conn.execute(text(query), inputs)
-                                    fetchRoundFormat = getRoundFormat.fetchall()
-                                    roundFormat = [row._asdict() for row in fetchRoundFormat]
+                                    getRoundFormatDetails = conn.execute(text(query), inputs)
+                                    fetchRoundFormatDetails = getRoundFormatDetails.fetchall()
+                                    roundFormatDetails = [row._asdict() for row in fetchRoundFormatDetails]
 
-                                    roundRobinID = roundFormat[0]["roundRobinID"]
-                                    winPts = roundFormat[0]["winPts"]
-                                    drawPts = roundFormat[0]["drawPts"]
-                                    lossPts = roundFormat[0]["lossPts"]
+                                    winPts = roundFormatDetails[0]['winPts']
+                                    drawPts = roundFormatDetails[0]['drawPts']
+                                    lossPts = roundFormatDetails[0]['lossPts']
+                                    roundRobinID = roundFormatDetails[0]['roundRobinID']
 
-                                    query = "SELECT * from tiebreaker WHERE roundRobinID = :roundRobinID"
+                                    #get tieBreaker of existing roundRobin Stages
+                                    query = "SELECT tbTypeID from tieBreaker WHERE roundRobinID = :roundRobinID"
                                     inputs = {'roundRobinID': roundRobinID}
-                                    getTieBreaker = conn.execute(text(query), inputs)
-                                    fetchTieBreaker = getTieBreaker.fetchall()
-                                    tieBreakerlist = [row._asdict() for row in fetchTieBreaker]
+                                    getTieBreakerDetails = conn.execute(text(query), inputs)
+                                    fetchTieBreakerDetails = getTieBreakerDetails.fetchall()
+                                    tieBreakers = [row._asdict() for row in fetchTieBreakerDetails]
 
                                     roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
                                     roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
@@ -465,15 +471,123 @@ class Tournaments:
                                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                     roundRobinID = IDfetch.scalar()
 
-                                    for tieBreaker in tieBreakerlist:
-                                        # tieBreakerID = tieBreaker["tieBreakerID"]
-                                        tbTypeID = tieBreaker["tbTypeID"]
-                                        sequence = tieBreaker["sequence"]
+                                    print(tieBreakers)
 
+                                    for i in range(len(tieBreakers)):
+                                        sequence = i + 1
                                         tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
-                                        tiebreakerInput = {'tbTypeID': tbTypeID, 'sequence': sequence, 'roundRobinID': roundRobinID}
+                                        tiebreakerInput = {'tbTypeID': tieBreakers[i]['tbTypeID'], 'sequence': sequence, 'roundRobinID': roundRobinID}
                                         createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+                                    
+                                    noPerGroup = int(int(numberOfParticipants) // int(numberOfGroups))
+                                    print("This is noPerGroup")
+                                    print(noPerGroup)
+                                    print()
 
+                                    for grpIdx in range(1, int(numberOfGroups) + 1):
+                                        print("This is grpIdx")
+                                        print(grpIdx)
+                                        print()
+
+                                        if noPerGroup % 2 == 1:
+                                            tempNoPerGroup = noPerGroup + 1 # If odd number of teams, add a dummy team for a bye round
+                                            isOdd = True
+                                        else:
+                                            tempNoPerGroup = noPerGroup
+                                            isOdd = False
+
+                                        print("This is tempNoPerGroup")
+                                        print(tempNoPerGroup)
+                                        print()
+                                        
+                                        teams = list(range(1, tempNoPerGroup + 1))  # Assign each team a unique number
+                                        print(teams)
+                                        rounds = []
+                                        
+                                        for _ in range(tempNoPerGroup - 1):  # Iterate for n-1 rounds
+                                            round_pairs = []
+                                            for i in range(tempNoPerGroup // 2):
+                                                if i == 0:
+                                                    # Pair the first team with the last team
+                                                    round_pairs.append((teams[i], teams[-1]))
+                                                else:
+                                                    # Pair the remaining teams by selecting one from the beginning and one from the end
+                                                    round_pairs.append((teams[i], teams[-(i + 1)]))
+                                            rounds.append(round_pairs)
+                                            # Rotate the teams by one position for the next round
+                                            teams = [teams[0]] + [teams[-1]] + teams[1:-1]
+
+                                        for index, pairs in enumerate(rounds, start=1):
+                                            print("This is Round")
+                                            print(index)
+                                            for pair in pairs:
+                                                if isOdd == True and (pair[0] == tempNoPerGroup or pair[1] == tempNoPerGroup):
+                                                    continue
+                                                print("executing sql matches")
+                                                matchCreateQuery = "INSERT INTO matches (stageID, bracketSequence, matchStatus, stageGroup) VALUES (:stageID, :bracketSequence, :matchStatus, :stageGroup)"
+                                                matchCreateInputs = {'stageID': stageID, 'bracketSequence': index, 'matchStatus': 0, 'stageGroup': grpIdx}
+                                                conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                                IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                                matchID = IDfetch.scalar()
+
+                                                for p in pair:
+                                                    matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID, participantID) 
+                                                    VALUES (:matchID, :participantID)
+                                                    """
+                                                    matchParticipantCreateInputs = {'matchID': matchID, 'participantID': p * -1}
+                                                    conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                                
+                                                for n in range(int(maxGames)):
+                                                    gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
+                                                    VALUES (:matchID, :gameNo)
+                                                    """
+                                                    matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
+                                                    conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                                    IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                                    gameID = IDfetch.scalar()
+
+                                                    for p in pair:
+                                                        gameParticipantCreateQuery = """INSERT INTO gameParticipant (gameID, participantID) 
+                                                        VALUES (:gameID, :participantID)
+                                                        """
+                                                        gameParticipantCreateInputs = {'gameID': gameID, 'participantID': p * -1}
+                                                        conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
+                                        if (int(stageFormatID) == 4):
+                                            for index, pairs in enumerate(rounds, start=1):
+                                                print("This is Round")
+                                                print(index)
+                                                for pair in pairs:
+                                                    if isOdd == True and (pair[0] == tempNoPerGroup or pair[1] == tempNoPerGroup):
+                                                        continue
+                                                    print("executing sql matches")
+                                                    matchCreateQuery = "INSERT INTO matches (stageID, bracketSequence, matchStatus, stageGroup) VALUES (:stageID, :bracketSequence, :matchStatus, :stageGroup)"
+                                                    matchCreateInputs = {'stageID': stageID, 'bracketSequence': index + tempNoPerGroup - 1, 'matchStatus': 0, 'stageGroup': grpIdx}
+                                                    conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                                    IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                                    matchID = IDfetch.scalar()
+
+                                                    for p in pair:
+                                                        matchParticipantCreateQuery = """INSERT INTO matchParticipant (matchID, participantID) 
+                                                        VALUES (:matchID, :participantID)
+                                                        """
+                                                        matchParticipantCreateInputs = {'matchID': matchID, 'participantID': p * -1}
+                                                        conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                                    
+                                                    for n in range(int(maxGames)):
+                                                        gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
+                                                        VALUES (:matchID, :gameNo)
+                                                        """
+                                                        matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
+                                                        conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                                        IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                                        gameID = IDfetch.scalar()
+
+                                                        for p in pair:
+                                                            gameParticipantCreateQuery = """INSERT INTO gameParticipant (gameID, participantID) 
+                                                            VALUES (:gameID, :participantID)
+                                                            """
+                                                            gameParticipantCreateInputs = {'gameID': gameID, 'participantID': p * -1}
+                                                            conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)   
                                 else:
                                     print("stageFormatID is invalid!")
                                     
