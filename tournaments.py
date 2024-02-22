@@ -1889,9 +1889,12 @@ class Tournaments:
         return updated_content
 
     def media(projID, tourID):
-        #for navbar
+        #fornavbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
+        
         with dbConnect.engine.connect() as conn:
             query = "SELECT newsID, newsTitle FROM news WHERE tourID = :tourID"
             inputs = {'tourID': tourID}
@@ -1900,12 +1903,14 @@ class Tournaments:
 
             newsBlock = [row._asdict() for row in rows]
     
-        return render_template('media.html', newsBlock=newsBlock, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID)
+        return render_template('media.html', newsBlock=newsBlock, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     def createMedia(projID, tourID, userID):
-        #for navbar
+        #fornavbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
             newsTitle = request.form.get("newsTitle")
@@ -1944,12 +1949,14 @@ class Tournaments:
             flash('Media Created!', 'success')
             return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
         else:
-            return render_template('createMedia.html', tournamentName=tournamentName, navtype=navtype, projID=projID, tourID=tourID, userID=userID)
+            return render_template('createMedia.html', tournamentName=tournamentName, navtype=navtype, projID=projID, tourID=tourID, userID=userID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
     
     def editMedia(projID, tourID, newsID):
-        # for navbar
+        #fornavbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
 
         if request.method == "POST":
             newsTitle = request.form.get("newsTitle")
@@ -2009,12 +2016,15 @@ class Tournaments:
                 else:
                     flash('Media not found!', 'error')
 
-            return render_template('editMedia.html', mediaFiles=mediaFiles, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, newsID=newsID, newsTitle=newsTitle, newsDesc=newsDesc, type=type, newsMediaCode=newsMediaCode)
+            return render_template('editMedia.html', mediaFiles=mediaFiles, navtype=navtype, tournamentName=tournamentName, projID=projID, tourID=tourID, newsID=newsID, newsTitle=newsTitle, newsDesc=newsDesc, type=type, newsMediaCode=newsMediaCode, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
         
     def deleteMedia(projID, tourID, newsID):
-        #for navbar
+        #fornavbar
         navtype = 'dashboard'
         tournamentName = retrieveDashboardNavName(tourID)
+        moderatorPermissionList = gettingModeratorPermissions(tourID)
+        isOwner = verifyOwner(tourID)
+
 
         if request.method == "GET":
 
@@ -2028,9 +2038,9 @@ class Tournaments:
                 flash('Oops, an error has occured.', 'error')
                 print(f"Error details: {e}")
 
-                return redirect(url_for("loadMedia", tourID=tourID, projID=projID))
+                return redirect(url_for("loadMedia", tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
             else:
-                return redirect(url_for("loadMedia", tourID=tourID, projID=projID))
+                return redirect(url_for("loadMedia", tourID=tourID, projID=projID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
             
 
     def publicMedia(tourID):
