@@ -82,7 +82,6 @@
                     <ul id="dashboardSettingsNav" style="display:none">
                         <li><a href="/settings/general/{{projID}}/{{tourID}}">General</a></li>
                         <li><a href="/moderator/{{projID}}/{{tourID}}">Permission</a></li>
-                        <li><a href="#">Custom Field</a></li>
                     </ul>
                 </div>
                 <a href="/structure/{{projID}}/{{tourID}}">Structure</a>
@@ -91,8 +90,8 @@
                 <a href="/placement/{{projID}}/{{tourID}}">Placement</a>
                 <a href="/match/{{projID}}/{{tourID}}">Match</a>
                 <!-- <a href="#">Final Standing</a> -->
-                <a href="/tournamentOverviewPublic/{{tourID}}">Public Page</a>
                 <a href="/media/{{projID}}/{{tourID}}">Media</a>
+                <a href="/tournamentOverviewPublic/{{tourID}}">Public Page</a>
 
             {% else %}
                 {% if "Setup Structure" in moderatorPermissionList %}
@@ -113,11 +112,11 @@
                 <!--{% if "Manage Final Standing" in moderatorPermissionList %}
                     <a href="#">Final Standing</a>
                 {% endif %}-->
-                {% if "Manage Public Page" in moderatorPermissionList %}
-                    <a href="#">Public Page</a>
-                {% endif %}
                 {% if "Manage Media" in moderatorPermissionList %}
                     <a href="/media/{{projID}}/{{tourID}}">Media</a>
+                {% endif %}
+                {% if "Manage Public Page" in moderatorPermissionList %}
+                    <a href="#">Public Page</a>
                 {% endif %}
 
             {% endif %}

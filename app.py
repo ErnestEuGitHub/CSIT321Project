@@ -324,42 +324,94 @@ def loadParticipantsPublicPreview(projID, tourID):
 
 @app.route('/media/<projID>/<tourID>', methods=["POST", "GET"])
 def loadMedia(projID, tourID):
-    if "id" not in session:
-        return redirect(url_for('loadLogin'))
-    
-    page = Tournaments.media(projID, tourID)
-    return page
-
-@app.route('/createMedia/<projID>/<tourID>', methods=["POST", "GET"])
-def loadCreateMedia(projID, tourID):
+    role = None             
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments WHERE userID = :userID AND tourID = :tourID"
+            query = "SELECT * from tournaments WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+            
+            query = "SELECT * from moderators WHERE userID = :userID AND tourID = :tourID"
             inputs = {'userID': session["id"], 'tourID': tourID}
-            checknews = conn.execute(text(query), inputs)
-            rows = checknews.fetchall()
+            checkmod = conn.execute(text(query), inputs)
+            modrows = checkmod.fetchall()
+            
+            #statusID=5, the tournament is suspended
+            if rows[0][9] == 5:
+                return redirect(url_for('loadtournaments', projID=projID))
+            elif rows[0][10] == session['id']:
+                role = "Owner"
+                page = Tournaments.media(projID, tourID)
+                return page
+            elif modrows[0][2] == session['id']:                
+                role = "Moderator"
+                page = Tournaments.media(projID, tourID)
+                return page
+            else:
+                return render_template('notfound.html')
 
-            if rows:
+@app.route('/createMedia/<projID>/<tourID>', methods=["POST", "GET"])
+def loadCreateMedia(projID, tourID):
+    role = None             
+    if "id" not in session:
+        return redirect(url_for('loadLogin'))
+    else:
+        with dbConnect.engine.connect() as conn:
+            query = "SELECT * from tournaments WHERE tourID = :tourID"
+            inputs = {'tourID': tourID}
+            checktour = conn.execute(text(query), inputs)
+            rows = checktour.fetchall()
+            
+            query = "SELECT * from moderators WHERE userID = :userID AND tourID = :tourID"
+            inputs = {'userID': session["id"], 'tourID': tourID}
+            checkmod = conn.execute(text(query), inputs)
+            modrows = checkmod.fetchall()
+            
+            #statusID=5, the tournament is suspended
+            if rows[0][9] == 5:
+                return redirect(url_for('loadtournaments', projID=projID))
+            elif rows[0][10] == session['id']:
+                role = "Owner"
                 page = Tournaments.createMedia(projID, tourID, session["id"])
                 return page
-            
+            elif modrows[0][2] == session['id']:                
+                role = "Moderator"
+                page = Tournaments.createMedia(projID, tourID, session["id"])
+                return page
             else:
                 return render_template('notfound.html')
             
 @app.route('/editMedia/<projID>/<tourID>/<newsID>', methods=["POST", "GET"])
 def loadEditMedia(projID, tourID, newsID):
+    role = None             
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments JOIN news ON tournaments.tourID = news.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID AND news.newsID = :newsID"
-            inputs = {'userID': session["id"], 'tourID': tourID, 'newsID': newsID}
+            query = """SELECT * from tournaments JOIN news ON tournaments.tourID = news.tourID 
+            WHERE tournaments.tourID = :tourID AND news.newsID = :newsID"""
+            inputs = {'tourID': tourID, 'newsID': newsID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
-
-            if rows:
+                        
+            query = """SELECT * from moderators JOIN news ON moderators.tourID = news.tourID 
+            WHERE moderators.userID = :userID AND moderators.tourID = :tourID AND news.newsID = :newsID"""
+            inputs = {'userID': session["id"], 'tourID': tourID, 'newsID': newsID}
+            checkmod = conn.execute(text(query), inputs)
+            modrows = checkmod.fetchall()
+            
+            #statusID=5, the tournament is suspended
+            if rows[0][9] == 5:
+                return redirect(url_for('loadtournaments', projID=projID))
+            elif rows[0][10] == session['id']:
+                role = "Owner"
+                page = Tournaments.editMedia(projID, tourID, newsID)
+                return page
+            elif modrows[0][2] == session['id']:                
+                role = "Moderator"
                 page = Tournaments.editMedia(projID, tourID, newsID)
                 return page
             else:
@@ -367,21 +419,36 @@ def loadEditMedia(projID, tourID, newsID):
             
 @app.route('/deleteMedia/<projID>/<tourID>/<newsID>', methods=["POST", "GET"])
 def loadDeleteMedia(projID, tourID, newsID):
+    role = None             
     if "id" not in session:
         return redirect(url_for('loadLogin'))
     else:
         with dbConnect.engine.connect() as conn:
-            query = "SELECT * from tournaments JOIN news ON tournaments.tourID = news.tourID WHERE tournaments.userID = :userID AND tournaments.tourID = :tourID"
-            inputs = {'userID': session["id"], 'tourID': tourID}
+            query = """SELECT * from tournaments JOIN news ON tournaments.tourID = news.tourID 
+            WHERE tournaments.tourID = :tourID AND news.newsID = :newsID"""
+            inputs = {'tourID': tourID, 'newsID': newsID}
             checktour = conn.execute(text(query), inputs)
             rows = checktour.fetchall()
-
-            if rows:
+                        
+            query = """SELECT * from moderators JOIN news ON moderators.tourID = news.tourID 
+            WHERE moderators.userID = :userID AND moderators.tourID = :tourID AND news.newsID = :newsID"""
+            inputs = {'userID': session["id"], 'tourID': tourID, 'newsID': newsID}
+            checkmod = conn.execute(text(query), inputs)
+            modrows = checkmod.fetchall()
+            
+            #statusID=5, the tournament is suspended
+            if rows[0][9] == 5:
+                return redirect(url_for('loadtournaments', projID=projID))
+            elif rows[0][10] == session['id']:
+                role = "Owner"
+                page = Tournaments.deleteMedia(projID, tourID, newsID)
+                return page
+            elif modrows[0][2] == session['id']:                
+                role = "Moderator"
                 page = Tournaments.deleteMedia(projID, tourID, newsID)
                 return page
             else:
                 return render_template('notfound.html')
-
 
 @app.route('/settings/general/<projID>/<tourID>', methods=["POST", "GET"])
 def loadsettings(projID, tourID):

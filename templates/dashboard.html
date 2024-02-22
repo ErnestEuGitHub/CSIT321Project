@@ -8,17 +8,17 @@
       </header>
       <div class="d-flex flex-row flex-wrap justify-content-center">         
          {% if isOwner %}
-            <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
-               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
-                  <h2>Participant</h2>
-               </div>
-            </a>
             <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
                <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                   <h2>Structure</h2>
                   <p></p>
                </div>
             </a>  
+            <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
+                  <h2>Participant</h2>
+               </div>
+            </a>
             <a href="/placement/{{projID}}/{{tourID}}" class="boxlink">
                <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                   <h2>Placement</h2>
@@ -32,14 +32,6 @@
                </div>
             </a>         
          {% else %}          
-            {% if "Manage Participant" in moderatorPermissionList %}
-               <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box text-center d-flex align-items-center justify-content-center">
-                     <h2>Participant</h2>
-                     <p></p>
-                  </div>
-               </a>
-            {% endif %}
             {% if "Setup Structure" in moderatorPermissionList %}
                <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
                   <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
@@ -47,6 +39,14 @@
                      <p></p>
                   </div>
                </a>  
+            {% endif %}
+            {% if "Manage Participant" in moderatorPermissionList %}
+               <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
+                  <div class="col-6 m-3 box text-center d-flex align-items-center justify-content-center">
+                     <h2>Participant</h2>
+                     <p></p>
+                  </div>
+               </a>
             {% endif %}
             {% if "Manage Registration" in moderatorPermissionList %}
                <a href="#" class="boxlink">
