@@ -204,6 +204,10 @@ class Projects:
                     inputs = {'statusID':status,'projID':projID}
                     updateStatus = conn.execute(text(query), inputs)
 
+                    query = "UPDATE tournaments SET statusID = 4 WHERE projID = :projID"
+                    inputs = {'projID':projID}
+                    endProjectTours = conn.execute(text(query), inputs)
+
                     projects = updateNavProjects()
                     flash('Status Updated!', 'success')
                     if session["profileID"] == 3:
@@ -225,6 +229,10 @@ class Projects:
                     query = "UPDATE projects SET statusID = 5 WHERE projID = :projID"
                     inputs = {'projID':projID}
                     endProject = conn.execute(text(query), inputs)
+
+                    query = "UPDATE tournaments SET statusID = 5 WHERE projID = :projID"
+                    inputs = {'projID':projID}
+                    endProjectTours = conn.execute(text(query), inputs)
 
                     query = "SELECT * FROM projects WHERE projID = :projID"
                     inputs = {'projID': projID}
