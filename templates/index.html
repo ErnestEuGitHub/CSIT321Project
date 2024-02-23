@@ -139,69 +139,84 @@
           </div>
         </div>
         <div class="row no-gutters">
-          <div class="col-md-4">
-            <div class="post-entry">
-              <a href="#">
-                <img src="../static/images/img_1.jpg" alt="Image" class="img-fluid">
-              </a>
-              <div class="caption">
-                <div class="caption-inner">
-                  <h3 class="mb-3">UEFA Champions League 2024</h3>
-                  <div class="author d-flex align-items-center">
-                    <div class="img mb-2 mr-3">
-                      <img src="../static/images/person_1.jpg" alt="">
-                    </div>
-                    <div class="text">
-                      <h4>Taylor Ong</h4>
-                      <span>Jan 2, 2024 &bullet; Football</span>
-                    </div>
-                  </div>
-                </div>
-              </div> 
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="post-entry">
-              <a href="#">
-                <img src="../static/images/img_3.jpg" alt="Image" class="img-fluid">
-              </a>
-              <div class="caption">
-                <div class="caption-inner">
-                  <h3 class="mb-3">Carabao Cup 2024</h3>
-                  <div class="author d-flex align-items-center">
-                    <div class="img mb-2 mr-3">
-                      <img src="../static/images/person_1.jpg" alt="">
-                    </div>
-                    <div class="text">
-                      <h4>Taylor Ong</h4>
-                      <span>Feb 17, 2024 &bullet; Football</span>
+          {% if tournamentslist %}
+            <div class="col-md-4">
+              <div class="post-entry">
+                <a href="#">
+                  <img src="../static/images/img_1.jpg" alt="Image" class="img-fluid">
+                </a>
+                <div class="caption">
+                  <div class="caption-inner">
+                    <h3 class="mb-3">{{tournamentslist[0]['tourName']}}</h3>
+                    <div class="author d-flex align-items-center">
+                      <div class="img mb-2 mr-3">
+                        {% if tournamentslist[0]['profileMediaID'] %}
+                          <img src="https://drive.google.com/thumbnail?id={{tournamentslist[0]['profileMediaID']}}&sz=s4000" alt="">
+                        {% else %}
+                          <img src="../static/images/person_1.jpg" alt="">
+                        {% endif %}
+                      </div>
+                      <div class="text">
+                        <h4>{{tournamentslist[0]['fname']}} {{tournamentslist[0]['lname']}}</h4>
+                        <span>{{tournamentslist[0]['startDate']}}-{{tournamentslist[0]['endDate']}} &bullet; {{tournamentslist[0]['sportName']}}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div> 
+                </div> 
+              </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="post-entry">
-              <a href="#">
-                <img src="../static/images/img_2.jpg" alt="Image" class="img-fluid">
-              </a>
-              <div class="caption">
-                <div class="caption-inner">
-                  <h3 class="mb-3">Community Cup 2024</h3>
-                  <div class="author d-flex align-items-center">
-                    <div class="img mb-2 mr-3">
-                      <img src="../static/images/person_1.jpg" alt="">
-                    </div>
-                    <div class="text">
-                      <h4>Taylor Ong</h4>
-                      <span>Nov 1, 2023 &bullet; Football</span>
+            <div class="col-md-4">
+              <div class="post-entry">
+                <a href="#">
+                  <img src="../static/images/img_3.jpg" alt="Image" class="img-fluid">
+                </a>
+                <div class="caption">
+                  <div class="caption-inner">
+                    <h3 class="mb-3">{{tournamentslist[1]['tourName']}}</h3>
+                    <div class="author d-flex align-items-center">
+                      <div class="img mb-2 mr-3">
+                        {% if tournamentslist[1]['profileMediaID'] %}
+                          <img src="https://drive.google.com/thumbnail?id={{tournamentslist[1]['profileMediaID']}}&sz=s4000" alt="">
+                        {% else %}
+                          <img src="../static/images/person_1.jpg" alt="">
+                        {% endif %}
+                      </div>
+                      <div class="text">
+                        <h4>{{tournamentslist[1]['fname']}} {{tournamentslist[1]['lname']}}</h4>
+                        <span>{{tournamentslist[1]['startDate']}}-{{tournamentslist[1]['endDate']}} &bullet; {{tournamentslist[1]['sportName']}}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div> 
+                </div> 
+              </div>
             </div>
-          </div>
+            <div class="col-md-4">
+              <div class="post-entry">
+                <a href="#">
+                  <img src="../static/images/img_2.jpg" alt="Image" class="img-fluid">
+                </a>
+                <div class="caption">
+                  <div class="caption-inner">
+                    <h3 class="mb-3">{{tournamentslist[2]['tourName']}}</h3>
+                    <div class="author d-flex align-items-center">
+                      <div class="img mb-2 mr-3">
+                        {% if tournamentslist[2]['profileMediaID'] %}
+                          <img src="https://drive.google.com/thumbnail?id={{tournamentslist[2]['profileMediaID']}}&sz=s4000" alt="">
+                        {% else %}
+                          <img src="../static/images/person_1.jpg" alt="">
+                        {% endif %}
+                      </div>
+                      <div class="text">
+                        <h4>{{tournamentslist[2]['fname']}} {{tournamentslist[2]['lname']}}</h4>
+                        <span>{{tournamentslist[2]['startDate']}}-{{tournamentslist[2]['endDate']}} &bullet; {{tournamentslist[2]['sportName']}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div> 
+              </div>
+            </div>
+          {% else %}
+          {% endif %}
         </div>
 
       </div>
@@ -347,10 +362,10 @@
             <a href="#" class="js-custom-next-v2"><span class="icon-keyboard_arrow_right"></span></a>
             </div>
           </div>
-        </div> -->
+        </div>
 
 
-        <!-- <div class="owl-4-slider owl-carousel">
+        <div class="owl-4-slider owl-carousel">
           <div class="item">
             <div class="video-media">
               <img src="../static/images/img_1.jpg" alt="Image" class="img-fluid">
@@ -431,12 +446,12 @@
             </div>
           </div>
 
-        </div> -->
+        </div>
 
       </div>
-    </div>
+    </div> -->
 
-    <div class="container site-section">
+    <!-- <div class="container site-section">
       <div class="row">
         <div class="col-6 title-section">
           <h2 class="heading">Our Blog</h2>
@@ -470,11 +485,11 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
 
 
-    <footer class="footer-section col-lg-12">
+    <!-- <footer class="footer-section col-lg-12">
       <div class="container">
         <div class="row">
           <div class="col-lg-3">
@@ -519,25 +534,8 @@
           </div>
 
         </div>
-
-        <!-- <div class="row text-center">
-          <div class="col-md-12">
-            <div class=" pt-5">
-              <p> -->
-                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                <!-- Copyright &copy;
-                <script>
-                  document.write(new Date().getFullYear());
-                </script> All rights reserved | This template is made with <i class="icon-heart"
-                  aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> -->
-                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-              <!-- </p>
-            </div>
-          </div> -->
-
-        </div>
       </div>
-    </footer>
+    </footer> -->
 
 
 
