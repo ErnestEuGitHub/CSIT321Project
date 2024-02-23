@@ -987,7 +987,7 @@ class Match:
                         
                         return render_template('stageMatchPublic.html', navtype=navtype, tournamentName=tournamentName, tourID=tourID, stageID=stageID,
                                                 stageName = stageName, stageFormatID = stageFormatID, numberOfParticipants = numberOfParticipants,
-                                                numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner)
+                                                numberOfGroups = numberOfGroups, matchFormatID = matchFormatID, stageMatchArray=stageMatchArray, noOfRounds=noOfRounds, rankingArray=rankingArray)
                     
                     elif stageFormatID == 3 or stageFormatID == 4:
 
