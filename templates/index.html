@@ -139,81 +139,84 @@
           </div>
         </div>
         <div class="row no-gutters">
-          <div class="col-md-4">
-            <div class="post-entry">
-              <a href="#">
-                <img src="../static/images/img_1.jpg" alt="Image" class="img-fluid">
-              </a>
-              <div class="caption">
-                <div class="caption-inner">
-                  <h3 class="mb-3">{{tournamentslist[0]['tourName']}}</h3>
-                  <div class="author d-flex align-items-center">
-                    <div class="img mb-2 mr-3">
-                      {% if tournamentslist[0]['profileMediaID'] %}
-                        <img src="https://drive.google.com/thumbnail?id={{tournamentslist[0]['profileMediaID']}}&sz=s4000" alt="">
-                      {% else %}
-                        <img src="../static/images/person_1.jpg" alt="">
-                      {% endif %}
-                    </div>
-                    <div class="text">
-                      <h4>{{tournamentslist[0]['fname']}} {{tournamentslist[0]['lname']}}</h4>
-                      <span>{{tournamentslist[0]['startDate']}}-{{tournamentslist[0]['endDate']}} &bullet; {{tournamentslist[0]['sportName']}}</span>
-                    </div>
-                  </div>
-                </div>
-              </div> 
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="post-entry">
-              <a href="#">
-                <img src="../static/images/img_3.jpg" alt="Image" class="img-fluid">
-              </a>
-              <div class="caption">
-                <div class="caption-inner">
-                  <h3 class="mb-3">{{tournamentslist[1]['tourName']}}</h3>
-                  <div class="author d-flex align-items-center">
-                    <div class="img mb-2 mr-3">
-                      {% if tournamentslist[1]['profileMediaID'] %}
-                        <img src="https://drive.google.com/thumbnail?id={{tournamentslist[1]['profileMediaID']}}&sz=s4000" alt="">
-                      {% else %}
-                        <img src="../static/images/person_1.jpg" alt="">
-                      {% endif %}
-                    </div>
-                    <div class="text">
-                      <h4>{{tournamentslist[1]['fname']}} {{tournamentslist[1]['lname']}}</h4>
-                      <span>{{tournamentslist[1]['startDate']}}-{{tournamentslist[1]['endDate']}} &bullet; {{tournamentslist[1]['sportName']}}</span>
+          {% if tournamentslist %}
+            <div class="col-md-4">
+              <div class="post-entry">
+                <a href="#">
+                  <img src="../static/images/img_1.jpg" alt="Image" class="img-fluid">
+                </a>
+                <div class="caption">
+                  <div class="caption-inner">
+                    <h3 class="mb-3">{{tournamentslist[0]['tourName']}}</h3>
+                    <div class="author d-flex align-items-center">
+                      <div class="img mb-2 mr-3">
+                        {% if tournamentslist[0]['profileMediaID'] %}
+                          <img src="https://drive.google.com/thumbnail?id={{tournamentslist[0]['profileMediaID']}}&sz=s4000" alt="">
+                        {% else %}
+                          <img src="../static/images/person_1.jpg" alt="">
+                        {% endif %}
+                      </div>
+                      <div class="text">
+                        <h4>{{tournamentslist[0]['fname']}} {{tournamentslist[0]['lname']}}</h4>
+                        <span>{{tournamentslist[0]['startDate']}}-{{tournamentslist[0]['endDate']}} &bullet; {{tournamentslist[0]['sportName']}}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div> 
+                </div> 
+              </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="post-entry">
-              <a href="#">
-                <img src="../static/images/img_2.jpg" alt="Image" class="img-fluid">
-              </a>
-              <div class="caption">
-                <div class="caption-inner">
-                  <h3 class="mb-3">{{tournamentslist[2]['tourName']}}</h3>
-                  <div class="author d-flex align-items-center">
-                    <div class="img mb-2 mr-3">
-                      {% if tournamentslist[2]['profileMediaID'] %}
-                        <img src="https://drive.google.com/thumbnail?id={{tournamentslist[2]['profileMediaID']}}&sz=s4000" alt="">
-                      {% else %}
-                        <img src="../static/images/person_1.jpg" alt="">
-                      {% endif %}
-                    </div>
-                    <div class="text">
-                      <h4>{{tournamentslist[2]['fname']}} {{tournamentslist[2]['lname']}}</h4>
-                      <span>{{tournamentslist[2]['startDate']}}-{{tournamentslist[2]['endDate']}} &bullet; {{tournamentslist[2]['sportName']}}</span>
+            <div class="col-md-4">
+              <div class="post-entry">
+                <a href="#">
+                  <img src="../static/images/img_3.jpg" alt="Image" class="img-fluid">
+                </a>
+                <div class="caption">
+                  <div class="caption-inner">
+                    <h3 class="mb-3">{{tournamentslist[1]['tourName']}}</h3>
+                    <div class="author d-flex align-items-center">
+                      <div class="img mb-2 mr-3">
+                        {% if tournamentslist[1]['profileMediaID'] %}
+                          <img src="https://drive.google.com/thumbnail?id={{tournamentslist[1]['profileMediaID']}}&sz=s4000" alt="">
+                        {% else %}
+                          <img src="../static/images/person_1.jpg" alt="">
+                        {% endif %}
+                      </div>
+                      <div class="text">
+                        <h4>{{tournamentslist[1]['fname']}} {{tournamentslist[1]['lname']}}</h4>
+                        <span>{{tournamentslist[1]['startDate']}}-{{tournamentslist[1]['endDate']}} &bullet; {{tournamentslist[1]['sportName']}}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div> 
+                </div> 
+              </div>
             </div>
-          </div>
+            <div class="col-md-4">
+              <div class="post-entry">
+                <a href="#">
+                  <img src="../static/images/img_2.jpg" alt="Image" class="img-fluid">
+                </a>
+                <div class="caption">
+                  <div class="caption-inner">
+                    <h3 class="mb-3">{{tournamentslist[2]['tourName']}}</h3>
+                    <div class="author d-flex align-items-center">
+                      <div class="img mb-2 mr-3">
+                        {% if tournamentslist[2]['profileMediaID'] %}
+                          <img src="https://drive.google.com/thumbnail?id={{tournamentslist[2]['profileMediaID']}}&sz=s4000" alt="">
+                        {% else %}
+                          <img src="../static/images/person_1.jpg" alt="">
+                        {% endif %}
+                      </div>
+                      <div class="text">
+                        <h4>{{tournamentslist[2]['fname']}} {{tournamentslist[2]['lname']}}</h4>
+                        <span>{{tournamentslist[2]['startDate']}}-{{tournamentslist[2]['endDate']}} &bullet; {{tournamentslist[2]['sportName']}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div> 
+              </div>
+            </div>
+          {% else %}
+          {% endif %}
         </div>
 
       </div>
