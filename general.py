@@ -4,11 +4,15 @@ from sqlalchemy import text
 
 def landing():
         with dbConnect.engine.connect() as conn:
-                result = conn.execute(text("Select * from testtable"))
+                result = conn.execute(text("SELECT * from tournaments LEFT JOIN users ON tournaments.userID = users.userID LEFT JOIN sports ON tournaments.sportID = sports.sportID WHERE CURRENT_DATE() BETWEEN startDate AND endDate LIMIT 3"))
                 rows = result.fetchall()
 
-                descriptions = [row._asdict() for row in rows]
-                return render_template('index.html', desc=descriptions)
+                if not rows:
+                    result = conn.execute(text("SELECT * from tournaments LEFT JOIN users ON tournaments.userID = users.userID LEFT JOIN sports ON tournaments.sportID = sports.sportID LIMIT 3"))
+                    rows = result.fetchall()
+
+                tournamentslist = [row._asdict() for row in rows]
+                return render_template('index.html', tournamentslist=tournamentslist)
         
 def retrieveDashboardNavName(tourID):
         with dbConnect.engine.connect() as conn:
