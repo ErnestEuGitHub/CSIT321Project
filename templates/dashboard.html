@@ -30,7 +30,19 @@
                   <h2>Matches</h2>
                   <p></p>
                </div>
-            </a>         
+            </a>      
+            <a href="/media/{{projID}}/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
+                  <h2>Media</h2>
+                  <p></p>
+               </div>
+            </a>  
+            <a href="/tournamentOverviewPublic/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
+                  <h2>Public Page</h2>
+                  <p></p>
+               </div>
+            </a>     
          {% else %}          
             {% if "Setup Structure" in moderatorPermissionList %}
                <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
@@ -63,6 +75,22 @@
                      <p></p>
                   </div>
                </a>  
+            {% endif %}
+            {% if "Manage Media" in moderatorPermissionList %}            
+            <a href="/media/{{projID}}/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
+                  <h2>Media</h2>
+                  <p></p>
+               </div>
+            </a>  
+            {% endif %}
+            {% if "Manage Public Page" in moderatorPermissionList %}            
+            <a href="/tournamentOverviewPublic/{{tourID}}" class="boxlink">
+               <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
+                  <h2>Public Page</h2>
+                  <p></p>
+               </div>
+            </a>  
             {% endif %}
          {% endif %}
       </div>
