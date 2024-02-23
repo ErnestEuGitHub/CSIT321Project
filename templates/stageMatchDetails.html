@@ -137,7 +137,7 @@
                             <label class="mb-2 text-muted" for="venue">Available Venues</label>
                             <select id="venue" class="form-select" name="venue" required autofocus>
                                 <option value="-1">Select start and end date time first </option>
-                                <!-- {% if currentvenueID is not none %} <option value="{{currentvenueID}}" selected>{{currentvenueName}} - Capacity: {{currentvenueCapacity}}</option> {% else %} <option value="-2">Select a venue for match</option> {% endif %} -->
+                                {% if currentvenueID %} <option value="{{currentvenueID}}" selected>{{currentvenueName}} - Capacity: {{currentvenueCapacity}}</option> {% else %} <option value="-2">Select a venue for match</option> {% endif %}
                                 {% for v in venuelistFiltered %}
                                     <option value="{{v['venueID']}}" {% if currentvenueID == v['venueID'] %} selected {% endif %}>{{v['venueName']}} - Capacity: {{v['venueCapacity']}}</option>
                                 {% endfor %}
@@ -159,6 +159,7 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     var projID = {{projID|tojson|safe}};
     var tourID = {{tourID|tojson|safe}};
@@ -365,86 +366,101 @@
         });
     }
 
-        //Venue Javascript
-        const startDateInput = document.getElementById('startDate');
-		const endDateInput = document.getElementById('endDate');
-		const venueSelect = document.getElementById('venue');
+    //Venue Javascript
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const venueSelect = document.getElementById('venue');
 
-		startDateInput.addEventListener('change', updateVenueOptions);
-		endDateInput.addEventListener('change', updateVenueOptions);
-        // Get the current URL
-        var currentURL = window.location.href;
+    startDateInput.addEventListener('change', updateVenueOptions);
+    endDateInput.addEventListener('change', updateVenueOptions);
+    // Get the current URL
+    var currentURL = window.location.href;
 
-        // Split the URL by '/' to get individual segments
-        var urlSegments = currentURL.split('/');
+    // Split the URL by '/' to get individual segments
+    var urlSegments = currentURL.split('/');
 
-        // Extract the match ID from the URL segments (the last segment)
-        var matchID = parseInt(urlSegments[urlSegments.length - 1]);
+    // Extract the match ID from the URL segments (the last segment)
+    var matchID = parseInt(urlSegments[urlSegments.length - 1]);
 
-		function updateVenueOptions() {
-			if (startDateInput.value && endDateInput.value) {
-				// Both start and end dates are selected
-				venueSelect.disabled = false;
-				var optionToRemove = document.querySelector('#venue option[value="-1"]');
-				if (optionToRemove) {
-					optionToRemove.remove(); // Remove the option from the dropdown
-				}
+    function updateVenueOptions() {
+        if (startDateInput.value && endDateInput.value) {
+            // Both start and end dates are selected
+            venueSelect.disabled = false;
+            var optionToRemove = document.querySelector('#venue option[value="-1"]');
+            if (optionToRemove) {
+                optionToRemove.remove(); // Remove the option from the dropdown
+            }
 
-				$.ajax({
-					type: "POST",
-					url: "/get_venues",  // Update the route to handle format retrieval
-					data: { 
-						matchstart: startDateInput.value, 
-						matchend: endDateInput.value,
-                        matchID: matchID
-					},
-					success: function (response) {
-						console.log(response);
-						// Clear existing options
-						$('#venue').empty();
-						// Add new options based on received data
-						response.forEach(function(venue) {
-							$('#venue').append(`<option value="${venue.venueID}">${venue.venueName}</option>`);
-						});
-					},
-					error: function (error) {
-						console.error("Error:", error);
-					}
-				});
-				// document.querySelector('#venue option[value="-1"]').style.display = 'none';
-			} else {
-				// Either start or end date is not selected
-				venueSelect.disabled = true;
-				// document.querySelector('#venue option[value="-1"]').style.display = 'block';
-			}
-    	}
+            $.ajax({
+                type: "POST",
+                url: "/get_venues",  // Update the route to handle format retrieval
+                data: { 
+                    matchstart: startDateInput.value, 
+                    matchend: endDateInput.value,
+                    matchID: matchID
+                },
+                success: function (response) {
+                    console.log(response);
+                    // Clear existing options
+                    $('#venue').empty();
+                    // Add new options based on received data
+                    
+                    // Assuming response[0] contains the array of venue objects
+                    var venuelistFiltered_dicts = response[0];
 
-		// Call the function initially to check the start date on page load
-		updateVenueOptions();
+                    // Assuming response[1] contains the currentvenueID
+                    var currentvenueID = response[1];
 
-		//Filter for venue
-		document.addEventListener('DOMContentLoaded', function() {
-			const venueSelect = document.getElementById('venue');
-			const venueOptions = venueSelect.getElementsByTagName('option');
-			const venueSearchInput = document.getElementById('venueSearch');
+                    // Assuming response[2] contains the currentvenueName
+                    var currentvenueName = response[2];
 
-			venueSearchInput.addEventListener('input', function() {
-				const searchValue = this.value.trim().toLowerCase();
+                    // Assuming response[3] contains the currentvenueCapacity
+                    var currentvenueCapacity = response[3];
 
-				for (let i = 0; i < venueOptions.length; i++) {
-					const option = venueOptions[i];
-					const text = option.textContent.trim().toLowerCase();
-					const isVisible = text.includes(searchValue);
+                    $('#venue').append(`<option value="${currentvenueID}">Current Venue: ${currentvenueName} - ${currentvenueCapacity} pax</option>`);
 
-					option.style.display = isVisible ? 'block' : 'none';
-				}
-
-			});
-		});
-
-        function bookVenue() {
-            document.getElementById("venueform").submit();
+                    venuelistFiltered_dicts.forEach(function(venue) {
+                        $('#venue').append(`<option value="${venue.venueID}">${venue.venueName} - Capacity: ${venue.venueCapacity} pax</option>`);
+                    });
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+            // document.querySelector('#venue option[value="-1"]').style.display = 'none';
+        } else {
+            // Either start or end date is not selected
+            venueSelect.disabled = true;
+            // document.querySelector('#venue option[value="-1"]').style.display = 'block';
         }
+    }
+
+    // Call the function initially to check the start date on page load
+    updateVenueOptions();
+
+    //Filter for venue
+    document.addEventListener('DOMContentLoaded', function() {
+        const venueSelect = document.getElementById('venue');
+        const venueOptions = venueSelect.getElementsByTagName('option');
+        const venueSearchInput = document.getElementById('venueSearch');
+
+        venueSearchInput.addEventListener('input', function() {
+            const searchValue = this.value.trim().toLowerCase();
+
+            for (let i = 0; i < venueOptions.length; i++) {
+                const option = venueOptions[i];
+                const text = option.textContent.trim().toLowerCase();
+                const isVisible = text.includes(searchValue);
+
+                option.style.display = isVisible ? 'block' : 'none';
+            }
+
+        });
+    });
+
+    function bookVenue() {
+        document.getElementById("venueform").submit();
+    }
 
 
 </script>
