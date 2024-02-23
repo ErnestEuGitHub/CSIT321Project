@@ -34,7 +34,7 @@
          {% else %}          
             {% if "Setup Structure" in moderatorPermissionList %}
                <a href="/structure/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
+                  <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                      <h2>Structure</h2>
                      <p></p>
                   </div>
@@ -42,23 +42,15 @@
             {% endif %}
             {% if "Manage Participant" in moderatorPermissionList %}
                <a href="/participant/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box text-center d-flex align-items-center justify-content-center">
+                  <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                      <h2>Participant</h2>
-                     <p></p>
-                  </div>
-               </a>
-            {% endif %}
-            {% if "Manage Registration" in moderatorPermissionList %}
-               <a href="#" class="boxlink">
-                  <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
-                     <h2>Registration</h2>
                      <p></p>
                   </div>
                </a>
             {% endif %}
             {% if "Place Participant" in moderatorPermissionList %}
                <a href="/placement/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
+                  <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                      <h2>Placement</h2>
                      <p></p>
                   </div>
@@ -66,7 +58,7 @@
             {% endif %}
             {% if "Start Match" in moderatorPermissionList %}
                <a href="/match/{{projID}}/{{tourID}}" class="boxlink">
-                  <div class="col-6 m-3 box d-flex align-items-center justify-content-center">
+                  <div class="col-6 m-3 dashboard box d-flex align-items-center justify-content-center">
                      <h2>Matches</h2>
                      <p></p>
                   </div>
