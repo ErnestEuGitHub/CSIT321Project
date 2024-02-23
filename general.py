@@ -80,14 +80,28 @@ def updateNavProjects():
 def updateVenue(matchstart, matchend, matchID):
         
         with dbConnect.engine.connect() as conn:
+            query = "SELECT * from matches LEFT JOIN venue ON matches.venueID = venue.venueID WHERE matchID = :matchID"
+            inputs = {'matchID': matchID}
+            getMatchDetails = conn.execute(text(query), inputs)
+            matchfetchDetails = getMatchDetails.fetchall()
+            matchDetails = [row._asdict() for row in matchfetchDetails]
+
+            matchstart = matchDetails[0]["startTime"]
+            matchend = matchDetails[0]["endTime"]
+            currentvenueID = matchDetails[0]["venueID"]
+            currentvenueName = matchDetails[0]["venueName"]
+            currentvenueCapacity = matchDetails[0]["venueCapacity"]
+
             query = "SELECT matchID, venueID FROM matches WHERE (:matchstart >= matches.startTime AND :matchend <= matches.endTime) OR (:matchstart <= matches.startTime AND :matchend >= matches.endTime) OR (:matchstart >= matches.startTime AND :matchstart <= matches.endTime) OR (:matchend >= matches.startTime AND :matchend <= matches.endTime) UNION SELECT exEventName, venueID FROM venueExtEvent WHERE (:matchstart >= venueExtEvent.startDateTime AND :matchend <= venueExtEvent.endDateTime) OR (:matchstart <= venueExtEvent.startDateTime AND :matchend >= venueExtEvent.endDateTime) OR (:matchstart >= venueExtEvent.startDateTime AND :matchstart <= venueExtEvent.endDateTime) OR (:matchend >= venueExtEvent.startDateTime AND :matchend <= venueExtEvent.endDateTime)"
             inputs = {'matchstart': matchstart, 'matchend': matchend}
             getUnavailableVenues = conn.execute(text(query), inputs)
             unavailableVenuesfetch = getUnavailableVenues.fetchall()
 
             unavailableVenuesListDict = [row._asdict() for row in unavailableVenuesfetch]
-            venueIDs = [row['venueID'] for row in unavailableVenuesListDict if row['matchID'] != matchID]
+            venueIDs = [row['venueID'] for row in unavailableVenuesListDict if row['matchID'] != int(matchID)]
+            # print('venueIDs 1 are:', venueIDs)
             venueIDs = [venueID for venueID in venueIDs if venueID is not None]
+            # print('venueIDs 2 are:', venueIDs)
             unavailableVenueIDs = set(venueIDs)
 
             query = "SELECT * from venue"
@@ -95,9 +109,13 @@ def updateVenue(matchstart, matchend, matchID):
             venuelist = getVenues.fetchall()
 
             venuelistFiltered = [venue for venue in venuelist if venue[0] not in unavailableVenueIDs]
-            venuelistFiltered_dicts = [{'venueID': venue[0], 'venueName': venue[1]} for venue in venuelistFiltered]
+            venuelistFiltered_dicts = [{'venueID': venue[0], 'venueName': venue[1], 'venueCapacity': venue[3]} for venue in venuelistFiltered]
 
-            return jsonify(venuelistFiltered_dicts)
+            print('venuelistFiltered_dicts are:', venuelistFiltered_dicts)
+            print('currentvenueID are:', currentvenueID)
+            print('currentvenueName are:', currentvenueName)
+            print('currentvenueCapacity are:', currentvenueCapacity)
+            return jsonify(venuelistFiltered_dicts, currentvenueID, currentvenueName, currentvenueCapacity)
     
 def gettingModeratorPermissions(tourID):
         with dbConnect.engine.connect() as conn:
