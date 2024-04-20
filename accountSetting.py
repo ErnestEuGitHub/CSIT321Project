@@ -75,6 +75,7 @@ class AccountSetting:
                 print(f"File ID from Google Drive: {file_id}")  # THis line is for debugging
                 inputs = {'userID' :userID, 'fname':fname, 'lname':lname, 'profileMediaID':file_id}
                 updateAccount = conn.execute(text(query), inputs)
+                conn.commit()
                 #This part is to start a new sessions
                 session["fname"] = fname
                 session["profileMediaID"] = file_id

@@ -209,6 +209,7 @@ class Match:
                         query = "UPDATE matches SET startTime = :startTime, endTime = :endTime, venueID = :venueID WHERE matchID = :matchID"
                         inputs = {'startTime': startDate, 'endTime': endDate, 'venueID': venue, 'matchID': matchID}
                         updateVenue = conn.execute(text(query), inputs)
+                        conn.commit()
                         
                     flash('Venue Booking Updated!', 'success')
                     return redirect(url_for('loadmatchdetails', projID=projID, tourID=tourID, stageID=stageID, matchID=matchID, moderatorPermissionList=moderatorPermissionList, isOwner = isOwner))
@@ -365,11 +366,13 @@ class Match:
                         updateGameDetailsQuery = 'UPDATE gameParticipant SET gameParticipantScore = :gameParticipantScore, gameParticipantOutcome = :gameParticipantOutcome WHERE gameParticipantID = :gameParticipantID'
                         gameDetailsInputs = {'gameParticipantScore': game['score'], 'gameParticipantOutcome': game['result'], 'gameParticipantID': game['gameParticipantID']}
                         result = conn.execute(text(updateGameDetailsQuery), gameDetailsInputs)
+                        conn.commit()
                     
                         if int(game['result']) == 1:
                             updateMatchDetailsQuery = 'UPDATE matchParticipant SET matchScore = matchScore + 1 WHERE matchID = :matchID AND participantID = :participantID'
                             matchDetailsInputs = {'matchID': matchID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateMatchDetailsQuery), matchDetailsInputs)
+                            conn.commit()
                     
                     matchParticipantQuery = "SELECT * FROM matchParticipant WHERE matchID = :matchID"
                     matchParticipantInputs = {'matchID': matchID}
@@ -382,15 +385,18 @@ class Match:
                             updateMatchResultWinnerQuery = 'UPDATE matchParticipant SET participantMatchOutcome = 1 WHERE matchParticipantID = :matchParticipantID'
                             matchResultWinnnerInputs = {'matchParticipantID': mp["matchParticipantID"]}
                             conn.execute(text(updateMatchResultWinnerQuery), matchResultWinnnerInputs)
+                            conn.commit()
                             IDfetch = mp["matchParticipantID"]
 
                             updateMatchResultLoserQuery = 'UPDATE matchParticipant SET participantMatchOutcome = 3 WHERE matchParticipantID != :matchParticipantID AND matchID = :matchID'
                             matchResultLoserInputs = {'matchParticipantID': IDfetch, 'matchID': matchID}
                             conn.execute(text(updateMatchResultLoserQuery), matchResultLoserInputs)
+                            conn.commit()
 
                             updateMatchStatusQuery = 'UPDATE matches SET matchStatus = 1 WHERE matchID = :matchID'
                             matchStatusInputs = {'matchID': matchID}
                             conn.execute(text(updateMatchStatusQuery), matchStatusInputs)
+                            conn.commit()
 
                             matchQuery = "SELECT * FROM matches WHERE matchID = :matchID"
                             matchInputs = {'matchID': matchID}
@@ -402,10 +408,12 @@ class Match:
                                 setParentMatchQuery = 'UPDATE matchParticipant SET participantID = :participantID WHERE matchID = :matchID AND participantID IS NULL ORDER BY matchParticipantID LIMIT 1'
                                 setParentMatchInputs = {'participantID': mp["participantID"], 'matchID': match[0]["parentMatchID"]}
                                 conn.execute(text(setParentMatchQuery), setParentMatchInputs)
+                                conn.commit()
 
                                 gameQuery = "SELECT * FROM games WHERE matchID = :matchID"
                                 gameInputs = {'matchID': match[0]["parentMatchID"]}
                                 result = conn.execute(text(gameQuery), gameInputs)
+                                conn.commit()
                                 gameRows = result.fetchall()
                                 game = [row._asdict() for row in gameRows]
 
@@ -413,6 +421,7 @@ class Match:
                                     setParentGameQuery = 'UPDATE gameParticipant SET participantID = :participantID WHERE gameID = :gameID AND participantID IS NULL ORDER BY gameParticipantID LIMIT 1'
                                     setParentGameInputs = {'participantID': mp["participantID"], 'gameID': g["gameID"]}
                                     conn.execute(text(setParentGameQuery), setParentGameInputs)
+                                    conn.commit()
 
 
                 if stageFormatID == 3 or stageFormatID == 4:
@@ -430,10 +439,12 @@ class Match:
                         updateGameDetailsQuery = 'UPDATE gameParticipant SET gameParticipantScore = :gameParticipantScore, gameParticipantOutcome = :gameParticipantOutcome WHERE gameParticipantID = :gameParticipantID'
                         gameDetailsInputs = {'gameParticipantScore': game['score'], 'gameParticipantOutcome': game['result'], 'gameParticipantID': game['gameParticipantID']}
                         result = conn.execute(text(updateGameDetailsQuery), gameDetailsInputs)
+                        conn.commit()
 
                         updateMatchStatusQuery = 'UPDATE matches SET matchStatus = 1 WHERE matchID = :matchID'
                         matchStatusInputs = {'matchID': matchID}
                         conn.execute(text(updateMatchStatusQuery), matchStatusInputs)
+                        conn.commit()
 
                         if game == gamesData[0]:
                             opponent = gamesData[1]
@@ -445,14 +456,17 @@ class Match:
                             updateMatchDetailsQuery = 'UPDATE matchParticipant SET matchScore = matchScore + 1 WHERE matchID = :matchID AND participantID = :participantID'
                             matchDetailsInputs = {'matchID': matchID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateMatchDetailsQuery), matchDetailsInputs)
+                            conn.commit()
 
                             updateMatchResultQuery = 'UPDATE matchParticipant SET participantMatchOutcome = 1 WHERE matchID = :matchID AND participantID = :participantID'
                             matchResultInputs = {'matchID': matchID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateMatchResultQuery), matchResultInputs)
+                            conn.commit()
 
                             updateRankingQuery = 'UPDATE ranking SET matchPlayed = matchPlayed + 1, win = win + 1, scoreFor = scoreFor + :scoreFor, scoreAgainst = scoreAgainst + :scoreAgainst, points = points + :points WHERE stageID = :stageID AND participantID = :participantID'
                             updateRankingInputs = {'scoreFor': game['score'], 'scoreAgainst': opponent['score'], 'points': winPts, 'stageID': stageID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateRankingQuery), updateRankingInputs)
+                            conn.commit()
                             
 
                         #Draw 
@@ -460,32 +474,39 @@ class Match:
                             updateMatchDetailsQuery = 'UPDATE matchParticipant SET matchScore = matchScore WHERE matchID = :matchID AND participantID = :participantID'
                             matchDetailsInputs = {'matchID': matchID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateMatchDetailsQuery), matchDetailsInputs)
+                            conn.commit()
 
                             updateMatchResultQuery = 'UPDATE matchParticipant SET participantMatchOutcome = 2 WHERE matchID = :matchID AND participantID = :participantID'
                             matchResultInputs = {'matchID': matchID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateMatchResultQuery), matchResultInputs)
+                            conn.commit()
 
                             updateRankingQuery = 'UPDATE ranking SET matchPlayed = matchPlayed + 1, draw = draw + 1, scoreFor = scoreFor + :scoreFor, scoreAgainst = scoreAgainst + :scoreAgainst, points = points + :points WHERE stageID = :stageID AND participantID = :participantID'
                             updateRankingInputs = {'scoreFor': game['score'], 'scoreAgainst': opponent['score'], 'points': drawPts, 'stageID': stageID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateRankingQuery), updateRankingInputs)
+                            conn.commit()
 
                         #Loss
                         if int(game['result']) == 3: 
                             updateMatchDetailsQuery = 'UPDATE matchParticipant SET matchScore = matchScore WHERE matchID = :matchID AND participantID = :participantID'
                             matchDetailsInputs = {'matchID': matchID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateMatchDetailsQuery), matchDetailsInputs)
+                            conn.commit()
 
                             updateMatchResultQuery = 'UPDATE matchParticipant SET participantMatchOutcome = 3 WHERE matchID = :matchID AND participantID = :participantID'
                             matchResultInputs = {'matchID': matchID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateMatchResultQuery), matchResultInputs)
+                            conn.commit()
 
                             updateRankingQuery = 'UPDATE ranking SET matchPlayed = matchPlayed + 1, loss = loss + 1, scoreFor = scoreFor + :scoreFor, scoreAgainst = scoreAgainst + :scoreAgainst, points = points + :points WHERE stageID = :stageID AND participantID = :participantID'
                             updateRankingInputs = {'scoreFor': game['score'], 'scoreAgainst': opponent['score'], 'points': lossPts, 'stageID': stageID, 'participantID': game['participantID']}
                             result = conn.execute(text(updateRankingQuery), updateRankingInputs)
+                            conn.commit()
 
                         rankingSelectQuery = 'SELECT * FROM ranking WHERE stageID = :stageID AND participantID = :participantID'
                         rankingSelectInputs = {'stageID':stageID, 'participantID': game['participantID']}
                         result = conn.execute(text(rankingSelectQuery), rankingSelectInputs)
+                        conn.commit()
                         rankingRows = result.fetchall()
                         ranking = [row._asdict() for row in rankingRows]
 
@@ -494,6 +515,7 @@ class Match:
                         updateScoreDiffQuery = 'UPDATE ranking SET scoreDiff = :scoreDiff  WHERE rankingID = :rankingID'
                         scoreDiffInputs = {'scoreDiff': scoreDiff, 'rankingID': ranking[0]['rankingID']}
                         result = conn.execute(text(updateScoreDiffQuery), scoreDiffInputs)
+                        conn.commit()
 
             return "updateGamesDetails success!"
     

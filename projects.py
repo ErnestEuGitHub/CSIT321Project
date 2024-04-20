@@ -101,6 +101,7 @@ class Projects:
                         file_id = upload_to_google_drive(projImage, projName)
                         inputs = {'projName': projName, 'projStartDate': startDate, 'projEndDate': endDate, 'userID': userID, 'projImageID': file_id}
                         createProject = conn.execute(text(query), inputs)
+                        conn.commit()
 
                     userID = session["id"]
                     projects = updateNavProjects()
@@ -156,6 +157,7 @@ class Projects:
                             query = "UPDATE projects SET projName = :projName,  projStartDate = :projStartDate, projEndDate = :projEndDate, statusID = :statusID WHERE projID = :projID"
                             inputs = {'projName':projName, 'projStartDate':startDate, 'projEndDate':endDate, 'projID':projID, 'statusID':status}
                             updateProject = conn.execute(text(query), inputs)
+                            conn.commit()
 
                             projects = updateNavProjects()
                             flash('Project Updated!', 'success')
@@ -203,10 +205,12 @@ class Projects:
                     query = "UPDATE projects SET statusID = :statusID WHERE projID = :projID"
                     inputs = {'statusID':status,'projID':projID}
                     updateStatus = conn.execute(text(query), inputs)
+                    conn.commit()
 
                     query = "UPDATE tournaments SET statusID = 4 WHERE projID = :projID"
                     inputs = {'projID':projID}
                     endProjectTours = conn.execute(text(query), inputs)
+                    conn.commit()
 
                     projects = updateNavProjects()
                     flash('Status Updated!', 'success')
@@ -229,10 +233,12 @@ class Projects:
                     query = "UPDATE projects SET statusID = 5 WHERE projID = :projID"
                     inputs = {'projID':projID}
                     endProject = conn.execute(text(query), inputs)
+                    conn.commit()
 
                     query = "UPDATE tournaments SET statusID = 5 WHERE projID = :projID"
                     inputs = {'projID':projID}
                     endProjectTours = conn.execute(text(query), inputs)
+                    conn.commit()
 
                     query = "SELECT * FROM projects WHERE projID = :projID"
                     inputs = {'projID': projID}

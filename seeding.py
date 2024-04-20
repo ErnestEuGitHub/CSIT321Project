@@ -42,12 +42,14 @@ def seeding(projID, tourID, stageID):
                         query = "INSERT INTO seeding (participantID, placementStatusID, sequence, stageID) VALUES (:participantID, :placementStatusID, :sequence, :stageID)"
                         inputs = {'participantID': partID, 'placementStatusID': 1, 'sequence': seqcount, 'stageID': stageID}
                         result = conn.execute(text(query), inputs)
+                        conn.commit()
 
                 else:
                     with dbConnect.engine.connect() as conn:
                         query = "INSERT INTO seeding (placementStatusID, sequence, stageID) VALUES (:placementStatusID, :sequence, :stageID)"
                         inputs = {'placementStatusID': 0, 'sequence': seqcount, 'stageID': stageID}
                         result = conn.execute(text(query), inputs)
+                        conn.commit()
                     
                 seqcount = seqcount + 1
         
@@ -69,12 +71,14 @@ def seeding(projID, tourID, stageID):
                         query = "UPDATE seeding SET participantID = :participantID, placementStatusID = :placementStatusID, sequence = :sequence, stageID = :stageID WHERE seedingID = :seedingID"
                         inputs = {'participantID': partID, 'placementStatusID': 1, 'sequence': seqcount, 'stageID': stageID, 'seedingID': getSeedID[seedcount][0]}
                         result = conn.execute(text(query), inputs)
+                        conn.commit()
 
                 else:
                     with dbConnect.engine.connect() as conn:
                         query = "UPDATE seeding SET participantID = NULL, placementStatusID = :placementStatusID, sequence = :sequence, stageID = :stageID WHERE seedingID = :seedingID"
                         inputs = {'placementStatusID': 0, 'sequence': seqcount, 'stageID': stageID, 'seedingID': getSeedID[seedcount][0]}
                         result = conn.execute(text(query), inputs)
+                        conn.commit()
                     
                 seqcount = seqcount + 1
                 seedcount = seedcount + 1
@@ -207,6 +211,7 @@ def seeding(projID, tourID, stageID):
                                 query = "INSERT INTO ranking (participantID, stageGroup, stageID) VALUES (:participantID, :stageGroup, :stageID)"
                                 inputs = {'participantID': team, 'stageGroup': rankingStgGrpCounter, 'stageID': stageID}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
 
                         # Update matchParticipant
                         for grp in placementGrpArray:
@@ -223,6 +228,7 @@ def seeding(projID, tourID, stageID):
                                     query = "UPDATE matchParticipant SET participantID = :participant WHERE matchID = :matchID AND participantID = :tempNum"
                                     inputs = {'participant': teams, 'matchID': match['matchID'], 'tempNum': (teamsInGrpCounter+1) * -1}
                                     result = conn.execute(text(query), inputs)
+                                    conn.commit()
 
                                     query = "UPDATE matchParticipant SET participantID = :participant WHERE matchID = :matchID AND participantID = :tempNum"
 
@@ -316,10 +322,12 @@ def seeding(projID, tourID, stageID):
                                 query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
                                 inputs = {'gameParticipantID': checkgamepart[0][0], 'participantID': matchParticipants[0][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
 
                                 query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
                                 inputs = {'gameParticipantID': checkgamepart[1][0], 'participantID': matchParticipants[1][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
                             else:    
                                 #for each gameID
                                 # print('checkgamepart else: ', checkgamepart)
@@ -334,10 +342,12 @@ def seeding(projID, tourID, stageID):
                                 query = "INSERT INTO gameParticipant (gameID, participantID) VALUES (:gameID, :participantID)"
                                 inputs = {'gameID': game['gameID'], 'participantID': matchParticipants[0][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
 
                                 query = "INSERT INTO gameParticipant (gameID, participantID) VALUES (:gameID, :participantID)"
                                 inputs = {'gameID': game['gameID'], 'participantID': matchParticipants[1][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
 
                 flash('Seeding Updated!', 'success')
                 print('Flash msg activated')
@@ -391,6 +401,7 @@ def seeding(projID, tourID, stageID):
                                 query = "UPDATE matchParticipant SET participantID = :participantID WHERE matchParticipantID = :matchParticipantID"
                                 inputs = {'participantID': participantID, 'matchParticipantID': getcurrentPartIDs[counter][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
 
                                 counter = counter + 1
 
@@ -414,6 +425,7 @@ def seeding(projID, tourID, stageID):
                                 query = "INSERT INTO matchParticipant (participantID, matchID) VALUES (:participantID, :matchID)"
                                 inputs = {'participantID': participantID, 'matchID':matchID}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
 
                     #Game Participant Code
                     matchesarray = [row._asdict() for row in fetchmatches]
@@ -453,10 +465,12 @@ def seeding(projID, tourID, stageID):
                                 query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
                                 inputs = {'gameParticipantID': checkgamepart[0][0], 'participantID': matchParticipants[0][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
 
                                 query = "UPDATE gameParticipant SET participantID = :participantID WHERE gameParticipantID = :gameParticipantID"
                                 inputs = {'gameParticipantID': checkgamepart[1][0], 'participantID': matchParticipants[1][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
                             else:    
                                 #for each gameID
                                 # print('checkgamepart else: ', checkgamepart)
@@ -471,10 +485,12 @@ def seeding(projID, tourID, stageID):
                                 query = "INSERT INTO gameParticipant (gameID, participantID) VALUES (:gameID, :participantID)"
                                 inputs = {'gameID': game['gameID'], 'participantID': matchParticipants[0][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
 
                                 query = "INSERT INTO gameParticipant (gameID, participantID) VALUES (:gameID, :participantID)"
                                 inputs = {'gameID': game['gameID'], 'participantID': matchParticipants[1][0]}
                                 result = conn.execute(text(query), inputs)
+                                conn.commit()
                                 
                 flash('Seeding Updated!', 'success')
                 print('Flash msg activated')

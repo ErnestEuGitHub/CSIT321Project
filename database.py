@@ -1,7 +1,12 @@
 from sqlalchemy import create_engine, text
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
+
 
 class dbConnect:
-    db_connection_string = "mysql+pymysql://9ifgazidbdynts8z5mhn:pscale_pw_M2Z17oTDOSuKopVqTLhLvZc1JPVeFnDkWRdFspL83eb@aws.connect.psdb.cloud/csit321?charset=utf8mb4"
+    db_connection_string = os.environ.get('MYSQL_ADDON_URI')
 
     engine = create_engine(
         db_connection_string,

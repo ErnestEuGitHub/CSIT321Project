@@ -307,12 +307,14 @@ class Tournaments:
                         with dbConnect.engine.connect() as conn:
                             query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
                             createNewGeneralInfo = conn.execute(text(query))
+                            conn.commit()
                             getID = createNewGeneralInfo.lastrowid
 
                             query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
                             file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
                             inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID': 0 ,'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
                             createTournament = conn.execute(text(query), inputs)
+                            conn.commit()
                             newtourID = createTournament.lastrowid
 
                             #get Template Tournament ID
@@ -351,6 +353,7 @@ class Tournaments:
                                     'numberOfParticipants': numberOfParticipants, 'numberOfGroups': numberOfGroups, 'matchFormatID': matchFormatID, 'maxGames': maxGames}
                                 conn.execute(text(stageQuery), stageInputs)
                                 IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                conn.commit()
                                 stageID = IDfetch.scalar()
                                 
                                 print('Stage Created with Template!')
@@ -368,6 +371,7 @@ class Tournaments:
                                     elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
                                     elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                                     conn.execute(text(elimFormatQuery), elimInputs)
+                                    conn.commit()
 
                                     # noOfMatch = numberOfParticipants - 1
                                     noOfRound = int(math.log2(int(numberOfParticipants)))
@@ -386,6 +390,7 @@ class Tournaments:
                                             matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1, 'matchStatus': 0}
                                             conn.execute(text(matchCreateQuery), matchCreateInputs)
                                             IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                            conn.commit()
                                             matchID = IDfetch.scalar()
                                             currentMatchArray.append(matchID)
                                             print(currentMatchArray)
@@ -396,6 +401,7 @@ class Tournaments:
                                                 """
                                                 matchParticipantCreateInputs = {'matchID': matchID}
                                                 conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                                conn.commit()
                                             
                                             for n in range(int(maxGames)):
                                                 gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
@@ -403,6 +409,7 @@ class Tournaments:
                                                 """
                                                 matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
                                                 conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                                conn.commit()
                                                 IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                                 gameID = IDfetch.scalar()
 
@@ -412,6 +419,7 @@ class Tournaments:
                                                     """
                                                     gameParticipantCreateInputs = {'gameID': gameID}
                                                     conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
+                                                    conn.commit()
                                         
                                         if currentRoundNo != 0:
                                             for currentMatchID in currentMatchArray:
@@ -429,6 +437,7 @@ class Tournaments:
                                                         parentMatchIDQuery = "UPDATE matches SET parentMatchID = :parentMatchID WHERE matchID = :matchID"
                                                         parentMatchIDInputs = {'parentMatchID': currentMatchID, 'matchID': childMatchID}
                                                         conn.execute(text(parentMatchIDQuery), parentMatchIDInputs)
+                                                        conn.commit()
                                                         childMatchArray.remove(childMatchID)
                                                         print("The childMatchArray is: ")
                                                         print(childMatchArray)
@@ -469,6 +478,7 @@ class Tournaments:
                                     roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
                                     conn.execute(text(roundFormatQuery), roundInputs)
                                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                    conn.commit()
                                     roundRobinID = IDfetch.scalar()
 
                                     print(tieBreakers)
@@ -478,6 +488,7 @@ class Tournaments:
                                         tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
                                         tiebreakerInput = {'tbTypeID': tieBreakers[i]['tbTypeID'], 'sequence': sequence, 'roundRobinID': roundRobinID}
                                         createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+                                        conn.commit()
                                     
                                     noPerGroup = int(int(numberOfParticipants) // int(numberOfGroups))
                                     print("This is noPerGroup")
@@ -528,6 +539,7 @@ class Tournaments:
                                                 matchCreateInputs = {'stageID': stageID, 'bracketSequence': index, 'matchStatus': 0, 'stageGroup': grpIdx}
                                                 conn.execute(text(matchCreateQuery), matchCreateInputs)
                                                 IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                                conn.commit()
                                                 matchID = IDfetch.scalar()
 
                                                 for p in pair:
@@ -536,6 +548,7 @@ class Tournaments:
                                                     """
                                                     matchParticipantCreateInputs = {'matchID': matchID, 'participantID': p * -1}
                                                     conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                                    conn.commit()
                                                 
                                                 for n in range(int(maxGames)):
                                                     gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
@@ -544,6 +557,7 @@ class Tournaments:
                                                     matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
                                                     conn.execute(text(gameCreateQuery), matchCreateInputs)
                                                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
+                                                    conn.commit()
                                                     gameID = IDfetch.scalar()
 
                                                     for p in pair:
@@ -552,6 +566,7 @@ class Tournaments:
                                                         """
                                                         gameParticipantCreateInputs = {'gameID': gameID, 'participantID': p * -1}
                                                         conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
+                                                        conn.commit()
                                         if (int(stageFormatID) == 4):
                                             for index, pairs in enumerate(rounds, start=1):
                                                 print("This is Round")
@@ -563,6 +578,7 @@ class Tournaments:
                                                     matchCreateQuery = "INSERT INTO matches (stageID, bracketSequence, matchStatus, stageGroup) VALUES (:stageID, :bracketSequence, :matchStatus, :stageGroup)"
                                                     matchCreateInputs = {'stageID': stageID, 'bracketSequence': index + tempNoPerGroup - 1, 'matchStatus': 0, 'stageGroup': grpIdx}
                                                     conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                                    conn.commit()
                                                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                                     matchID = IDfetch.scalar()
 
@@ -572,6 +588,7 @@ class Tournaments:
                                                         """
                                                         matchParticipantCreateInputs = {'matchID': matchID, 'participantID': p * -1}
                                                         conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                                        conn.commit()
                                                     
                                                     for n in range(int(maxGames)):
                                                         gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
@@ -579,6 +596,7 @@ class Tournaments:
                                                         """
                                                         matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
                                                         conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                                        conn.commit()
                                                         IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                                         gameID = IDfetch.scalar()
 
@@ -588,6 +606,7 @@ class Tournaments:
                                                             """
                                                             gameParticipantCreateInputs = {'gameID': gameID, 'participantID': p * -1}
                                                             conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)   
+                                                            conn.commit()
                                 else:
                                     print("stageFormatID is invalid!")
                                     
@@ -628,12 +647,14 @@ class Tournaments:
 
                             query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
                             createNewGeneralInfo = conn.execute(text(query))
+                            conn.commit()
                             getID = createNewGeneralInfo.lastrowid
 
                             query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
                             file_id = upload_to_google_drive(tourImage, bannerImage, tourName)
                             inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID': 0 ,'statusID':status, 'userID':userID, 'generalInfoID':getID, 'tourImageID': file_id[0], 'tourBannerID': file_id[1]}
                             createTournament = conn.execute(text(query), inputs)
+                            conn.commit()
 
                             #for navbar
                             tournamentlist = updateNavTournaments(projID)
@@ -823,6 +844,7 @@ class Tournaments:
                     stageInputs = {'stageName': stageName, 'stageSequence': stageSequence, 'stageFormatID': stageFormatID, 'stageStatusID': stageStatusID, 'tourID': tourID, 
                                    'numberOfParticipants': numberOfParticipants, 'numberOfGroups': numberOfGroups, 'matchFormatID': matchFormatID, 'maxGames': maxGames}
                     conn.execute(text(stageQuery), stageInputs)
+                    conn.commit()
                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                     stageID = IDfetch.scalar()
 
@@ -831,6 +853,7 @@ class Tournaments:
                         elimFormatQuery = "INSERT INTO elimFormat (tfMatch, stageID) VALUES (:tfMatch, :stageID)"
                         elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                         conn.execute(text(elimFormatQuery), elimInputs)
+                        conn.commit()
 
                         # noOfMatch = numberOfParticipants - 1
                         noOfRound = int(math.log2(int(numberOfParticipants)))
@@ -848,6 +871,7 @@ class Tournaments:
                                 """
                                 matchCreateInputs = {'stageID': stageID,'bracketSequence': currentRoundNo + 1, 'matchStatus': 0}
                                 conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                conn.commit()
                                 IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                 matchID = IDfetch.scalar()
                                 currentMatchArray.append(matchID)
@@ -859,6 +883,7 @@ class Tournaments:
                                     """
                                     matchParticipantCreateInputs = {'matchID': matchID}
                                     conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                    conn.commit()
                                 
                                 for n in range(int(maxGames)):
                                     gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
@@ -866,6 +891,7 @@ class Tournaments:
                                     """
                                     matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
                                     conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                    conn.commit()
                                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                     gameID = IDfetch.scalar()
 
@@ -875,6 +901,7 @@ class Tournaments:
                                         """
                                         gameParticipantCreateInputs = {'gameID': gameID}
                                         conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
+                                        conn.commit()
                             
                             if currentRoundNo != 0:
                                 for currentMatchID in currentMatchArray:
@@ -892,6 +919,7 @@ class Tournaments:
                                             parentMatchIDQuery = "UPDATE matches SET parentMatchID = :parentMatchID WHERE matchID = :matchID"
                                             parentMatchIDInputs = {'parentMatchID': currentMatchID, 'matchID': childMatchID}
                                             conn.execute(text(parentMatchIDQuery), parentMatchIDInputs)
+                                            conn.commit()
                                             childMatchArray.remove(childMatchID)
                                             print("The childMatchArray is: ")
                                             print(childMatchArray)
@@ -911,6 +939,7 @@ class Tournaments:
                         roundFormatQuery = "INSERT INTO roundFormat (winPts, drawPts, lossPts, stageID) VALUES (:winPts, :drawPts, :lossPts, :stageID)"
                         roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
                         conn.execute(text(roundFormatQuery), roundInputs)
+                        conn.commit()
                         IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                         roundRobinID = IDfetch.scalar()
 
@@ -921,6 +950,7 @@ class Tournaments:
                             tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
                             tiebreakerInput = {'tbTypeID': tieBreakers[i], 'sequence': sequence, 'roundRobinID': roundRobinID}
                             createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+                            conn.commit()
                         
                         noPerGroup = int(int(numberOfParticipants) // int(numberOfGroups))
                         print("This is noPerGroup")
@@ -970,6 +1000,7 @@ class Tournaments:
                                     matchCreateQuery = "INSERT INTO matches (stageID, bracketSequence, matchStatus, stageGroup) VALUES (:stageID, :bracketSequence, :matchStatus, :stageGroup)"
                                     matchCreateInputs = {'stageID': stageID, 'bracketSequence': index, 'matchStatus': 0, 'stageGroup': grpIdx}
                                     conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                    conn.commit()
                                     IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                     matchID = IDfetch.scalar()
 
@@ -979,6 +1010,7 @@ class Tournaments:
                                         """
                                         matchParticipantCreateInputs = {'matchID': matchID, 'participantID': p * -1}
                                         conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                        conn.commit()
                                     
                                     for n in range(int(maxGames)):
                                         gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
@@ -986,6 +1018,7 @@ class Tournaments:
                                         """
                                         matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
                                         conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                        conn.commit()
                                         IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                         gameID = IDfetch.scalar()
 
@@ -995,6 +1028,7 @@ class Tournaments:
                                             """
                                             gameParticipantCreateInputs = {'gameID': gameID, 'participantID': p * -1}
                                             conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)
+                                            conn.commit()
                             if (int(stageFormatID) == 4):
                                 for index, pairs in enumerate(rounds, start=1):
                                     print("This is Round")
@@ -1006,6 +1040,7 @@ class Tournaments:
                                         matchCreateQuery = "INSERT INTO matches (stageID, bracketSequence, matchStatus, stageGroup) VALUES (:stageID, :bracketSequence, :matchStatus, :stageGroup)"
                                         matchCreateInputs = {'stageID': stageID, 'bracketSequence': index + tempNoPerGroup - 1, 'matchStatus': 0, 'stageGroup': grpIdx}
                                         conn.execute(text(matchCreateQuery), matchCreateInputs)
+                                        conn.commit()
                                         IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                         matchID = IDfetch.scalar()
 
@@ -1015,6 +1050,7 @@ class Tournaments:
                                             """
                                             matchParticipantCreateInputs = {'matchID': matchID, 'participantID': p * -1}
                                             conn.execute(text(matchParticipantCreateQuery), matchParticipantCreateInputs)
+                                            conn.commit()
                                         
                                         for n in range(int(maxGames)):
                                             gameCreateQuery = """INSERT INTO games (matchID, gameNo) 
@@ -1022,6 +1058,7 @@ class Tournaments:
                                             """
                                             matchCreateInputs = {'matchID': matchID,'gameNo': n+1}
                                             conn.execute(text(gameCreateQuery), matchCreateInputs)
+                                            conn.commit()
                                             IDfetch = conn.execute(text("SELECT LAST_INSERT_ID()"))
                                             gameID = IDfetch.scalar()
 
@@ -1031,6 +1068,7 @@ class Tournaments:
                                                 """
                                                 gameParticipantCreateInputs = {'gameID': gameID, 'participantID': p * -1}
                                                 conn.execute(text(gameParticipantCreateQuery), gameParticipantCreateInputs)   
+                                                conn.commit()
                     else:
                         print("stageFormatID is invalid!")
                 
@@ -1183,6 +1221,7 @@ class Tournaments:
                             print(f"File ID from Google Drive: {pic_id}") # This line is for debugging
                             inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'sportID':sport, 'tourImageID': pic_id[0], 'tourBannerID': pic_id[1], 'statusID':status, 'tourID':tourID}
                             updateGeneralInfo = conn.execute(text(query), inputs)
+                            conn.commit()
                     
                         # flash('General Information Updated!', 'success')
                     
@@ -1208,6 +1247,7 @@ class Tournaments:
                         query = "UPDATE generalInfo SET generalInfoDesc = :generalDesc, rules = :rules, prize = :prize WHERE generalInfoID = :generalInfoID"
                         inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'generalInfoID':generalInfoID}
                         updateDetails = conn.execute(text(query), inputs)
+                        conn.commit()
                 
                     # flash('Details Updated!', 'success')
                 
@@ -1225,6 +1265,7 @@ class Tournaments:
                         query = "UPDATE generalInfo SET contact = :contact WHERE generalInfoID = :generalInfoID"
                         inputs = {'contact':contact, 'generalInfoID':generalInfoID}
                         updateDetails = conn.execute(text(query), inputs)
+                        conn.commit()
                 
                     # flash('Contact Updated!', 'success')
                 
@@ -1309,6 +1350,7 @@ class Tournaments:
                     query = "UPDATE tournaments SET statusID = :statusID WHERE tourID = :tourID"
                     inputs = {'statusID':status,'tourID':tourID}
                     updateStatus = conn.execute(text(query), inputs)
+                    conn.commit()
 
                     flash('Status Updated!', 'success')
                     if session["profileID"] == 3:
@@ -1331,6 +1373,7 @@ class Tournaments:
                     query = "UPDATE tournaments SET statusID = 5 WHERE tourID = :tourID"
                     inputs = {'tourID': tourID}
                     result = conn.execute(text(query), inputs)
+                    conn.commit()
 
                     #getting general tab information
                     query = "SELECT * FROM sports"
@@ -1445,6 +1488,7 @@ class Tournaments:
                 queryParticipant = "INSERT INTO participants (participantName, participantEmail, tourID) VALUES (:participantName, :participantEmail, :tourID)"
                 inputParticipant = {'participantName': participantName, 'participantEmail':participantEmail, 'tourID':tourID}
                 createNewParticipant = conn.execute(text(queryParticipant),inputParticipant)
+                conn.commit()
                 
                 participantID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()                    
                 
@@ -1452,6 +1496,7 @@ class Tournaments:
                     queryPlayer = "INSERT INTO players (playerName, participantID) VALUES (:playerName, :participantID)"
                     inputPlayer = {'playerName': playerName, 'participantID': participantID}
                     createNewPlayer = conn.execute(text(queryPlayer), inputPlayer)
+                    conn.commit()
 
                 flash('Participant Created!', 'success')
             
@@ -1489,6 +1534,7 @@ class Tournaments:
                     'tourID': tourID
                 }
                 conn.execute(text(queryEditParticipants), inputEditParticipants)
+                conn.commit()
                 
                 for playerName, playerID in playerList: 
                     # Update player names in the database
@@ -1502,13 +1548,15 @@ class Tournaments:
                         'playerID': playerID,
                         'participantID': participantID,
                     }
-                    conn.execute(text(queryEditPlayers), inputEditPlayers)              
+                    conn.execute(text(queryEditPlayers), inputEditPlayers)       
+                    conn.commit()       
                 
                 # Create New Player
                 for i, newPlayerName in enumerate(newPlayerName, start=1):
                     queryNewPlayer = "INSERT INTO players (playerName, participantID) VALUES (:playerName, :participantID)"
                     inputNewPlayer = {'playerName': newPlayerName, 'participantID': participantID}
                     createNewPlayer = conn.execute(text(queryNewPlayer), inputNewPlayer)
+                    conn.commit()
 
             flash('Participant Information Updated!', 'success')
             
@@ -1572,6 +1620,7 @@ class Tournaments:
                             'tourID': tourID
                         }
                         conn.execute(text(queryDeleteParticipantsOnly), inputDeleteParticipantsOnly)
+                        conn.commit()
                         flash('Participant Deleted Successfully!', 'success')
                     else:
                         # Delete participant from the database when there is player(s)
@@ -1588,6 +1637,7 @@ class Tournaments:
                             'tourID': tourID
                         }
                         conn.execute(text(queryDeleteParticipantAndPlayer), inputDeleteParticipantAndPlayer)
+                        conn.commit()
                         flash('Participant Deleted Successfully!', 'success')                 
                 
                 return redirect(url_for("loadParticipant", projID=projID, tourID=tourID))
@@ -1656,6 +1706,7 @@ class Tournaments:
                             'participantID': participantID
                         }
                         conn.execute(text(queryDeletePlayerOnly), inputDeletePlayerOnly)
+                        conn.commit()
                         flash('Player Deleted Successfully!', 'success')                 
                 
                 return redirect(url_for("loadDeleteParticipant", projID=projID, tourID=tourID, participantID=participantID))
@@ -1742,6 +1793,7 @@ class Tournaments:
                 queryNewModerator = "INSERT INTO moderators (userID, tourID, moderatorEmail) VALUES (:userID, :tourID, :moderatorEmail)"
                 inputNewModerator = {'userID': userID, 'tourID': tourID, 'moderatorEmail': moderatorEmail}
                 conn.execute(text(queryNewModerator), inputNewModerator)
+                conn.commit()
                     
                 # Retrieve the newly inserted moderator's ID
                 moderatorID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
@@ -1752,6 +1804,7 @@ class Tournaments:
                         query_insert_permission = f"INSERT INTO moderatorPermissions (moderatorID, permissionID) VALUES (:moderatorID, :permissionID)"
                         input_insert_permission = {'moderatorID': moderatorID, 'permissionID': idx}
                         conn.execute(text(query_insert_permission), input_insert_permission)
+                        conn.commit()
 
             return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
         else:
@@ -1805,6 +1858,7 @@ class Tournaments:
                     text("DELETE FROM moderatorPermissions WHERE moderatorID = :moderatorID"),
                     {'moderatorID': moderatorID}
                 )
+                conn.commit()
 
                 # Insert selected permissions into the 'moderatorPermissions' table
                 for idx, permission in enumerate(selectedPermissions, start=1):
@@ -1812,6 +1866,7 @@ class Tournaments:
                         query_insert_permission = f"INSERT INTO moderatorPermissions (moderatorID, permissionID) VALUES (:moderatorID, :permissionID)"
                         input_insert_permission = {'moderatorID': moderatorID, 'permissionID': idx}
                         conn.execute(text(query_insert_permission), input_insert_permission)
+                        conn.commit()
 
             return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
             
@@ -1884,12 +1939,14 @@ class Tournaments:
                     text("DELETE FROM moderatorPermissions WHERE moderatorID = :moderatorID"),
                     {'moderatorID': moderatorID}
                 )
+                conn.commit()
 
                 # Delete the moderator
                 conn.execute(
                     text("DELETE FROM moderators WHERE moderatorID = :moderatorID"),
                     {'moderatorID': moderatorID}
                 )
+                conn.commit()
 
                 flash('Moderator deleted successfully!', 'success')
                 return redirect(url_for("loadModerator", projID=projID, tourID=tourID))
@@ -2037,6 +2094,7 @@ class Tournaments:
                 queryNews = "INSERT INTO news (newsTitle, newsDesc, tourID, userID) VALUES (:newsTitle, :newsDesc, :tourID, :userID)"
                 inputNews = {'newsTitle':newsTitle, 'newsDesc':newsDesc, 'tourID':tourID, 'userID':userID}
                 createNews = conn.execute(text(queryNews), inputNews)
+                conn.commit()
 
                 newsID = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
             
@@ -2060,6 +2118,7 @@ class Tournaments:
                     file_id = upload_to_google_drive2(file)
                     inputMedia = {'type': file_type, 'newsMediaCode': file_id, 'newsID': newsID}
                     createMedia = conn.execute(text(queryMedia), inputMedia)
+                    conn.commit()
 
             flash('Media Created!', 'success')
             return redirect(url_for("loadMedia", projID=projID, tourID=tourID))
@@ -2083,6 +2142,7 @@ class Tournaments:
                 queryUpdate = "UPDATE news SET newsTitle = :newsTitle, newsDesc = :newsDesc WHERE newsID = :newsID"
                 inputUpdate = {'newsTitle': newsTitle, 'newsDesc': newsDesc, 'newsID': newsID}
                 conn.execute(text(queryUpdate), inputUpdate)
+                conn.commit()
 
                 if all(file.filename != '' for file in mediaImage):
             
@@ -2106,6 +2166,7 @@ class Tournaments:
                         file_id = upload_to_google_drive2(file)
                         inputEditMedia = {'type':file_type, 'newsMediaCode': file_id, 'newsID':newsID }
                         editMedia = conn.execute(text(queryEditMedia), inputEditMedia)
+                        conn.commit()
 
                 flash('Media Updated!', 'success')
 
@@ -2148,6 +2209,7 @@ class Tournaments:
                     queryDelete = "DELETE FROM news WHERE newsID = :newsID"
                     inputDelete = {'newsID': newsID}
                     conn.execute(text(queryDelete), inputDelete)
+                    conn.commit()
             
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')
@@ -2342,6 +2404,7 @@ class Tournaments:
                         query = "INSERT INTO template (templateName, tourID, userID) VALUES (:templateName, :tourID, :userID)"
                         inputs = {'templateName': templateName,'tourID': tourID, 'userID': session["id"]}
                         insertTemplate = conn.execute(text(query), inputs)
+                        conn.commit()
                         flash('Template Created!', 'success')
                         return redirect(url_for('loadCreateTour', projID=projID))
 
@@ -2380,6 +2443,7 @@ class Tournaments:
                         query = "DELETE from template WHERE templateID = :templateID"
                         inputs = {'templateID': templateID}
                         deleteTemplate = conn.execute(text(query), inputs)
+                        conn.commit()
                         flash('Template Deleted!', 'success')
                         return redirect(url_for('loadEditTemplate', projID=projID))
                 except Exception as e:
@@ -2392,6 +2456,7 @@ class Tournaments:
                         query = "UPDATE template SET tourID = :tourID WHERE templateID = :templateID"
                         inputs = {'tourID': tourID, 'templateID': templateID}
                         updateTemplate = conn.execute(text(query), inputs)
+                        conn.commit()
                         flash('Template Updated!', 'success')
                         return redirect(url_for('loadEditTemplate', projID=projID))
 

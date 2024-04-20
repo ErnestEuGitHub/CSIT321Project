@@ -87,6 +87,7 @@ class User:
                         query = "INSERT INTO users (email, password, profileID, fname, lname, statusID) VALUES (:email, :password, 1, :fname, :lname, 1)"
                         inputs = {'email': email, 'password': hashedpw, 'fname': fname, 'lname': lname}
                         addUser = conn.execute(text(query), inputs)
+                        conn.commit()
 
                     flash('Account Created! Try logging in.', 'success')
                     return render_template('login.html')

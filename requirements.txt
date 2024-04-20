@@ -4,3 +4,5 @@ sqlalchemy
 pymysql
 bcrypt
 google-api-python-client
+mysqlclient
+python-dotenv

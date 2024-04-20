@@ -49,18 +49,21 @@ class Stage:
                               'stageStatusID': stageStatusID, 'numberOfParticipants': numberOfParticipants, 'numberOfGroups': numberOfGroups, 
                               'matchFormatID': matchFormatID, 'maxGames': maxGames, 'stageID': stageID}
                     conn.execute(text(stageQuery), stageInputs)
+                    conn.commit()
 
                     if int(stageFormatID) == 1 or int(stageFormatID) == 2:
                         print("stageFormatID is" + stageFormatID)
                         elimFormatQuery = "UPDATE elimFormat SET tfMatch = :tfMatch WHERE stageID = :stageID"
                         elimInputs = {'tfMatch': tfMatch, 'stageID': stageID}
                         conn.execute(text(elimFormatQuery), elimInputs)
+                        conn.commit()
 
                     elif int(stageFormatID) == 3 or int(stageFormatID) == 4:
                         print("stageFormatID is "+ stageFormatID)
                         roundFormatQuery = "UPDATE roundFormat SET winPts = :winPts, drawPts = :drawPts, lossPts = :lossPts WHERE stageID = :stageID"
                         roundInputs = {'winPts': winPts, 'drawPts': drawPts, 'lossPts': lossPts, 'stageID': stageID}
                         conn.execute(text(roundFormatQuery), roundInputs)
+                        conn.commit()
                         
                         roundRobinIDQuery = "SELECT roundRobinID FROM roundFormat WHERE stageID = :stageID"
                         roundRobinIDInputs = {'stageID': stageID}
@@ -72,12 +75,14 @@ class Stage:
                         delTieBreakersQuery = "DELETE FROM tieBreaker WHERE roundRobinID = :roundRobinID"
                         delTbInputs = {'roundRobinID': roundRobinID}
                         conn.execute(text(delTieBreakersQuery), delTbInputs)
+                        conn.commit()
 
                         for i in range(len(tieBreakers)):
                             sequence = i + 1
                             tieBreakerQuery = "INSERT INTO tieBreaker (tbTypeID, sequence, roundRobinID) VALUES (:tbTypeID, :sequence, :roundRobinID)"
                             tiebreakerInput = {'tbTypeID': tieBreakers[i], 'sequence': sequence, 'roundRobinID': roundRobinID}
                             createTiebreakers = conn.execute(text(tieBreakerQuery), tiebreakerInput)
+                            conn.commit()
                     else:
                         print("stageFormatID is invalid!")
                 
@@ -181,6 +186,7 @@ class Stage:
                     delStageQuery = "UPDATE stages SET stageStatusID = 4 WHERE stageID = :stageID"
                     delStageInputs = {'stageID': stageID}
                     conn.execute(text(delStageQuery), delStageInputs)
+                    conn.commit()
 
             except Exception as e:
                 flash('Oops, an error has occured.', 'error')

@@ -163,6 +163,7 @@ def createProjAdmin():
                     file_id = upload_to_google_drive(projImage, projName)
                     inputs = {'projName': projName, 'projStartDate': startDate, 'projEndDate': endDate, 'userID': owner, 'statusID':status, 'projImageID': file_id}
                     createProject = conn.execute(text(query), inputs)
+                    conn.commit()
 
                 # userID = session["id"]
                 # projects = updateNavProjects()
@@ -232,6 +233,7 @@ def ProjSettingsAdmin(projID):
                         print(f"File ID from Google Drive: {file_id}")  # This line is for debugging
                         inputs = {'projName':projName, 'projStartDate':startDate, 'projEndDate':endDate, 'userID': owner, 'statusID':status, 'projImageID': file_id, 'projID':projID}
                         updateProject = conn.execute(text(query), inputs)
+                        conn.commit()
                         flash('Project Updated!', 'success')
 
                         return redirect(url_for('loadProjAdminSetting', projID=projID))
@@ -351,12 +353,14 @@ def createTourAdmin():
 
                     query = "INSERT INTO generalInfo SET generalInfoDesc = default;"
                     createNewGeneralInfo = conn.execute(text(query))
+                    conn.commit()
                     getID = createNewGeneralInfo.lastrowid
 
                     query = "INSERT INTO tournaments (tourName, tourSize, startDate, endDate, gender, projID, sportID, formatID, statusID, userID, generalInfoID, tourImageID, tourBannerID) VALUES (:tourName, :tourSize, :startDate, :endDate, :gender, :projID, :sportID, :formatID, :statusID, :userID, :generalInfoID, :tourImageID, :tourBannerID)"
                     file_id_2 = upload_to_google_drive_2(tourImage, bannerImage, tourName)
                     inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':owner, 'generalInfoID':getID, 'tourImageID': file_id_2[0], 'tourBannerID': file_id_2[1]}
                     createTournament = conn.execute(text(query), inputs)
+                    conn.commit()
                 
                 flash('Tournament Created!', 'success')
                 return render_template('sysAdminCreateTour.html', tourName=tourName, tourSize=tourSize, startDate=startDate, endDate=endDate, gender=gender, sport=sport, format=format, sportlist=sportsOptions, status=status, owner=owner, projID=projID)
@@ -468,6 +472,7 @@ def TourSettingsAdmin(tourID):
                     query = "UPDATE tournaments SET tourName = :tourName, tourSize = :tourSize, startDate = :startDate, endDate = :endDate, gender = :gender, projID = :projID, sportID = :sportID, formatID = :formatID, statusID = :statusID, userID = :userID WHERE tourID = :tourID"
                     inputs = {'tourName': tourName, 'tourSize': tourSize, 'startDate': startDate, 'endDate': endDate, 'gender':gender, 'projID':projID, 'sportID':sport, 'formatID':formatID, 'statusID':status, 'userID':owner, 'tourID':tourID}
                     updateGeneralInfo = conn.execute(text(query), inputs)
+                    conn.commit()
                 
                 except Exception as e:
                     flash('Oops, an error has occured in updating general details tab.', 'error')
@@ -487,6 +492,7 @@ def TourSettingsAdmin(tourID):
                 query = "UPDATE generalInfo SET generalInfoDesc = :generalDesc, rules = :rules, prize = :prize WHERE generalInfoID = :generalInfoID"
                 inputs = {'generalDesc':generalDesc, 'rules':rules, 'prize':prize, 'generalInfoID':generalInfoID}
                 updateDetails = conn.execute(text(query), inputs)
+                conn.commit()
             
             except Exception as e:
                     flash('Oops, an error has occured in updating details tab.', 'error')
@@ -499,6 +505,7 @@ def TourSettingsAdmin(tourID):
                     query = "UPDATE generalInfo SET contact = :contact WHERE generalInfoID = :generalInfoID"
                     inputs = {'contact':contact, 'generalInfoID':generalInfoID}
                     updateDetails = conn.execute(text(query), inputs)
+                    conn.commit()
             
                 # flash('Contact Updated!', 'success')
             
@@ -621,6 +628,7 @@ def createVenueAdmin():
                     query = "INSERT into venue (venueName, venueAddr, venueCapacity) VALUES (:venueName, :venueAddr, :venueCapacity)"
                     inputs = {'venueName':venueName, 'venueAddr': venueAddr, 'venueCapacity': venueCapacity}
                     result = conn.execute(text(query), inputs)
+                    conn.commit()
 
                     flash('Venue Updated!', 'success')
                     return redirect(url_for('loadCreateVenueAdmin'))
@@ -647,6 +655,7 @@ def venueAdminSetting(venueID):
                     query = "DELETE FROM venue WHERE venueID = :venueID"
                     inputs = {'venueID': venueID}
                     result = conn.execute(text(query), inputs)
+                    conn.commit()
 
                     query = "SELECT * FROM matches WHERE venueID = :venueID"
                     inputs = {'venueID': venueID}
@@ -660,6 +669,7 @@ def venueAdminSetting(venueID):
                             query = "UPDATE matches SET venueID = null WHERE matchID = :matchID"
                             inputs = {'matchID': matchID}
                             result = conn.execute(text(query), inputs)
+                            conn.commit()
 
                     flash('Venue Deleted!', 'success')
                     return redirect(url_for('loadVenueAdmin'))
@@ -683,6 +693,7 @@ def venueAdminSetting(venueID):
                         query = "UPDATE venue SET venueName = :venueName, venueAddr = :venueAddr, venueCapacity = :venueCapacity WHERE venueID = :venueID"
                         inputs = {'venueName':venueName, 'venueAddr': venueAddr, 'venueCapacity': venueCapacity, 'venueID': venueID}
                         result = conn.execute(text(query), inputs)
+                        conn.commit()
 
                         flash('Venue Updated!', 'success')
                         return redirect(url_for('loadVenueAdminSetting', venueID=venueID))
@@ -748,6 +759,7 @@ def createUserAdmin():
                     query = "INSERT INTO users (email, password, profileID, fname, lname, statusID) VALUES (:email, :password, :profileID, :fname, :lname, 1)"
                     inputs = {'email': email, 'password': hashedpw, 'fname': fname, 'lname': lname, 'profileID': profile}
                     addUser = conn.execute(text(query), inputs)
+                    conn.commit()
 
                 flash('Account Created! Try logging in.', 'success')
                 return redirect(url_for('loadCreateUsersAdmin'))
@@ -771,6 +783,7 @@ def userAdminSetting(userID):
                     query = "UPDATE users SET statusID = 0 WHERE userID = :userID"
                     inputs = {'userID': userID}
                     updateUser = conn.execute(text(query), inputs)
+                    conn.commit()
 
                 flash('User Suspended!', 'success')
                 return redirect(url_for('loadUsersAdmin'))
@@ -810,6 +823,7 @@ def userAdminSetting(userID):
                                 query = "UPDATE users SET email = :email, password = :password, profileID = :profileID, fname = :fname, lname = :lname WHERE userID = :userID"
                                 inputs = {'email': email, 'password': hashedpw, 'fname': fname, 'lname': lname, 'profileID': profile, 'userID': userID}
                                 updateUser = conn.execute(text(query), inputs)
+                                conn.commit()
 
                             flash('Account Updated!', 'success')
                             return redirect(url_for('loadUserAdminSetting', userID=userID))
@@ -824,6 +838,7 @@ def userAdminSetting(userID):
                             query = "UPDATE users SET email = :email, profileID = :profileID, fname = :fname, lname = :lname WHERE userID = :userID"
                             inputs = {'email': email, 'fname': fname, 'lname': lname, 'profileID': profile, 'userID': userID}
                             updateUser = conn.execute(text(query), inputs)
+                            conn.commit()
                         
                         flash('Account Updated!', 'success')
                         return redirect(url_for('loadUserAdminSetting', userID=userID))
